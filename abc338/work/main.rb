@@ -1,58 +1,41 @@
-N, M = gets.chomp.split.map(&:to_i)
-XS = gets.chomp.split.map(&:to_i).map { |i| i - 1}
+N = gets.chomp.to_i
+ABS = (1..N).map { gets.chomp.split.map(&:to_i) }
 
-cost_min = 0
-cost_diff = Array.new(N, 0)
-cost_total = Array.new(N, 0)
-(1...M).each do |i|
-  #pp "---#{i}---"
-  x = XS[i - 1]
-  y = XS[i]
-  #pp [x, y]
+# def check(abs)
+#   data = []
+#   abs.each do |a, b|
+#     a, b = b, a if b < a
+#     data.each do |a2, b2|
+#       cond1 = (a2 < a && a < b2)
+#       cond2 = (a2 < b && b < b2)
+#       return 'Yes' if cond1 && !cond2
+#       return 'Yes' if !cond1 && cond2
+#     end
+#     data << [a, b]
+#   end
 
-  x, y = y, x if y < x
+#   'No'
+# end
 
-  l = y - x # 0 < l
-  if N - l < l
-    # y -> (N - 1) -> 0 -> x と、N番目の橋を渡る場合
-    d = N - l
-    d2 = (N - d) - d
-    #pp [x, y, d, d2]
-    #pp cost_diff
-    cost_diff[y] += d2
-    #pp cost_diff
-    if x > 0
-      #pp "if x > 0"
-      cost_diff[0] += d2
-      cost_diff[x] += -d2
-    end
-
-    cost_min += d
-  else
-    # x -> y と、N番目の橋を渡らない場合
-    d = l
-    d2 = (N - d) - d
-    cost_diff[x] += d2
-    cost_diff[y] += -d2
-
-    cost_min += d
+def check(n, abs)
+  data = Array.new(n * 2, 0)
+  # pp data
+  abs.each do |a, b|
+    a, b = b, a if b < a
+    # pp [a, b]
+    data[a - 1] += 1
+    data[b - 1] += -1
   end
 
-  #pp cost_min
-  #pp cost_diff
-end
+  pp data
 
-#pp cost_min
-#pp cost_diff
-
-N.times do |j|
-  if j == 0
-    cost_total[j] = cost_min + cost_diff[j]
-  else
-    cost_total[j] = cost_total[j - 1] + cost_diff[j]
+  h = 0
+  data.each do |a|
+    h += a
+    return 'Yes' if 1 < h
   end
+
+  'No'
 end
-# pp cost_total
 
-
-puts cost_total.min
+puts check(N, ABS)
