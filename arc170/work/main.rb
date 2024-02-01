@@ -3,56 +3,46 @@ AS = gets.chomp.split.map(&:to_i)
 
 last1s = Array.new(1 + 10, nil)
 last2s = Array.new(1 + 10) { Array.new(1 + 10, nil) }
-paires = {}
+paires = []
+
+k_max = -1
 
 AS.each_with_index do |a, i|
+  # c -> b -> a
+  # k    j    i
   (1..10).each do |b|
     c = b - (a - b)
     if 1 <= c && c <= 10
       kj = last2s[c][b]
       if kj
         k, j = kj
-        paires[k] ||= []
-        paires[k] << i
-        last2s[c][b] = nil
+        if k_max < k
+          paires << [k, i]
+          last2s[c][b] = nil
+          k_max = k
+        end
       end
     end
   end
 
+  # b -> a
+  # j    i
   (1..10).each do |b|
-    j = last_is[b] 
+    j = last1s[b] 
     if j
-      if !table[b][a]
-        table[b][a] = i
-        d = AS[i] - AS[j]
-        paires[d] ||= {}
-        # paires[d][j] ||= []
-        paires[d][j] = i
-      end
+      last2s[b][a] = [j, i]
     end
   end
 
+  # a
+  # i
   last1s[a] = i
-
-
-
-
-  table[a] = Array.new(1 + 10, nil)
 end
 
-pp last_is
-pp table
+pp last1s
+pp last2s
 pp paires
 
-
-ranges = []
-paires.each do |d, ijs|
-  ijs.each do |i, j|
-    ranges << [i, ijs[j]] if ijs[j]
-  end
-end
-
-pp ranges
 
 
 
