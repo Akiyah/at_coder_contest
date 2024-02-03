@@ -26,8 +26,12 @@ def one_step(steps, s, status, board)
         return true
       end
 
-      if status[p0i_][p0j_][p1i_][p1j_] == nil
-        status[p0i_][p0j_][p1i_][p1j_] = s + 1
+      # if status[p0i_][p0j_][p1i_][p1j_] == nil
+      #   status[p0i_][p0j_][p1i_][p1j_] = s + 1
+      #   steps[s + 1] << [p0i_, p0j_, p1i_, p1j_]
+      # end
+      if status[p0i_ * N * N * N + p0j_ * N * N + p1i_ * N + p1j_] == nil
+        status[p0i_ * N * N * N + p0j_ * N * N + p1i_ * N + p1j_] = s + 1
         steps[s + 1] << [p0i_, p0j_, p1i_, p1j_]
       end
     end
@@ -44,13 +48,14 @@ def calc(board)
     end
   end
   
-  status = Array.new(N) {
-    Array.new(N) {
-      Array.new(N) {
-        Array.new(N, nil)
-      }
-    }
-  }
+  # status = Array.new(N) {
+  #   Array.new(N) {
+  #     Array.new(N) {
+  #       Array.new(N, nil)
+  #     }
+  #   }
+  # }
+  status = Array.new(N * N * N * N, nil)
 
   # #pp ps
 
@@ -61,7 +66,7 @@ def calc(board)
   
   # #pp status
   # #pp [p0i, p0j, p1i, p1j]
-  status[p0i][p0j][p1i][p1j] = 1
+  status[p0i * N * N * N + p0j * N * N + p1i * N + p1j] = 1
   # status[p1i][p1j][p0i][p0j] = 1
   steps = []
   # steps[0] = [[p0i, p0j, p1i, p1j], [p1i, p1j, p0i, p0j]]
@@ -70,7 +75,7 @@ def calc(board)
 
   while true
     #pp "s"
-    #pp s
+    # pp s
     result = one_step(steps, s, status, board)
     #pp "result"
     #pp result
@@ -80,7 +85,9 @@ def calc(board)
     if steps[s + 1].empty?
       return -1
     end
-    
+
+    # pp [s + 1, steps[s + 1].length]
+
     s += 1
   end
 
