@@ -39,10 +39,17 @@ AS.each_with_index do |a, i|
   last1s[a] = i
 end
 
-pp last1s
-pp last2s
-pp paires
+# pp last1s
+# pp last2s
+# pp paires
 
+last_i = -1
+result = paires.sum do |i, j|
+  # pp [i, j]
+  x = (i - last_i) * (N - j)
+  last_i = i
+  # pp x
+  x
+end
 
-
-
+puts result
