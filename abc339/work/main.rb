@@ -4,8 +4,8 @@ board = (1..N).map do |i|
 end
 
 def one_step(steps, s, status, board)
-  steps[s + 1] = []
-  steps[s].each do |p0i, p0j, p1i, p1j|
+  new_steps = []
+  steps.each do |p0i, p0j, p1i, p1j|
     [[-1, 0], [1, 0], [0, -1], [0, 1]].each do |di, dj|
       # #pp [p0i, p0j, p1i, p1j]
       p0i_ = p0i + di
@@ -23,7 +23,7 @@ def one_step(steps, s, status, board)
       # #pp [p0i_, p0j_, p1i_, p1j_]
 
       if p0i_ == p1i_ && p0j_ == p1j_
-        return true
+        return [true, []]
       end
 
       # if status[p0i_][p0j_][p1i_][p1j_] == nil
@@ -32,12 +32,12 @@ def one_step(steps, s, status, board)
       # end
       if status[p0i_ * N * N * N + p0j_ * N * N + p1i_ * N + p1j_] == nil
         status[p0i_ * N * N * N + p0j_ * N * N + p1i_ * N + p1j_] = s + 1
-        steps[s + 1] << [p0i_, p0j_, p1i_, p1j_]
+        new_steps << [p0i_, p0j_, p1i_, p1j_]
       end
     end
   end
 
-  false
+  [false, new_steps]
 end
 
 def calc(board)
@@ -68,27 +68,27 @@ def calc(board)
   # #pp [p0i, p0j, p1i, p1j]
   status[p0i * N * N * N + p0j * N * N + p1i * N + p1j] = 1
   # status[p1i][p1j][p0i][p0j] = 1
-  steps = []
   # steps[0] = [[p0i, p0j, p1i, p1j], [p1i, p1j, p0i, p0j]]
-  steps[0] = [[p0i, p0j, p1i, p1j]]
+  steps = [[p0i, p0j, p1i, p1j]]
   s = 0
 
   while true
     #pp "s"
     # pp s
-    result = one_step(steps, s, status, board)
+    result, new_steps = one_step(steps, s, status, board)
     #pp "result"
     #pp result
     if result
       return s + 1
     end
-    if steps[s + 1].empty?
+    if new_steps.empty?
       return -1
     end
 
     # pp [s + 1, steps[s + 1].length]
 
     s += 1
+    steps = new_steps
   end
 
 end
