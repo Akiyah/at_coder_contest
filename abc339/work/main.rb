@@ -1,6 +1,13 @@
 N = gets.chomp.to_i # 2 ~ 60
-BOARD = (1..N).map do |i|
-  gets.chomp.split('')
+
+PS = []
+BOARD = (0...N).map do |i|
+  gets.chomp.split('').map.with_index do |c, j|
+    if c == 'P'
+      PS << [i, j]
+    end
+    c == '#'
+  end
 end
 
 STATUS = Array.new(64 * 64 * 64 * 64, nil)
@@ -16,10 +23,10 @@ def one_step(steps, s)
 
     p0i_ = p0i - 1
     p1i_ = p1i - 1
-    if p0i_ < 0 || BOARD[p0i_][p0j] == '#'
+    if p0i_ < 0 || BOARD[p0i_][p0j] # == '#'
       p0i_ = p0i
     end
-    if p1i_ < 0 || BOARD[p1i_][p1j] == '#'
+    if p1i_ < 0 || BOARD[p1i_][p1j] # == '#'
       p1i_ = p1i
     end
 
@@ -37,10 +44,10 @@ def one_step(steps, s)
 
     p0i_ = p0i + 1
     p1i_ = p1i + 1
-    if N <= p0i_ || BOARD[p0i_][p0j] == '#'
+    if N <= p0i_ || BOARD[p0i_][p0j] # == '#'
       p0i_ = p0i
     end
-    if N <= p1i_ || BOARD[p1i_][p1j] == '#'
+    if N <= p1i_ || BOARD[p1i_][p1j] # == '#'
       p1i_ = p1i
     end
 
@@ -58,10 +65,10 @@ def one_step(steps, s)
 
     p0j_ = p0j - 1
     p1j_ = p1j - 1
-    if p0j_ < 0 || BOARD[p0i][p0j_] == '#'
+    if p0j_ < 0 || BOARD[p0i][p0j_] # == '#'
       p0j_ = p0j
     end
-    if p1j_ < 0 || BOARD[p1i][p1j_] == '#'
+    if p1j_ < 0 || BOARD[p1i][p1j_] # == '#'
       p1j_ = p1j
     end
 
@@ -80,10 +87,10 @@ def one_step(steps, s)
 
     p0j_ = p0j + 1
     p1j_ = p1j + 1
-    if N <= p0j_ || BOARD[p0i][p0j_] == '#'
+    if N <= p0j_ || BOARD[p0i][p0j_] # == '#'
       p0j_ = p0j
     end
-    if N <= p1j_ || BOARD[p1i][p1j_] == '#'
+    if N <= p1j_ || BOARD[p1i][p1j_] # == '#'
       p1j_ = p1j
     end
 
@@ -105,18 +112,18 @@ def one_step(steps, s)
 end
 
 def calc
-  ps = []
-  BOARD.each.with_index do |row, i|
-    row.each.with_index do |c, j|
-      ps << [i, j] if c == 'P'
-    end
-  end
+  # ps = []
+  # BOARD.each.with_index do |row, i|
+  #   row.each.with_index do |c, j|
+  #     ps << [i, j] if c == 'P'
+  #   end
+  # end
   
 
-  p0i = ps[0][0]
-  p0j = ps[0][1]
-  p1i = ps[1][0]
-  p1j = ps[1][1]
+  p0i = PS[0][0]
+  p0j = PS[0][1]
+  p1i = PS[1][0]
+  p1j = PS[1][1]
   
   # status[p0i * N3 + p0j * N2 + p1i * N + p1j] = 1
   STATUS[(p0i << 18) + (p0j << 12) + (p1i << 6) + p1j] = 1
