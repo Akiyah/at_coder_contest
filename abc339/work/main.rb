@@ -8,6 +8,8 @@ BOARD = (0...N).map do |i|
   end
 end
 
+BOARD2 = [[true] * (N + 2)] + BOARD.map { |row| [true] + row + [true] } + [[true] * (N + 2)]
+
 STATUS = Array.new(N * N * N * N, nil)
 
 N2 = N * N
@@ -17,10 +19,8 @@ def one_step(steps, s)
   new_steps = []
   steps.each do |p0i, p0j, p1i, p1j|
     # up
-    p0i_ = p0i - 1
-    p1i_ = p1i - 1
-    p0i_ = p0i if p0i_ < 0 || BOARD[p0i_][p0j]
-    p1i_ = p1i if p1i_ < 0 || BOARD[p1i_][p1j]
+    p0i_ = BOARD2[p0i][p0j + 1] ? p0i : p0i - 1
+    p1i_ = BOARD2[p1i][p1j + 1] ? p1i : p1i - 1
     return [true, []] if p0i_ == p1i_ && p0j == p1j
     s2 = (p0i_ * N3) + (p0j * N2) + (p1i_ * N) + p1j
     if STATUS[s2] == nil
@@ -29,10 +29,8 @@ def one_step(steps, s)
     end
 
     # down
-    p0i_ = p0i + 1
-    p1i_ = p1i + 1
-    p0i_ = p0i if N <= p0i_ || BOARD[p0i_][p0j]
-    p1i_ = p1i if N <= p1i_ || BOARD[p1i_][p1j]
+    p0i_ = BOARD2[p0i + 2][p0j + 1] ? p0i : p0i + 1
+    p1i_ = BOARD2[p1i + 2][p1j + 1] ? p1i : p1i + 1
     return [true, []] if p0i_ == p1i_ && p0j == p1j
     s2 = (p0i_ * N3) + (p0j * N2) + (p1i_ * N) + p1j
     if STATUS[s2] == nil
@@ -41,10 +39,8 @@ def one_step(steps, s)
     end
 
     # left
-    p0j_ = p0j - 1
-    p1j_ = p1j - 1
-    p0j_ = p0j if p0j_ < 0 || BOARD[p0i][p0j_]
-    p1j_ = p1j if p1j_ < 0 || BOARD[p1i][p1j_]
+    p0j_ = BOARD2[p0i + 1][p0j] ? p0j : p0j - 1
+    p1j_ = BOARD2[p1i + 1][p1j] ? p1j : p1j - 1
     return [true, []] if p0i == p1i && p0j_ == p1j_
     s2 = (p0i * N3) + (p0j_ * N2) + (p1i * N) + p1j_
     if STATUS[s2] == nil
@@ -53,10 +49,8 @@ def one_step(steps, s)
     end
 
     # right
-    p0j_ = p0j + 1
-    p1j_ = p1j + 1
-    p0j_ = p0j if N <= p0j_ || BOARD[p0i][p0j_]
-    p1j_ = p1j if N <= p1j_ || BOARD[p1i][p1j_]
+    p0j_ = BOARD2[p0i + 1][p0j + 2] ? p0j : p0j + 1
+    p1j_ = BOARD2[p1i + 1][p1j + 2] ? p1j : p1j + 1
     return [true, []] if p0i == p1i && p0j_ == p1j_
     s2 = (p0i * N3) + (p0j_ * N2) + (p1i * N) + p1j_
     if STATUS[s2] == nil
