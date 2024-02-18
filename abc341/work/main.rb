@@ -1,73 +1,48 @@
-H, W, N = gets.chomp.split.map(&:to_i)
+h, w, n = gets.chomp.split.map(&:to_i)
 ts = gets.chomp.split('')
-ss = (1..H).map do
+ss = (1..h).map do
   gets.chomp.split('').map { |s| s == '.' }
 end
-ss2 = ss.map do |line|
-  r = 0
-  line.each.with_index do |s, i|
-    if s
-      r += 2 ** (W - i - 1)
-    end
-  end
-  ##pp r.to_s(2)
-  r
-end
 
-ss0 = ss2.clone # base
+# pp ss
 
-def step(ts, ss2, ss0)
-  di = dj = 0
-  ts.each do |t|
-    case t
-    when 'U'
-      di -= 1
-    when 'D'
-      di += 1
-    when 'L'
-      dj -= 1
-    when 'R'
-      dj += 1
-    end
-
-    if 0 <= di
-      i_start = di
-      i_end = H - 1 - di # < h - 1
-    else
-      i_start = -di
-      i_end = H - 1
-    end
-    ((i_start)..(i_end)).each do |i|
-      if 0 <= -dj
-        ss2[i] &= (ss0[i + di] >> -dj)
-      else
-        ss2[i] &= (ss0[i + di] * (2 ** dj)) % (2 ** W)
-      end
-    end
-
-    pp ss2
-    ss2.each do |line|
-      #pp line.to_s(2)
-      puts sprintf("%+08b", line)
-    end
+points = []
+(0...h).each do |i|
+  (0...w).each do |j|
+    points << [i, j] if ss[i][j]
   end
 end
 
-# #pp ss
-# #pp points
+ds = []
+di = dj = 0
+ts.each do |t|
+  case t
+  when 'U'
+    di -= 1
+  when 'D'
+    di += 1
+  when 'L'
+    dj -= 1
+  when 'R'
+    dj += 1
+  end
 
-# pp ss2
-# ss2.each do |line|
-#   #pp line.to_s(2)
-#   puts sprintf("%+08b", line)
-# end
-
-
-step(ts, ss2, ss0)
-
-
-result = ss2.sum do |line|
-  # pp line.to_s(2)
-  line.to_s(2).split('').count('1')
+  ds << [di, dj]
 end
-puts result
+
+def check(i, j, ts, ss, ds)
+  ds.each do |di, dj|
+    return false unless ss[i + di][j + dj]
+  end
+
+  true
+end
+
+# pp ds
+
+# pp ss
+# pp points
+
+results = points.select do |i, j| check(i, j, ts, ss, ds) end
+
+puts results.count
