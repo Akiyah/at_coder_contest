@@ -1,48 +1,48 @@
-h, w, n = gets.chomp.split.map(&:to_i)
-ts = gets.chomp.split('')
-ss = (1..h).map do
-  gets.chomp.split('').map { |s| s == '.' }
+H, W, N = gets.chomp.split.map(&:to_i)
+TS = gets.chomp.split('')
+SS = (1..H).map do
+  gets.chomp.split('').map { |s| s == '.' ? '1' : '0' }.join.to_i(2)
 end
 
-# pp ss
+# pp SS
 
-points = []
-(0...h).each do |i|
-  (0...w).each do |j|
-    points << [i, j] if ss[i][j]
-  end
-end
+points = SS.clone
 
-ds = []
-di = dj = 0
-ts.each do |t|
+def step_one(t, points)
+  di = dj = 0
+
   case t
   when 'U'
-    di -= 1
+    di = -1
   when 'D'
-    di += 1
+    di = 1
   when 'L'
-    dj -= 1
+    dj = -1
   when 'R'
-    dj += 1
+    dj = 1
   end
 
-  ds << [di, dj]
-end
-
-def check(i, j, ts, ss, ds)
-  ds.each do |di, dj|
-    return false unless ss[i + di][j + dj]
+  new_points = []
+  new_points[0] = SS[0]
+  new_points[H - 1] = SS[H - 1]
+  (1...(H - 1)).each do |i|
+    new_points[i] = SS[i] & (points[i - di] >> dj)
   end
-
-  true
+  new_points
 end
 
-# pp ds
+def step(points)
+  TS.each do |t|
+    points = step_one(t, points)
+  end
+  points
+end
 
-# pp ss
-# pp points
 
-results = points.select do |i, j| check(i, j, ts, ss, ds) end
+points = step(points)
 
-puts results.count
+result = points.sum do |line|
+  # pp line.to_s(2)
+  line.to_s(2).split('').count('1')
+end
+puts result

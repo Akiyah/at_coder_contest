@@ -1,0 +1,51 @@
+akiyah@penguin:~/workspaces/at_coder_contest/abc341/work$ ruby profile.rb < input4.txt 
+238144
+
+[LineProf] ===============================================================
+
+main.rb
+   0.2ms     7 |   1  H, W, N = gets.chomp.split.map(&:to_i)
+               |   2  TS = gets.chomp.split('')
+ 1183.4ms     2 |   3  SS = (1..H).map do
+ 1173.9ms 252000 |   4    gets.chomp.split('').map { |s| s == '.' }
+  64.1ms     1 |   5  end.flatten
+               |   6  
+               |   7  # pp SS
+               |   8  
+               |   9  points = []
+ 4049.4ms     1 |  10  (0...H).each do |i|
+ 4040.0ms   500 |  11    (0...W).each do |j|
+               |  12      # points << [i, j] if SS[i][j]
+ 1860.1ms 998004 |  13      points << [i, j] if SS[i * W + j]
+               |  14    end
+               |  15  end
+              .......
+               |  17  DS = []
+               |  18  di = dj = 0
+   4.0ms     1 |  19  TS.each do |t|
+               |  20    case t
+               |  21    when 'U'
+   0.2ms   130 |  22      di -= 1
+               |  23    when 'D'
+   0.2ms   120 |  24      di += 1
+               |  25    when 'L'
+   0.2ms   130 |  26      dj -= 1
+               |  27    when 'R'
+   0.2ms   120 |  28      dj += 1
+               |  29    end
+               |  30  
+   0.9ms   500 |  31    DS << [di, dj]
+               |  32  end
+               |  33  
+               |  34  def check(i, j)
+ 2094804.8ms 248004 |  35    DS.each do |di, dj|
+               |  36      # return false unleSS SS[i + di][j + dj]
+ 1006038.9ms 595875150 |  37      return false unless SS[(i + di) * W + (j + dj)]
+               |  38    end
+               |  39  
+              .......
+               |  48  results = points.select do |i, j| check(i, j) end
+               |  49  
+   5.5ms     2 |  50  puts results.count
+
+akiyah@penguin:~/workspaces/at_coder_contest/abc341/work$ 
