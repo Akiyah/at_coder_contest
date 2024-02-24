@@ -5,17 +5,17 @@ ABXS = (1...N).map do
 end
 
 VS_CALCED = []
-VS_CALCING = []
+VS_CALCING = {}
+VS_CALCING_REV = {}
 
 VS_CALCING[1] = 0 # index, cost
-
+VS_CALCING_REV[0] = [1]
 
 def calc
   loop do
-    # v = VS_CALCING.min { |a, b| a[1] <=> b[1] }
-    min_value = VS_CALCING.compact.min
-    i = VS_CALCING.find_index(min_value)
-    cost = VS_CALCING[i]
+    #i, cost = VS_CALCING.to_a.min { |a, b| a[1] <=> b[1] }
+    cost = VS_CALCING_REV.keys.min
+    i = VS_CALCING_REV[cost].first
 
     if i == N
       return cost
@@ -25,21 +25,51 @@ def calc
 
     unless VS_CALCED[i + 1]
       if VS_CALCING[i + 1]
-        VS_CALCING[i + 1] = [VS_CALCING[i + 1], cost + a].min
+        if cost + a < VS_CALCING[i + 1]
+          VS_CALCING_REV[VS_CALCING[i + 1]].delete(i + 1)
+          if VS_CALCING_REV[VS_CALCING[i + 1]].length == 0
+            VS_CALCING_REV.delete(VS_CALCING[i + 1])
+          end
+    
+          VS_CALCING[i + 1] = cost + a
+
+          VS_CALCING_REV[VS_CALCING[i + 1]] ||= []
+          VS_CALCING_REV[VS_CALCING[i + 1]] << i + 1
+        end
       else
         VS_CALCING[i + 1] = cost + a
+
+        VS_CALCING_REV[VS_CALCING[i + 1]] ||= []
+        VS_CALCING_REV[VS_CALCING[i + 1]] << i + 1
       end
     end
 
     unless VS_CALCED[x]
       if VS_CALCING[x]
-        VS_CALCING[x] = [VS_CALCING[x], cost + b].min
-      else
+        if cost + b < VS_CALCING[x]
+          VS_CALCING_REV[VS_CALCING[x]].delete(x)
+          if VS_CALCING_REV[VS_CALCING[x]].length == 0
+            VS_CALCING_REV.delete(VS_CALCING[x])
+          end
+    
+          VS_CALCING[x] = cost + b
+  
+          VS_CALCING_REV[VS_CALCING[x]] ||= []
+          VS_CALCING_REV[VS_CALCING[x]] << x
+        end
+       else
         VS_CALCING[x] = cost + b
+
+        VS_CALCING_REV[VS_CALCING[x]] ||= []
+        VS_CALCING_REV[VS_CALCING[x]] << x
       end
     end
 
-    VS_CALCING[i] = nil
+    VS_CALCING.delete(i)
+    VS_CALCING_REV[cost].delete(i)
+    if VS_CALCING_REV[cost].length == 0
+      VS_CALCING_REV.delete(cost)
+    end
     VS_CALCED[i] = true
   end
 end
