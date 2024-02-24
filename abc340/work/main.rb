@@ -15,10 +15,15 @@ VS_CALCING << [1, 0] # index, cost
 
 def calc
   loop do
-    pp [VS_CALCED.count, VS_CALCING.count]
+    # pp "*" * 50
+    # pp [VS_CALCED.count, VS_CALCING.count]
+    # pp VS_CALCED
+    # pp VS_CALCING
     #unless
     # VS_CALCED.include? { |v| v[0] == N }
-    v = VS_CALCING.min { |v| v[1] }
+    #v = VS_CALCING.min { |v| v[1] }
+    v = VS_CALCING.min { |a, b| a[1] <=> b[1] }
+    # pp v
     i, cost = v
 
     if i == N
@@ -33,7 +38,7 @@ def calc
         v2[1] = cost + a
       end
     else
-      VS_CALCING << [i + 1, cost + a]
+      VS_CALCING << [i + 1, cost + a] unless VS_CALCED.index(i + 1)
     end
 
     v3 = VS_CALCING.find { |v| v[0] == x }
@@ -42,11 +47,11 @@ def calc
         v3[1] = cost + b
       end
     else
-      VS_CALCING << [x, cost + b]
+      VS_CALCING << [x, cost + b] unless VS_CALCED.index(x)
     end
 
     VS_CALCING.delete(v)
-    VS_CALCED << v
+    VS_CALCED << v[0]
   end
 end
 
