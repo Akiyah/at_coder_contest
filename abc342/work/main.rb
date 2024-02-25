@@ -3,7 +3,7 @@ ldkcabs = (1..M).map do
   gets.chomp.split.map(&:to_i)
 end
 
-pp ldkcabs
+# pp ldkcabs
 
 diagrams = {}
 ldkcabs.each do |l, d, k, c, a, b|
@@ -12,7 +12,7 @@ ldkcabs.each do |l, d, k, c, a, b|
   diagrams[b][a] << [l, d, k, c]
 end
 
-pp diagrams
+# pp diagrams
 
 calced = {}
 calcing = {}
@@ -44,7 +44,7 @@ def calc(diagrams, calced, calcing, f)
 
     calced[b] = true
     f[b] = tb
-    pp f
+    # pp f
     calcing.delete(b)
   end
 end
@@ -53,5 +53,7 @@ end
 
 calc(diagrams, calced, calcing, f)
 
-pp f
-
+# pp f
+(1...N).each do |i|
+  puts f[i] ? f[i] : 'Unreachable'
+end
