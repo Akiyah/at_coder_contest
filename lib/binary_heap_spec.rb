@@ -1,4 +1,4 @@
-require 'rspec'
+# require 'rspec'
 require_relative 'binary_heap'
 
 describe BinaryHeap do
