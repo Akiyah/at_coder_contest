@@ -40,24 +40,21 @@ class MaxHeap
 end
 
 N, M = gets.chomp.split.map(&:to_i)
-ldkcabs = (1..M).map do
-  gets.chomp.split.map(&:to_i)
+
+#diagrams = Hash.new() { {} }
+diagrams = Hash.new do |hash, key|
+  hash[key] = Hash.new { |hash, key| hash[key] = [] }
 end
-
-# pp ldkcabs
-
-diagrams = {}
-ldkcabs.each do |l, d, k, c, a, b|
-  diagrams[b] ||= {}
-  diagrams[b][a] ||= []
+(1..M).map do
+  l, d, k, c, a, b = gets.chomp.split.map(&:to_i)
+  # diagrams[b] ||= {}
+  # diagrams[b][a] ||= []
   diagrams[b][a] << [l, d, k, c]
 end
 
-# pp diagrams
-
 calced = {}
 calcing = MaxHeap.new
-f = {}
+f = Array.new(N - 1, 'Unreachable')
 
 # calcing[N] = Float::INFINITY
 calcing.push(Float::INFINITY, N)
@@ -89,7 +86,7 @@ def calc(diagrams, calced, calcing, f)
     end
 
     calced[b] = true
-    f[b] = tb
+    f[b - 1] = tb
     # pp f
     # calcing.delete(b)
   end
@@ -100,6 +97,8 @@ end
 calc(diagrams, calced, calcing, f)
 
 # pp f
-(1...N).each do |i|
-  puts f[i] ? f[i] : 'Unreachable'
-end
+# (1...N).each do |i|
+#   puts f[i] #  ? f[i] : 'Unreachable'
+# end
+
+puts f[0...(-1)].join("\n")
