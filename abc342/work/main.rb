@@ -1,43 +1,4 @@
-class MaxHeap
-  attr_reader :array
-
-  def initialize
-    @array = []
-  end
-
-  def push(value, item)
-    @array.push([value, item])
-
-    i = @array.size - 1
-    while i > 0
-      j = (i - 1) / 2
-      break if @array[i][0] <= @array[j][0]
-      @array[i], @array[j] = @array[j], @array[i]
-      i = j
-    end
-  end
-
-  def pop
-    ret = @array.shift
-
-    return nil if ret.nil?
-    return ret if @array.empty?
-
-    @array.unshift(@array.pop)
-
-    j = 0
-    while (i = j * 2 + 1) < @array.size
-      if !@array[i + 1].nil? && @array[i + 1][0] > @array[i][0]
-        i = i + 1 # right child
-      end
-
-      break if @array[i][0] <= @array[j][0]
-      @array[j], @array[i] = @array[i], @array[j]
-      j = i
-    end
-    ret
-  end
-end
+require "ac-library-rb/priority_queue"
 
 N, M = gets.chomp.split.map(&:to_i)
 
@@ -50,13 +11,13 @@ end
 end
 
 calced = {}
-calcing = MaxHeap.new
+calcing = AcLibraryRb::PriorityQueue.new {|x, y| x[0] > y[0] }
 f = Array.new(N - 1, 'Unreachable')
 
-calcing.push(Float::INFINITY, N)
+calcing.push([Float::INFINITY, N])
 
 def calc(diagrams, calced, calcing, f)
-  while 0 < calcing.array.length do
+  while !calcing.empty? do
     tb, b = calcing.pop
     next if calced[b]
 
@@ -66,11 +27,11 @@ def calc(diagrams, calced, calcing, f)
         ldkcs.each do |l, d, k, c|
           if tb == Float::INFINITY
             x = k - 1
-            calcing.push(l + x * d, a)
+            calcing.push([l + x * d, a])
           else
             if l <= tb - c
               x = [(tb - c - l) / d, k - 1].min
-              calcing.push(l + x * d, a)
+              calcing.push([l + x * d, a])
             end
           end
         end
