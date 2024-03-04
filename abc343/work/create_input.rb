@@ -1,19 +1,25 @@
-# N = 200000
-N = gets.chomp.to_i
-M = N - 1
+N = 200000
+Q = 200000
 
-puts [N, M].join(' ')
+puts [N, Q].join(' ')
 
-(1..M).each do |i|
-  l = rand(1000000000)
-  d = rand(1000000000)
-  k = rand(1000000000)
-  c = rand(1000000000)
-  a = i # rand(1..N)
-  b = i + 1 # rand(1..N)
-  # while a == b do
-  #   b = rand(1..N)
-  # end
-  puts [l, d, k, c, a, b].join(' ')
+AS = (1..Q).map do
+  rand(1000) + 1
+end
+
+puts AS.join(' ')
+
+(1..Q).each do
+  t = rand(2) + 1
+  if t == 1
+    p = rand(N) + 1
+    x = rand(1000) + 1
+    puts [1, p, x].join(' ')
+  else
+    l = rand(N) + 1
+    r = rand(N) + 1
+    l, r = r, l if r < l
+    puts [2, l, r].join(' ')
+  end
 end
 
