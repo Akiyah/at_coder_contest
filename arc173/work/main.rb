@@ -6,106 +6,62 @@ CASES = (1..T).map do
 end
 
 
-def g(c_top, cs)
-  pp [c_top, cs]
-  # if cs.length == 0
-  #   return 1
-  # end
-
-  if cs.length == 1
-    d_top = cs[0]
-    return d_top if c_top == -1
-    return d_top + 1 if d_top < c_top 
-    return d_top
+def g0(cs, c_top = nil)
+  if cs.length == 0
+    # cs = [] なので、 0 < c_top として計算する
+    return 1
   end
 
   d_top = cs[0]
   ds = cs[1..-1]
   k = ds.length
 
-  if c_top == -1
-    result = 0
-    #pp [result, k]
+  result = 0
+
+  if c_top == nil
     # 0
-    if k == 1
-      result += 9
-    else
-      result += 10 * (9 ** (k - 1))
-    end
-    #pp [result, k]
+    result += (9 ** (k + 1) - 1) / (9 - 1)
+
     # 1...d_top
+    # c_top が nil なので、 0 < d_top
     result += (d_top - 1) * (9 ** k)
-    #pp [result, k]
+
     # d_top
-    result += g(d_top, ds)
-    #pp [result, k]
-    return result
+    result += g0(ds, d_top)
   else
-    result = 0
-    #pp [result]
-    # 0
-    # result += 10 * (9 ** (k - 1)) if c_top != 0
     # 0...d_top
-    if 0 <= c_top && c_top < d_top
+    if c_top < d_top
       result += (d_top - 1) * (9 ** k)
-      # #pp (d_top - 1) * (9 ** k)
     else
       result += d_top * (9 ** k)
-      # #pp d_top * (9 ** k)
     end
+
     # d_top
-    result += g(d_top, ds) if c_top != d_top
-    #pp [result]
-    return result
+    result += g0(ds, d_top) if c_top != d_top
   end
+
+  result
 end
 
 
-pp g(-1, [9, 9, 9])
-pp g(-1, [1, 0, 0, 0])
+def g(c)
+  g0(c.to_s.split('').map(&:to_i)) - 1
+end
 
-# #pp g(-1, [1])
-# #pp g(-1, [9])
-
-# #pp g(4, [5])
-# #pp g(5, [5])
-# #pp g(6, [5])
-
-# #pp g(-1, [1, 0])
-# #pp g(-1, [1, 0, 0])
-# #pp g(-1, [1, 0, 0, 0])
-# #pp g(-1, [1, 2, 3])
-
-# #pp g(-1, [2, 3, 4])
-
-# #pp g(-1, [2, 7])
-# #pp g(-1, [1, 7, 3])
-# #pp g(7, [3])
-# #pp g(-1, 2506230721.to_s.split('').map(&:to_i))
-
-# (1..1000).select do |c|
-#   pp [c, g(-1, c.to_s.split('').map(&:to_i))]
-# end
-
-
-
-# CASES.each do |c|
-#   cs = c.to_s.split('').map(&:to_i)
-#   puts calc(cs)
-# end
-
-exit
-
-
-n = 0
-(1..1000).select do |c|
-  cs = c.to_s.split('')
-  l = cs.length
-  if (0...(l - 1)).any? { |i| cs[i] == cs[i + 1] } 
-    pp [c, '-']
-  else
-    n += 1
-    pp [c, n]
+def create_answers
+  n = 0
+  [0] + (1..10000).to_a.map do |c|
+    cs = c.to_s.split('')
+    if (0...(cs.length - 1)).all? { |i| cs[i] != cs[i + 1] } 
+      n += 1
+    end
+    n
   end
 end
-nil
+
+answers = create_answers
+# p answers
+
+(1..10000).each do |c|
+  pp [c, answers[c], g(c), answers[c] == g(c)] if answers[c] != g(c)
+end
