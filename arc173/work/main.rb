@@ -5,6 +5,10 @@ CASES = (1..T).map do
   gets.chomp.to_i
 end
 
+def nn?(n)
+  ns = n.to_s.split('')
+  (0...(ns.length - 1)).all? { |i| ns[i] != ns[i + 1] }
+end
 
 def g0(cs, c_top = nil)
   if cs.length == 0
@@ -51,17 +55,55 @@ end
 def create_answers
   n = 0
   [0] + (1..10000).to_a.map do |c|
-    cs = c.to_s.split('')
-    if (0...(cs.length - 1)).all? { |i| cs[i] != cs[i + 1] } 
+    if nn?(c)
       n += 1
     end
     n
   end
 end
 
-answers = create_answers
+# answers = create_answers
 # p answers
 
-(1..10000).each do |c|
-  pp [c, answers[c], g(c), answers[c] == g(c)] if answers[c] != g(c)
+# (0..100).each do |c|
+#   pp [c, answers[c], g(c), answers[c] == g(c)] # if answers[c] != g(c)
+# end
+
+
+
+def f2(c, n1, n2) # g(n1) < c && c <= g(n2)
+  # pp [c, n1, n2]
+  loop do # g(n - 1) == c - 1 && c == g(n) となるnを探す
+    # pp [c, n1, n2]
+    n = (n1 + n2) / 2
+    gn = g(n)
+
+    if gn == c && nn?(n)
+      return n
+    end
+
+    if c <= gn
+      n2 = n
+    else
+      n1 = n
+    end
+  end
+end
+
+def f(c)
+  # g(n) = c となる n を探す
+
+  n1 = 0
+  n2 = c
+  while g(n2) < c do
+    n1 = n2
+    n2 = n2 * 2
+  end
+
+  f2(c, n1, n2)
+end
+
+CASES.each do |c|
+  # pp c
+  puts f(c)
 end
