@@ -29,19 +29,19 @@ def check_ab(abs, z)
 
   a, b = abs[0]
 
-  return false if abs.sum { |a2, b2| a2 * b2 } < H * W - z.to_s(2).split('').count('1')
+  # return false if abs.sum { |a2, b2| a2 * b2 } < H * W - z.to_s(2).split('').count('1')
 
 
-  if a * b <= H * W - z.to_s(2).split('').count('1')
-    # 回転なし
-    return true if check_a_b(a, b, abs[1..-1], z)
+  # if a * b <= H * W - z.to_s(2).split('').count('1')
+  # 回転なし
+  return true if check_a_b(a, b, abs[1..-1], z)
 
-    # 回転あり(bとaを入れ替える)
-    return true if check_a_b(b, a, abs[1..-1], z)
-  end
+  # 回転あり(bとaを入れ替える)
+  return true if check_a_b(b, a, abs[1..-1], z)
+  # end
 
   # このタイルを使わない
-  check_ab(abs[1..-1], z)
+  # check_ab(abs[1..-1], z)
 end
 
 
@@ -49,8 +49,14 @@ end
 def check
   z = 0 # board 2 digit H x W
 
-  check_ab(ABS, z)
+  (1..N).each do |n|
+    ABS.combination(n).each do |abs|
+      if abs.sum { |a, b| a * b } == H * W
+        return true if check_ab(abs, z)
+      end
+    end
+  end
+  false
 end
-
 
 puts check ? 'Yes' : 'No'
