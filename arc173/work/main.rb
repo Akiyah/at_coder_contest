@@ -11,6 +11,8 @@ def nn?(n)
 end
 
 def g0(cs, c_top = nil)
+  # pp "g0(#{cs}, #{c_top})"
+
   if cs.length == 0
     # cs = [] なので、 0 < c_top として計算する
     return 1
@@ -49,7 +51,9 @@ end
 
 
 MEMO = {}
+G_COUNT = [0]
 def g(c)
+  pp "g(#{c}) : #{G_COUNT[0] += 1}"
   return MEMO[c] if MEMO[c]
 
   # pp "g(#{c})"
@@ -76,6 +80,7 @@ end
 
 
 def f2(c, n1, n2) # g(n1) < c && c <= g(n2)
+  pp "f2(#{c}, #{n1}, #{n2})"
   # pp [c, n1, n2]
   loop do # g(n - 1) == c - 1 && c == g(n) となるnを探す
     # pp [c, n1, n2]
