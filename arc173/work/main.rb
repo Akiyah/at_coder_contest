@@ -48,8 +48,12 @@ def g0(cs, c_top = nil)
 end
 
 
+MEMO = {}
 def g(c)
-  g0(c.to_s.split('').map(&:to_i)) - 1
+  return MEMO[c] if MEMO[c]
+
+  # pp "g(#{c})"
+  MEMO[c] = g0(c.to_s.split('').map(&:to_i)) - 1
 end
 
 def create_answers
@@ -93,12 +97,15 @@ end
 def f(c)
   # g(n) = c となる n を探す
 
+  # n1 = 0
+  # n2 = c
+  # while g(n2) < c do
+  #   n1 = n2
+  #   n2 = n2 * 2
+  # end
+
   n1 = 0
-  n2 = c
-  while g(n2) < c do
-    n1 = n2
-    n2 = n2 * 2
-  end
+  n2 = 3476050371420 + 1
 
   f2(c, n1, n2)
 end
