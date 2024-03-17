@@ -28,6 +28,8 @@ end
 # pp YS
 
 def check_a_b(a, b, abs, z)
+  return [false, nil] if H < a || W < b
+
   x = YS[a][b]
 
   (0..(H - a)).each do |i|
