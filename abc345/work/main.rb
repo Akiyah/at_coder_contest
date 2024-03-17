@@ -37,8 +37,9 @@ def check_ab(abs, z)
   return true if check_a_b(a, b, abs[1..-1], z)
 
   # 回転あり(bとaを入れ替える)
-  return true if check_a_b(b, a, abs[1..-1], z)
-  # end
+  if a != b
+    return true if check_a_b(b, a, abs[1..-1], z)
+  end
 
   # このタイルを使わない
   # check_ab(abs[1..-1], z)
