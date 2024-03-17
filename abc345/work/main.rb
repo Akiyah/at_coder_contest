@@ -1,5 +1,7 @@
 # require "ac-library-rb/segtree"
 
+$debug = true
+
 N, H, W = gets.chomp.split.map(&:to_i)
 ABS = (1..N).map { gets.chomp.split.map(&:to_i) }.sort_by { |a, b| -a * b }
 # pp ABS
@@ -8,76 +10,85 @@ Z_FULL = 2 ** (H * W) - 1
 
 XS = (0..H).map do |a|
   (0..W).map do |b|
-    (0...b).sum do |j|
-      (2 ** a - 1) << j * H
+    (0...a).sum do |i|
+      (2 ** b - 1) << i * W
     end
   end
 end
-# pp XS
 
 def check_a_b(a, b, abs, z)
-  # pp ['check_a_b', a, b, abs, z.to_s(2)]
-  # x = (0...b).sum do |j|
-  #   (2 ** a - 1) << j * H
-  # end
   x = XS[a][b]
-  #pp [x, x2] unless x == x2
-
-  # z_a = z.to_s(2).split('')
-  # pp z
-  # pp z.to_s(2)
-  # pp z_a
-  # pp z_a.length
-  # pp H * W - z_a.length
-  # z_a = z_a + [0] * (H * W - z_a.length)
-  # z_a.each_with_index do |d, k|
-  #   next if d != 0
-  #   next if H * W < k + (a * W + b)
-  #   y = (x << k)
-  #   if (y & z) == 0
-  #     return true if check_ab(abs, y | z)
-  #   end  
-  # end
 
   (0..(H - a)).each do |i|
     (0..(W - b)).each do |j|
-      # next if z_a[j * H + i] == 1
-      y = (x << (j * H + i))
+      y = (x << (i * W + j))
       if (y & z) == 0
-        return true if check_ab(abs, y | z)
+        r, tiles = check_abs(abs, y | z)
+        if r
+          return [true, [[a, b, i, j]] + tiles]
+        end
       end
     end
   end
-  false
+  [false, nil]
 end
 
-def check_ab(abs, z)
+def check_abs(abs, z)
   # pp ['check_ab', abs, z.to_s(2)]
-  return true if z == Z_FULL
-  return false if abs.empty?
+  return [true, []] if z == Z_FULL
+  return [false, nil] if abs.empty?
 
   a, b = abs[0]
 
   # 回転なし
-  return true if check_a_b(a, b, abs[1..-1], z)
+  r, tiles = check_a_b(a, b, abs[1..-1], z)
+  if r
+    return [true, tiles]
+  end
 
   # 回転あり(bとaを入れ替える)
   if a != b
-    return true if check_a_b(b, a, abs[1..-1], z)
+    r, tiles = check_a_b(b, a, abs[1..-1], z)
+    if r
+      return [true, tiles]
+    end
   end
+
+  [false, nil]
 end
 
 def check
-  z = 0 # board 2 digit H x W
-
   (1..N).each do |n|
     ABS.combination(n).each do |abs|
       if abs.sum { |a, b| a * b } == H * W
-        return true if check_ab(abs, z)
+        board = (1..H).map { Array.new(W, 0) }
+        r, tiles = check_abs(abs, 0)
+        if r
+          return [true, tiles]
+        end
       end
     end
   end
-  false
+  [false, nil, nil]
 end
 
-puts check ? 'Yes' : 'No'
+r, tiles = check
+
+if r && $debug
+  pp tiles
+
+  board = (1..H).map { Array.new(W, 0) }
+  tiles.each_with_index do |abij, k|
+    a, b, i, j = abij
+    (0...a).each do |i2|
+      (0...b).each do |j2|
+        board[i + i2][j + j2] = k
+      end
+    end
+  end
+  board.each do |line|
+    puts line.join
+  end
+end
+
+puts r ? 'Yes' : 'No'
