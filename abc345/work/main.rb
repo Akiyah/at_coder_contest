@@ -1,9 +1,9 @@
 # require "ac-library-rb/segtree"
 
-$debug = true
+$debug = !ARGV[0].nil?
 
-N, H, W = gets.chomp.split.map(&:to_i)
-ABS = (1..N).map { gets.chomp.split.map(&:to_i) }.sort_by { |a, b| -a * b }
+N, H, W = STDIN.gets.chomp.split.map(&:to_i)
+ABS = (1..N).map { STDIN.gets.chomp.split.map(&:to_i) }.sort_by { |a, b| -a * b }
 # pp ABS
 
 Z_FULL = 2 ** (H * W) - 1
@@ -16,12 +16,25 @@ XS = (0..H).map do |a|
   end
 end
 
+YS = (0..H).map do |a|
+  (0..W).map do |b|
+    (0..(H - a)).map do |i|
+      (0..(W - b)).map do |j|
+        XS[a][b] << (i * W + j)
+      end
+    end
+  end
+end
+# pp YS
+
 def check_a_b(a, b, abs, z)
-  x = XS[a][b]
+  x = YS[a][b]
 
   (0..(H - a)).each do |i|
-    (0..(W - b)).each do |j|
-      y = (x << (i * W + j))
+    ys = x[i]
+      (0..(W - b)).each do |j|
+      # y = (x << (i * W + j))
+      y = ys[j]
       if (y & z) == 0
         r, tiles = check_abs(abs, y | z)
         if r
@@ -77,6 +90,9 @@ r, tiles = check
 if r && $debug
   pp tiles
 
+
+  bgcolors = [40, 41, 42, 43, 44, 45, 46, 47]
+
   board = (1..H).map { Array.new(W, 0) }
   tiles.each_with_index do |abij, k|
     a, b, i, j = abij
@@ -87,7 +103,7 @@ if r && $debug
     end
   end
   board.each do |line|
-    puts line.join
+    puts line.map { |k| "\e[#{bgcolors[k]}m#{k}" }.join + "\e[0m"
   end
 end
 
