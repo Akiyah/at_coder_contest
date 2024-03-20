@@ -23,13 +23,14 @@ LEFT_BORDER = (1 << (W - 1)) * LEFT_S
 UP_BORDER = ((1 << W) - 1) << (H - 1) * W
 
 def f(z)
-  z2a(z).map { |l| l.map { |b| b ? 1 : 0}.join }.join("\n")
+  z2a(z).each_slice(W).map { |l| l.map { |b| b ? 1 : 0}.join }.join("\n")
 end
 
 def z2a(z)
   z_a = z.to_s(2).split('').map { |x| x.to_i == 1 }.reverse
   z_a += [false] * (H * W - z_a.length)
-  z_a = z_a.each_slice(W).to_a
+  # z_a = z_a.each_slice(W).to_a
+  z_a
 end
 
 def a2z(a)
@@ -73,7 +74,7 @@ def check_a_b(a, b, abs, z)
 
   z2 = shadow(z, a, b)
   z_a = z2a(z2)
-  z_a.flatten.each_with_index do |z_ak, k|
+  z_a.each_with_index do |z_ak, k|
     next if z_ak
 
     y = (x << k)
