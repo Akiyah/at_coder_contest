@@ -17,9 +17,7 @@ XS = (0..H).map do |a|
 end
 
 def f(z)
-  s = z.to_s(2)
-  s = ('0' * (H * W - s.length)) + s
-  s.split('').to_a.reverse.each_slice(W).map(&:join)
+  z2a(z).map(&:join)
 end
 
 def z2a(z)
@@ -32,25 +30,38 @@ def a2z(a)
   a.flatten.reverse.map {|b| b ? 1 : 0}.join.to_i(2)
 end
 
+def shadow_left1(z)
+  s = ((1 << (H * W)) - 1) / ((1 << W) - 1)
+  mask = ((1 << W) - 1 - 1) * s
+  border = (1 << (W - 1)) * s
+  ((z & mask) >> 1) + border
+end
+
+def shadow_left(z, b)
+  z2 = z
+  (0...b).each do
+    z2 |= shadow_left1(z2)
+  end
+  z2
+end
+
+def shadow_up1(z)
+  (z >> W) + (((1 << W) - 1) << (H - 1) * W)
+end
+
+def shadow_up(z, a)
+  z2 = z
+  (0...a).each do
+    z2 |= shadow_up1(z2)
+  end
+  z2
+end
+
 def shadow(z, a, b)
-  z_a = z2a(z)
-
-  (0...H).each do |i|
-    (0...W).each do |j|
-      (0...a).each do |ai|
-        z_a[i][j] ||= H <= ai + i || z_a[i + ai][j]
-      end
-    end
-  end
-  (0...H).each do |i|
-    (0...W).each do |j|
-      (0...b).each do |bj|
-        z_a[i][j] ||= W <= bj + j || z_a[i][j + bj]
-      end
-    end
-  end
-
-  a2z(z_a)
+  z2 = z
+  z2 = shadow_up(z2, a - 1)
+  z2 = shadow_left(z2, b - 1)
+  z2
 end
 
 def check_a_b(a, b, abs, z)
@@ -121,7 +132,6 @@ r, tiles = check
 
 if r && $debug
   pp tiles
-
 
   bgcolors = [40, 41, 42, 43, 44, 45, 46, 47]
 
