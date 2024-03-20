@@ -22,15 +22,18 @@ def f(z)
   s.split('').to_a.reverse.each_slice(W).map(&:join)
 end
 
-def check_a_b(a, b, abs, z)
-  # return [false, nil] if H < a || W < b
-
-  # pp f(z)
-
-  x = XS[a][b]
+def z2a(z)
   z_a = z.to_s(2).split('').map { |x| x.to_i == 1 }.reverse
   z_a += [false] * (H * W - z_a.length)
   z_a = z_a.each_slice(W).to_a
+end
+
+def a2z(a)
+  a.flatten.reverse.map {|b| b ? 1 : 0}.join.to_i(2)
+end
+
+def shadow(z, a, b)
+  z_a = z2a(z)
 
   (0...H).each do |i|
     (0...W).each do |j|
@@ -47,25 +50,30 @@ def check_a_b(a, b, abs, z)
     end
   end
 
-  z_a = z_a.flatten
+  a2z(z_a)
+end
 
-  z_a.each_with_index do |z_ak, k|
+def check_a_b(a, b, abs, z)
+  x = XS[a][b]
+
+  z2 = shadow(z, a, b)
+
+  z_a = z2a(z2)
+
+  z_a.flatten.each_with_index do |z_ak, k|
     next if z_ak
 
-    # k = i * W + j
-    i = k / W
-    j = k % W
-    # next if H - a < i || W - b < j
-
     y = (x << k)
-    pp ['(y & z) != 0', f(z), f(x), f(y), f(y & z), k, a, b] if (y & z) != 0
-    pp ['y | z == z', f(z), f(x), f(y), f(y | z), k, a, b] if y | z == z
-    if (y & z) == 0
-      r, tiles = check_abs(abs, (y | z))
-      if r
-        return [true, [[a, b, i, j]] + tiles]
-      end
+    # pp ['(y & z) != 0', f(z), f(x), f(y), f(y & z), k, a, b] if (y & z) != 0
+    # pp ['y | z == z', f(z), f(x), f(y), f(y | z), k, a, b] if y | z == z
+    #if (y & z) == 0
+    r, tiles = check_abs(abs, (y | z))
+    if r
+      i = k / W
+      j = k % W
+      return [true, [[a, b, i, j]] + tiles]
     end
+    #end
   end
   [false, nil]
 end
