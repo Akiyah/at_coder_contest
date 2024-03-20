@@ -41,26 +41,25 @@ def a2z(a)
   a.flatten.reverse.map {|b| b ? 1 : 0}.join.to_i(2)
 end
 
-def check_a_b(a, b, abs, z)
+def check_a_b(a, b, abs, z) # 左上に近い場所に配置する
   return false if H < a || W < b
   x = XS[a][b]
 
-  z2 = z
-  (0...(a - 1)).each do
-    z2 |= (z2 >> W) | UP_BORDER
-    return false if z2 == Z_FULL
-  end
-  (0...(b - 1)).each do
-    z2 |= ((z2 & LEFT_MASK) >> 1) | LEFT_BORDER
-    return false if z2 == Z_FULL
-  end
+  s = z.to_s(2)
+  s = '0' * (H * W - s.length) + s
+  k = H * W - 1 - s.rindex('0')
 
-  H_W_RANGE.select { |k| (z2 >> k) % 2 == 0 }.each do |k|
-    r = check_abs(abs, z | (x << k))
-    if r
-      $tiles = [[a, b, k]] + $tiles if $debug
-      return true
-    end
+  i = k / W
+  j = k % W
+
+  return false if H < a + i || W < b + j
+
+  return false if z & (x << k) != 0
+
+  r = check_abs(abs, z | (x << k))
+  if r
+    $tiles = [[a, b, k]] + $tiles if $debug
+    return true
   end
   false
 end
@@ -91,7 +90,7 @@ end
 
 def check
   (1..N).each do |n|
-    ABS.combination(n).each do |abs|
+    ABS.permutation(n).each do |abs|
       next unless abs.sum { |a, b| a * b } == H * W
       return true if check_abs(abs, 0)
     end
