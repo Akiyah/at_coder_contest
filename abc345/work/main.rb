@@ -55,14 +55,11 @@ def check_a_b(a, b, abs, z)
   end
 
   H_W_RANGE.select { |k| (z2 >> k) % 2 == 0 }.each do |k|
-  # H_W_RANGE.each do |k|
-    # if (z2 >> k) % 2 == 0
-      r = check_abs(abs, z | (x << k))
-      if r
-        $tiles = [[a, b, k]] + $tiles if $debug
-        return true
-      end
-    # end
+    r = check_abs(abs, z | (x << k))
+    if r
+      $tiles = [[a, b, k]] + $tiles if $debug
+      return true
+    end
   end
   false
 end
@@ -91,7 +88,6 @@ def check
   (1..N).each do |n|
     ABS.combination(n).each do |abs|
       if abs.sum { |a, b| a * b } == H * W
-        board = (1..H).map { Array.new(W, 0) }
         if check_abs(abs, 0)
           return true
         end
