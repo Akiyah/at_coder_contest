@@ -2,6 +2,7 @@
 
 $debug = !ARGV[0].nil?
 $tiles = []
+$count = {}
 
 N, H, W = STDIN.gets.chomp.split.map(&:to_i)
 ABS = (1..N).map { STDIN.gets.chomp.split.map(&:to_i) }.sort_by { |a, b| -a * b }
@@ -65,6 +66,10 @@ def check_a_b(a, b, abs, z)
 end
 
 def check_abs(abs, z)
+  if $debug
+    $count[abs.length] ||= 0
+    $count[abs.length] += 1
+  end
   if z == Z_FULL
     $tiles = [] if $debug
     return true
@@ -87,11 +92,8 @@ end
 def check
   (1..N).each do |n|
     ABS.combination(n).each do |abs|
-      if abs.sum { |a, b| a * b } == H * W
-        if check_abs(abs, 0)
-          return true
-        end
-      end
+      next unless abs.sum { |a, b| a * b } == H * W
+      return true if check_abs(abs, 0)
     end
   end
   false
@@ -99,24 +101,28 @@ end
 
 r = check
 
-if r && $debug
-  pp $tiles
+if $debug
+  pp $count
 
-  bgcolors = [40, 41, 42, 43, 44, 45, 46, 47]
+  if r
+    pp $tiles
 
-  board = (1..H).map { Array.new(W, 0) }
-  $tiles.each_with_index do |abk, c|
-    a, b, k = abk
-    i = k / W
-    j = k % W
-    (0...a).each do |i2|
-      (0...b).each do |j2|
-        board[i + i2][j + j2] = c
+    bgcolors = [40, 41, 42, 43, 44, 45, 46, 47]
+
+    board = (1..H).map { Array.new(W, 0) }
+    $tiles.each_with_index do |abk, c|
+      a, b, k = abk
+      i = k / W
+      j = k % W
+      (0...a).each do |i2|
+        (0...b).each do |j2|
+          board[i + i2][j + j2] = c
+        end
       end
     end
-  end
-  board.each do |line|
-    puts line.map { |k| "\e[#{bgcolors[k]}m#{k}" }.join + "\e[0m"
+    board.each do |line|
+      puts line.map { |k| "\e[#{bgcolors[k]}m#{k}" }.join + "\e[0m"
+    end
   end
 end
 
