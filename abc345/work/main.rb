@@ -23,6 +23,8 @@ LEFT_BORDER = (1 << (W - 1)) * LEFT_S
 
 UP_BORDER = ((1 << W) - 1) << (H - 1) * W
 
+H_W_RANGE = (0...(H * W))
+
 def f(z)
   z2a(z).each_slice(W).map { |l| l.map { |b| b ? 1 : 0}.join }.join("\n")
 end
@@ -38,66 +40,29 @@ def a2z(a)
   a.flatten.reverse.map {|b| b ? 1 : 0}.join.to_i(2)
 end
 
-def shadow_left(z, b)
-  z2 = z
-  (0...b).each do
-    z2 |= ((z2 & LEFT_MASK) >> 1) + LEFT_BORDER
-    return Z_FULL if z2 == Z_FULL
-  end
-  z2
-end
-
-def shadow_up(z, a)
-  z2 = z
-  (0...a).each do
-    z2 |= (z2 >> W) + UP_BORDER
-    return Z_FULL if z2 == Z_FULL
-  end
-  z2
-end
-
-def shadow(z, a, b)
-  z2 = z
-  # z2 = shadow_up(z2, a - 1)
-  (0...a).each do
-    z2 |= (z2 >> W) + UP_BORDER
-    return Z_FULL if z2 == Z_FULL
-  end
-  # return Z_FULL if z2 == Z_FULL
-  # z2 = shadow_left(z2, b - 1)
-  (0...b).each do
-    z2 |= ((z2 & LEFT_MASK) >> 1) + LEFT_BORDER
-    return Z_FULL if z2 == Z_FULL
-  end
-  z2
-end
-
 def check_a_b(a, b, abs, z)
   return false if H < a || W < b
   x = XS[a][b]
 
-  # z2 = shadow(z, a, b)
-  # return false if z2 == Z_FULL
-
   z2 = z
   (0...(a - 1)).each do
-    z2 |= (z2 >> W) + UP_BORDER
+    z2 |= (z2 >> W) | UP_BORDER
     return false if z2 == Z_FULL
   end
   (0...(b - 1)).each do
-    z2 |= ((z2 & LEFT_MASK) >> 1) + LEFT_BORDER
+    z2 |= ((z2 & LEFT_MASK) >> 1) | LEFT_BORDER
     return false if z2 == Z_FULL
   end
 
-  z_a = z2.to_s(2).reverse.split('').map { |x| x == '1' }
-  z_a.each_with_index do |z_ak, k|
-    next if z_ak
-
-    r = check_abs(abs, (x << k) | z)
-    if r
-      $tiles = [[a, b, k]] + $tiles if $debug
-      return true
-    end
+  H_W_RANGE.select { |k| (z2 >> k) % 2 == 0 }.each do |k|
+  # H_W_RANGE.each do |k|
+    # if (z2 >> k) % 2 == 0
+      r = check_abs(abs, z | (x << k))
+      if r
+        $tiles = [[a, b, k]] + $tiles if $debug
+        return true
+      end
+    # end
   end
   false
 end
