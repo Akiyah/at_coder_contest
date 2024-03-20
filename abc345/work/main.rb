@@ -16,37 +16,39 @@ XS = (0..H).map do |a|
   end
 end
 
-YS = (0..H).map do |a|
-  (0..W).map do |b|
-    (0..(H - a)).map do |i|
-      (0..(W - b)).map do |j|
-        XS[a][b] << (i * W + j)
-      end
-    end
-  end
-end
-# pp YS
-
 def check_a_b(a, b, abs, z)
   return [false, nil] if H < a || W < b
 
-  x = YS[a][b]
-  # z_a = z.to_s(2).split('')
+  x = XS[a][b]
+  z_a = z.to_s(2).split('')
+  z_a = [0] * (H * W - z_a.length) + z_a
+  # pp [z.to_s(2), z.to_s(2).length, z_a, H, W]
 
-  (0..(H - a)).each do |i|
-    ys = x[i]
-    (0..(W - b)).each do |j|
-      # next if z_a[i * W + j] == 1
-      # y = (x << (i * W + j))
-      y = ys[j]
-      if (y & z) == 0
-        r, tiles = check_abs(abs, y | z)
-        if r
-          return [true, [[a, b, i, j]] + tiles]
-        end
+  z_a.each_with_index do |zk, k|
+    i = k / W
+    j = k % W
+    next if H - a < i || W - b < j
+
+    y = (x << k)
+    if (y & z) == 0
+      r, tiles = check_abs(abs, (y | z))
+      if r
+        return [true, [[a, b, i, j]] + tiles]
       end
     end
   end
+
+  # (0..(H - a)).each do |i|
+  #   (0..(W - b)).each do |j|
+  #     y = (x << (i * W + j))
+  #     if (y & z) == 0
+  #       r, tiles = check_abs(abs, y | z)
+  #       if r
+  #         return [true, [[a, b, i, j]] + tiles]
+  #       end
+  #     end
+  #   end
+  # end
   [false, nil]
 end
 
