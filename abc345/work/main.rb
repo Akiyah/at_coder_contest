@@ -1,6 +1,7 @@
 # require "ac-library-rb/segtree"
 
 $debug = !ARGV[0].nil?
+$tiles = []
 
 N, H, W = STDIN.gets.chomp.split.map(&:to_i)
 ABS = (1..N).map { STDIN.gets.chomp.split.map(&:to_i) }.sort_by { |a, b| -a * b }
@@ -69,7 +70,7 @@ def shadow(z, a, b)
 end
 
 def check_a_b(a, b, abs, z)
-  return [false, nil] if H < a || W < b
+  return false if H < a || W < b
   x = XS[a][b]
 
   z2 = shadow(z, a, b)
@@ -78,35 +79,33 @@ def check_a_b(a, b, abs, z)
     next if z_ak
 
     y = (x << k)
-    r, tiles = check_abs(abs, (y | z))
+    r = check_abs(abs, (y | z))
     if r
-      return [true, [[a, b, k]] + tiles]
+      $tiles = [[a, b, k]] + $tiles if $debug
+      return true
     end
   end
-  [false, nil]
+  false
 end
 
 def check_abs(abs, z)
-  return [true, []] if z == Z_FULL
-  return [false, nil] if abs.empty?
+  if z == Z_FULL
+    $tiles = [] if $debug
+    return true
+  end
+  return false if abs.empty?
 
   a, b = abs[0]
 
   # 回転なし
-  r, tiles = check_a_b(a, b, abs[1..-1], z)
-  if r
-    return [true, tiles]
-  end
+  return true if check_a_b(a, b, abs[1..-1], z)
 
   # 回転あり(bとaを入れ替える)
   if a != b
-    r, tiles = check_a_b(b, a, abs[1..-1], z)
-    if r
-      return [true, tiles]
-    end
+    return true if check_a_b(b, a, abs[1..-1], z)
   end
 
-  [false, nil]
+  false
 end
 
 def check
@@ -114,25 +113,24 @@ def check
     ABS.combination(n).each do |abs|
       if abs.sum { |a, b| a * b } == H * W
         board = (1..H).map { Array.new(W, 0) }
-        r, tiles = check_abs(abs, 0)
-        if r
-          return [true, tiles]
+        if check_abs(abs, 0)
+          return true
         end
       end
     end
   end
-  [false, nil, nil]
+  false
 end
 
-r, tiles = check
+r = check
 
 if r && $debug
-  pp tiles
+  pp $tiles
 
   bgcolors = [40, 41, 42, 43, 44, 45, 46, 47]
 
   board = (1..H).map { Array.new(W, 0) }
-  tiles.each_with_index do |abk, c|
+  $tiles.each_with_index do |abk, c|
     a, b, k = abk
     i = k / W
     j = k % W
