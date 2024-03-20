@@ -16,8 +16,14 @@ XS = (0..H).map do |a|
   end
 end
 
+LEFT_S = ((1 << (H * W)) - 1) / ((1 << W) - 1)
+LEFT_MASK = ((1 << W) - 1 - 1) * LEFT_S
+LEFT_BORDER = (1 << (W - 1)) * LEFT_S
+
+UP_BORDER = ((1 << W) - 1) << (H - 1) * W
+
 def f(z)
-  z2a(z).map(&:join)
+  z2a(z).map { |l| l.map { |b| b ? 1 : 0}.join }.join("\n")
 end
 
 def z2a(z)
@@ -31,10 +37,7 @@ def a2z(a)
 end
 
 def shadow_left1(z)
-  s = ((1 << (H * W)) - 1) / ((1 << W) - 1)
-  mask = ((1 << W) - 1 - 1) * s
-  border = (1 << (W - 1)) * s
-  ((z & mask) >> 1) + border
+  ((z & LEFT_MASK) >> 1) + LEFT_BORDER
 end
 
 def shadow_left(z, b)
@@ -46,7 +49,7 @@ def shadow_left(z, b)
 end
 
 def shadow_up1(z)
-  (z >> W) + (((1 << W) - 1) << (H - 1) * W)
+  (z >> W) + UP_BORDER
 end
 
 def shadow_up(z, a)
@@ -65,32 +68,24 @@ def shadow(z, a, b)
 end
 
 def check_a_b(a, b, abs, z)
+  return [false, nil] if H < a || W < b
   x = XS[a][b]
 
   z2 = shadow(z, a, b)
-
   z_a = z2a(z2)
-
   z_a.flatten.each_with_index do |z_ak, k|
     next if z_ak
 
     y = (x << k)
-    # pp ['(y & z) != 0', f(z), f(x), f(y), f(y & z), k, a, b] if (y & z) != 0
-    # pp ['y | z == z', f(z), f(x), f(y), f(y | z), k, a, b] if y | z == z
-    #if (y & z) == 0
     r, tiles = check_abs(abs, (y | z))
     if r
-      i = k / W
-      j = k % W
-      return [true, [[a, b, i, j]] + tiles]
+      return [true, [[a, b, k]] + tiles]
     end
-    #end
   end
   [false, nil]
 end
 
 def check_abs(abs, z)
-  # pp ['check_ab', abs, z.to_s(2)]
   return [true, []] if z == Z_FULL
   return [false, nil] if abs.empty?
 
@@ -136,11 +131,13 @@ if r && $debug
   bgcolors = [40, 41, 42, 43, 44, 45, 46, 47]
 
   board = (1..H).map { Array.new(W, 0) }
-  tiles.each_with_index do |abij, k|
-    a, b, i, j = abij
+  tiles.each_with_index do |abk, c|
+    a, b, k = abk
+    i = k / W
+    j = k % W
     (0...a).each do |i2|
       (0...b).each do |j2|
-        board[i + i2][j + j2] = k
+        board[i + i2][j + j2] = c
       end
     end
   end
