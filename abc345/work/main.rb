@@ -31,10 +31,12 @@ def check_a_b(a, b, abs, z)
   return [false, nil] if H < a || W < b
 
   x = YS[a][b]
+  # z_a = z.to_s(2).split('')
 
   (0..(H - a)).each do |i|
     ys = x[i]
-      (0..(W - b)).each do |j|
+    (0..(W - b)).each do |j|
+      # next if z_a[i * W + j] == 1
       # y = (x << (i * W + j))
       y = ys[j]
       if (y & z) == 0
