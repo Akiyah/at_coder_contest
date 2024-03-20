@@ -16,51 +16,54 @@ XS = (0..H).map do |a|
   end
 end
 
+def f(z)
+  s = z.to_s(2)
+  s = ('0' * (H * W - s.length)) + s
+  s.split('').to_a.reverse.each_slice(W).map(&:join)
+end
+
 def check_a_b(a, b, abs, z)
-  return [false, nil] if H < a || W < b
+  # return [false, nil] if H < a || W < b
+
+  # pp f(z)
 
   x = XS[a][b]
   z_a = z.to_s(2).split('').map { |x| x.to_i == 1 }.reverse
   z_a += [false] * (H * W - z_a.length)
   z_a = z_a.each_slice(W).to_a
 
-  # pp "z_a"
-  # pp [a, b, abs, z]
-  # pp z_a
   (0...H).each do |i|
     (0...W).each do |j|
-      z_a[i][j] ||= H < a + i || W < b + j || z_a[i + a - 1][j + b - 1]
+      (0...a).each do |ai|
+        z_a[i][j] ||= H <= ai + i || z_a[i + ai][j]
+      end
     end
   end
-  # pp z_a
+  (0...H).each do |i|
+    (0...W).each do |j|
+      (0...b).each do |bj|
+        z_a[i][j] ||= W <= bj + j || z_a[i][j + bj]
+      end
+    end
+  end
 
-  # ((H - a + 1)...H).each do |i|
-  #   (0...W).each do |j|
-  #     z_a[i][j] = true
-  #   end
-  # end
+  z_a = z_a.flatten
 
-  # ((W - b + 1)...W).each do |j|
-  #   (0...H).each do |i|
-  #     z_a[i][j] = true
-  #   end
-  # end
+  z_a.each_with_index do |z_ak, k|
+    next if z_ak
 
-  z_a.each_with_index do |z_ai, i|
-    z_ai.each_with_index do |z_aij, j|
-      next if z_aij
+    # k = i * W + j
+    i = k / W
+    j = k % W
+    # next if H - a < i || W - b < j
 
-      k = i * W + j
-      # i = k / W
-      # j = k % W
-      # next if H - a < i || W - b < j
-
-      y = (x << k)
-      if (y & z) == 0
-        r, tiles = check_abs(abs, (y | z))
-        if r
-          return [true, [[a, b, i, j]] + tiles]
-        end
+    y = (x << k)
+    pp ['(y & z) != 0', f(z), f(x), f(y), f(y & z), k, a, b] if (y & z) != 0
+    pp ['y | z == z', f(z), f(x), f(y), f(y | z), k, a, b] if y | z == z
+    if (y & z) == 0
+      r, tiles = check_abs(abs, (y | z))
+      if r
+        return [true, [[a, b, i, j]] + tiles]
       end
     end
   end
