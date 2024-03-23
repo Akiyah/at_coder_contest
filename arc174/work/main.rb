@@ -1,77 +1,44 @@
-require "ac-library-rb/segtree"
+# require "ac-library-rb/segtree"
 
 $debug = !ARGV[0].nil?
 
-N, C = STDIN.gets.chomp.split.map(&:to_i)
-#AS = (1..N).map { STDIN.gets.chomp.split.map(&:to_i) }.sort_by { |a, b| -a * b }
-AS = STDIN.gets.chomp.split.map(&:to_i)
-# pp AS
+N = STDIN.gets.chomp.to_i
 
 
-sum = nil
-m = 0
-l = nil
-m_l = 0
-m_r = 0
-# 総和が正で最大の区間を探す C <= 0 の場合は負で最小の区間を探す
-if 0 < C
-  (0...N).each do |i|
-    a = AS[i]
 
-    if sum == nil
-      if 0 < a # 区間の始まり
-        l = i
-        sum = a
-        m = sum if m < sum
-      end
-    else
-      sum += a
-      if m < sum # 区間の終了の更新
-        m = sum
-        m_l = l
-        m_r = i
-      end
-      if sum <= 0 # 区間を探すのをやめる
-        sum = nil
-      end
-    end
+def calc(as, ps)
+  pp [as, ps] if $debug
+  # 3 <= (as[1 - 1] * 1 + as[2 - 1] * 2 + as[3 - 1] * 3 + (as[4 - 1] + a4) * 4 + (as[5 - 1] + a5) * 5) / (as[1 - 1] + as[2 - 1] + as[3 - 1] + (as[4 - 1] + a4) + (as[5 - 1] + a5))
+  # となるa4, a5でループを回す。
+  # 3 * (as[1 - 1] + as[2 - 1] + as[3 - 1] + (as[4 - 1] + a4) + (as[5 - 1] + a5)) <= (as[1 - 1] * 1 + as[2 - 1] * 2 + as[3 - 1] * 3 + (as[4 - 1] + a4) * 4 + (as[5 - 1] + a5) * 5)
+  # as[1 - 1] * 2 + as[2 - 1] <= (as[4 - 1] + a4) + (as[5 - 1] + a5) * 2
+  # (as[1 - 1] * 2 + as[2 - 1] - as[4 - 1] - a4) / 2 <= as[5 - 1] + a5
+  # (as[1 - 1] * 2 + as[2 - 1] - as[4 - 1] - a4) / 2 - as[5 - 1] <= a5
+  # a4 = 0 のとき、
+  # (as[1 - 1] * 2 + as[2 - 1] - as[4 - 1]) / 2 - as[5 - 1] <= a5
 
-    pp [i, a, sum, l, m, m_l, m_r] if $debug
-  end
-else
-  (0...N).each do |i|
-    a = AS[i]
+  a5_max = Rational(as[1 - 1] * 2 + as[2 - 1] - as[4 - 1], 2).ceil - as[5 - 1]
 
-    if sum == nil
-      if a < 0 # 区間の始まり
-        l = i
-        sum = a
-        m = sum if sum < m
-      end
-    else
-      sum += a
-      if sum < m # 区間の終了の更新
-        m = sum
-        m_l = l
-        m_r = i
-      end
-      if 0 <= sum # 区間を探すのをやめる
-        sum = nil
-      end
-    end
+  a5s = [0]
+  a5s << a5_max if 0 < a5_max
+  a5s << a5_max - 1 if 1 < a5_max
 
-    pp [i, a, sum, l, m, m_l, m_r] if $debug
-  end
+  # (0..a5_max).map do |a5|
+  a5s.map do |a5|
+    a4 = as[1 - 1] * 2 + as[2 - 1] - (as[5 - 1] + a5) * 2 - as[4 - 1]
+    a4 = 0 if a4 < 0
+
+    x = ps[4 - 1] * a4 + ps[5 - 1] * a5
+    pp "a4: #{a4}, a5: #{a5}, x: #{x}" if $debug
+    x
+  end.min
 end
 
-pp [m, m_l, m_r] if $debug
 
-result0 = AS.sum
 
-# result1 = AS[0...right_i].sum + AS[right_i..left_i].sum * C + AS[(left_i + 1)..-1].sum
+(1..N).each do
+  as = STDIN.gets.chomp.split.map(&:to_i)
+  ps = STDIN.gets.chomp.split.map(&:to_i)
 
-if 0 < C
-  puts result0 + m * (C - 1)
-else
-  puts result0 + m * (C - 1)
+  puts calc(as, ps)
 end
