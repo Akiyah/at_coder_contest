@@ -2,61 +2,90 @@
 
 $debug = !ARGV[0].nil?
 
-H, W, M = STDIN.gets.chomp.split.map(&:to_i)
-TAXS = (1..M).map { STDIN.gets.chomp.split.map(&:to_i) }
+A, B, C = STDIN.gets.chomp.split.map(&:to_i)
 
-def calc
-  painted_i = []
-  painted_i_count = 0
-  painted_j = []
-  painted_j_count = 0
+def calc()
+  pp [A, B, C, C.to_s(2), C.to_s(2).length] if $debug
+  
+  s = C.to_s(2)
+  l = s.length
+  ss = s.split('')
+  m = ss.count('1')
 
-  counts = {}
+  d = (A - B).abs
+  return -1 if m < d
 
-  TAXS.reverse.each do |t, a, x|
-    if t == 1
-      if painted_i[a - 1]
+  if m % 2 == 0
+    return -1 unless d % 2 == 0
+  else
+    return -1 if d % 2 == 0
+  end
+
+  a0 = (m + d) / 2
+  b0 = (m - d) / 2
+  a0, b0 = b0, a0 if A < B
+
+  k = (A - a0) # 残りの1として可能な数
+
+  return -1 if (60 - m) < k
+
+#   k = (60 - m) - (A - a0) # 残りの1の数
+
+  pp [k, a0, b0] if $debug
+
+  ss_a = []
+  ss_b = []
+  j = 0
+  ss.reverse.each do |c|
+    if c == '1'
+      if j < a0
+        ss_a << '1'
+        ss_b << '0'
       else
-        if painted_j_count != W
-          counts[x] ||= 0
-          counts[x] += W - painted_j_count
-        end
-        painted_i_count += 1
-        painted_i[a - 1] = true
+        ss_a << '0'
+        ss_b << '1'
       end
+      j += 1
     else
-      if painted_j[a - 1]
-      else
-        if painted_i_count != H
-          counts[x] ||= 0
-          counts[x] += H - painted_i_count
-        end
-        painted_j_count += 1
-        painted_j[a - 1] = true
+      if k > 0
+        ss_a << '1'
+        ss_b << '1'
+        k -= 1
       end
     end
-    if $debug
-      pp "---"
-      pp counts
-      pp painted_i
-      pp painted_i_count
-      pp painted_j
-      pp painted_j_count
+  end
+
+  if 0 < k
+    ss_a += ['1'] * (k)
+    ss_b += ['1'] * (k)
+  end
+
+  ss_a.reverse!
+  ss_b.reverse!
+
+  x = ss_a.join('').to_i(2)
+  y = ss_b.join('').to_i(2)
+
+  if $debug
+    pp x.to_s(2).split('').join('')
+    pp y.to_s(2).split('').join('')
+    pp x.to_s(2).split('').count('1')
+    pp y.to_s(2).split('').count('1')
+
+
+    r = ss_a.zip(ss_b).map do |a, b|
+      (a != b && (a == '1' || b == '1')) ? '1' : '0'
     end
+    pp r.join('')
+
   end
 
-  remain = H * W - counts.values.sum
-  if 0 < remain
-    counts[0] ||= 0
-    counts[0] += remain
-  end
 
-  counts
+  [x, y].join(' ')
+
 end
 
-b = calc
 
-puts b.keys.count
-b.keys.sort.each do |k|
-  puts "#{k} #{b[k]}"
-end
+puts calc()
+
+
