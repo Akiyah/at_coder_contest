@@ -4,6 +4,10 @@ $debug = !ARGV[0].nil?
 
 A, B, C = STDIN.gets.chomp.split.map(&:to_i)
 
+def to_s2_60(x)
+  x.to_s(2).rjust(60)
+end
+
 def calc()
   pp [A, B, C, C.to_s(2), C.to_s(2).length] if $debug
   
@@ -29,9 +33,10 @@ def calc()
 
   return -1 if (60 - m) < k
 
-#   k = (60 - m) - (A - a0) # 残りの1の数
+  #   k = (60 - m) - (A - a0) # 残りの1の数
 
-  pp [k, a0, b0] if $debug
+  pp ['m', 'k', 'a0', 'b0'] if $debug
+  pp [m, k, a0, b0] if $debug
 
   ss_a = []
   ss_b = []
@@ -51,6 +56,9 @@ def calc()
         ss_a << '1'
         ss_b << '1'
         k -= 1
+      else
+        ss_a << '0'
+        ss_b << '0'
       end
     end
   end
@@ -67,16 +75,36 @@ def calc()
   y = ss_b.join('').to_i(2)
 
   if $debug
-    pp x.to_s(2).split('').join('')
-    pp y.to_s(2).split('').join('')
-    pp x.to_s(2).split('').count('1')
-    pp y.to_s(2).split('').count('1')
-
-
-    r = ss_a.zip(ss_b).map do |a, b|
+    actual_cs = ss_a.zip(ss_b).map do |a, b|
       (a != b && (a == '1' || b == '1')) ? '1' : '0'
     end
-    pp r.join('')
+    # pp actual_cs.join('')
+
+
+    puts "x:        " + to_s2_60(x)
+    puts "y:        " + to_s2_60(y)
+    puts "actual:   " + to_s2_60(actual_cs.join('').to_i(2))
+    puts "expected: " + to_s2_60(C)
+
+
+
+    actual = {
+      a: x.to_s(2).split('').count('1'),
+      b: y.to_s(2).split('').count('1'),
+      c2: to_s2_60(actual_cs.join('').to_i(2)),
+      c: actual_cs.join('').to_i(2)
+    }
+
+    expected = {
+      a: A,
+      b: B,
+      c2: to_s2_60(C),
+      c: C
+    }
+
+    pp actual
+    pp expected
+
 
   end
 
