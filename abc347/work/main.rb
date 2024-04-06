@@ -28,6 +28,8 @@ def calc()
   a0 = (m + d) / 2
   b0 = (m - d) / 2
   a0, b0 = b0, a0 if A < B
+  return -1 if A < a0
+  return -1 if B < b0
 
   k = (A - a0) # 残りの1として可能な数
 
