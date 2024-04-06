@@ -13,48 +13,48 @@ RCES = (1..N).map do
 end
 
 
-def check(enagies, board, foots, r2, c2, e)
-  eb = board[r2 - 1][c2 - 1]
-  return unless eb
-
-  e2 = e - 1
-  ee = enagies[[r2, c2]]
-  if ee != nil
-    e2 = [e2, ee].max
-  end
-
-  return if e2 < 0
-
-  return if e2 <= eb
-
-  ef = foots[[r2, c2]]
-  if ef != nil
-    if e2 <= ef
-      return
-    end
-  end
-
-  board[r2 - 1][c2 - 1] = e2
-  foots[[r2, c2]] = e2
-end
-
 def calc_one(enagies, s, t, board, foots_old)
   foots = {}
+  # board = board_old.map(&:dup)
 
   foots_old.each do |f_key, e|
     r, c = f_key
 
-    check(enagies, board, foots, r - 1, c, e) if 1 <= r - 1
-    check(enagies, board, foots, r + 1, c, e) if r + 1 <= H
-    check(enagies, board, foots, r, c - 1, e) if 1 <= c - 1
-    check(enagies, board, foots, r, c + 1, e) if c + 1 <= W
+    [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].each do |r2, c2|
+      next if r2 < 1 || H < r2 || c2 < 1 || W < c2
+      next if board[r2 - 1][c2 - 1] == false
+
+      e2 = e - 1
+      if enagies[[r2, c2]] != nil
+        if e2 < enagies[[r2, c2]]
+          e2 = [e2, enagies[[r2, c2]]].max
+        end
+      end
+
+      next if e2 < 0
+
+      if board[r2 - 1][c2 - 1] != nil
+        if e2 <= board[r2 - 1][c2 - 1]
+          next
+        end
+      end
+
+      if foots[[r2, c2]] != nil
+        if e2 <= foots[[r2, c2]]
+          next
+        end
+      end
+
+      board[r2 - 1][c2 - 1] = e2
+      foots[[r2, c2]] = e2
+    end
   end
 
-  return foots, true if foots[t] != nil
+  return board, foots, true if foots[t] != nil
 
-  return foots, false if foots.size == 0
+  return board, foots, false if foots.size == 0
 
-  return foots, nil
+  return board, foots, nil
 end
 
 
@@ -73,7 +73,7 @@ def calc()
       else
         s = [r + 1, c + 1] if a == 'S'
         t = [r + 1, c + 1] if a == 'T'
-        -1
+        nil
       end
     end
   end
@@ -88,7 +88,8 @@ def calc()
   foots[s] = e
   board[s[0]- 1][s[1] - 1] = e
   while true
-    foots, result = calc_one(enagies, s, t, board, foots)
+    board, foots, result = calc_one(enagies, s, t, board, foots)
+    pp board if $debug
     pp foots if $debug
     return result if result != nil
   end
