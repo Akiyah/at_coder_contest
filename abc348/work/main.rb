@@ -17,14 +17,9 @@ def check(enagies, board, foots, r2, c2, e)
   eb = board[r2 - 1][c2 - 1]
   return unless eb
 
-  e2 = e - 1
-  ee = enagies[[r2, c2]]
-  if ee != nil
-    e2 = [e2, ee].max
-  end
+  e2 = [e - 1, enagies[r2 - 1][c2 - 1]].max
 
   return if e2 < 0
-
   return if e2 <= eb
 
   ef = foots[[r2, c2]]
@@ -59,10 +54,16 @@ end
 
 
 def calc()
-  enagies = {}
-  RCES.each do |r, c, e|
-    enagies[[r, c]] = e
+  enagies = (1..H).map do |r|
+    (1..W).map do |c|
+      -1
+    end
   end
+  
+  RCES.each do |r, c, e|
+    enagies[r - 1][c - 1] = e
+  end
+  pp enagies if $debug
 
   s = []
   t = []
@@ -81,12 +82,12 @@ def calc()
   pp [enagies, s, t, board] if $debug
   
 
-  e = enagies[s]
-  return false if e == nil
+  ee = enagies[s[0] - 1][s[1] - 1]
+  return false if ee < 0
 
   foots = {}
-  foots[s] = e
-  board[s[0]- 1][s[1] - 1] = e
+  foots[s] = ee
+  board[s[0]- 1][s[1] - 1] = ee
   while true
     foots, result = calc_one(enagies, s, t, board, foots)
     pp foots if $debug
