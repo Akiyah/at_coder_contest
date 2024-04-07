@@ -1,6 +1,10 @@
 # require "ac-library-rb/segtree"
 
 N = gets.chomp.to_i
+ABS = (1..N).map do
+  gets.chomp.split.map(&:to_i)
+end
+
 
 def check(d, cs, &block)
   return if d < 0
