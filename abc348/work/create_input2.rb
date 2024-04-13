@@ -1,6 +1,5 @@
 H = 200
 W = 200
-N = 300
 
 AS = Array.new(H) { Array.new(W, '.') }
 
@@ -16,17 +15,14 @@ AS.each do |row|
 end
 
 es = []
-while es.size <= N
-  i = (0...H).to_a.sample
-  j = (0...W).to_a.sample
-  e = (1..(H * W)).to_a.sample
-  if AS[i][j] == '.'
-    AS[i][j] == e
-    es << [i, j, e]
+(0...15).each do |i|
+  (0...20).each do |j|
+    e = (i + j + 1) * 10
+    es << [1 + i * 9, 1 + j * 9, e]
   end
 end
 
-puts "#{N}"
+puts "#{es.length}"
 
 es.each do |i, j, e|
   puts [i, j, e].join(' ')
