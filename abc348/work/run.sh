@@ -9,6 +9,7 @@ ruby main.rb < input8.txt > actual/actual8.txt
 ruby main.rb < input9.txt > actual/actual9.txt
 ruby main.rb < input10.txt > actual/actual10.txt
 ruby main.rb < input11.txt > actual/actual11.txt
+ruby main.rb < input12.txt > actual/actual12.txt
 
 diff actual/actual1.txt expected1.txt
 diff actual/actual2.txt expected2.txt
@@ -21,4 +22,5 @@ diff actual/actual8.txt expected8.txt
 diff actual/actual9.txt expected9.txt
 diff actual/actual10.txt expected10.txt
 diff actual/actual11.txt expected11.txt
+diff actual/actual12.txt expected12.txt
 
