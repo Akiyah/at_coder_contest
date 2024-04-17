@@ -12,6 +12,87 @@ RCES = (1..N).map do
   STDIN.gets.chomp.split.map(&:to_i)
 end
 
+def create_enagies
+  enagies = (1..H).map do |r|
+    (1..W).map do |c|
+      -1
+    end
+  end
+  
+  RCES.each do |r, c, e|
+    enagies[r - 1][c - 1] = e
+  end
+  enagies
+end
+
+def create_board
+  AS.map.with_index do |line, r|
+    line.map.with_index do |a, c|
+      if a == '#'
+        false
+      else
+        -1
+      end
+    end
+  end
+end
+
+def create_graph_nodes_one(r, c, e, board, enagies)
+  return [] if AS[r][c] == '#'
+  return [] if e < 0
+  return [] if e <= board[r][c]
+
+  board[r][c] = e 
+  
+  nodes = []
+
+  nodes << [r, c] if 0 < enagies[r][c]
+  nodes += create_graph_nodes_one(r - 1, c, e - 1, board, enagies) if 0 < r
+  nodes += create_graph_nodes_one(r + 1, c, e - 1, board, enagies) if r < H - 1
+  nodes += create_graph_nodes_one(r, c - 1, e - 1, board, enagies) if 0 < c
+  nodes += create_graph_nodes_one(r, c + 1, e - 1, board, enagies) if c < W - 1
+  nodes.uniq
+end
+
+def create_graph_nodes(r, c, e)
+  board = create_board
+  enagies = create_enagies
+
+  nodes = []
+
+  points = [[r, c]]
+  e.times do |i|
+    next_points = []
+    points.each do |r, c|
+      next unless board[r][c]
+      next if (e - i) <= board[r][c]
+
+      board[r][c] = (e - i)
+      nodes << [r, c] if 0 < enagies[r][c]
+
+      next_points << [r - 1, c] if 0 < r
+      next_points << [r + 1, c] if r < H - 1
+      next_points << [r, c - 1] if 0 < c
+      next_points << [r, c + 1] if c < W - 1
+    end
+
+    points = next_points.uniq
+  end
+
+  nodes.uniq
+end
+
+def create_graph
+  graph = {}
+  RCES.each do |r, c, e|
+    graph[[r - 1, c - 1]] = create_graph_nodes(r - 1, c - 1, e)
+  end
+  graph
+end
+
+pp 'create_graph' if $debug
+pp create_graph if $debug
+
 
 def check(enagies, board, foots, r2, c2, e)
   eb = board[r2 - 1][c2 - 1]
