@@ -33,8 +33,8 @@ def create_board
       if a == '#'
         false
       else
-        s = [r + 1, c + 1] if a == 'S'
-        t = [r + 1, c + 1] if a == 'T'
+        s = [r, c] if a == 'S'
+        t = [r, c] if a == 'T'
         -1
       end
     end
@@ -49,17 +49,18 @@ def calc_one(enagies, s, t, board, foots)
 
   max_foots.each do |r, c|
     return true if [r, c] == t # goal
-    next unless board[r - 1][c - 1] # '#'
+    next unless board[r][c] # '#'
 
-    e = [max, enagies[r - 1][c - 1]].max
-    next if e <= board[r - 1][c - 1]
-    board[r - 1][c - 1] = e
+    e = [max, enagies[r][c]].max
+    next if e <= board[r][c]
+    next if e <= 0
+    board[r][c] = e
     
     foots[e - 1] ||= []
-    foots[e - 1] << [r - 1, c] if 1 <= r - 1
-    foots[e - 1] << [r + 1, c] if r + 1 <= H
-    foots[e - 1] << [r, c - 1] if 1 <= c - 1
-    foots[e - 1] << [r, c + 1] if c + 1 <= W
+    foots[e - 1] << [r - 1, c] if 0 <= r - 1
+    foots[e - 1] << [r + 1, c] if r + 1 < H
+    foots[e - 1] << [r, c - 1] if 0 <= c - 1
+    foots[e - 1] << [r, c + 1] if c + 1 < W
   end
 
   return false if foots.size == 0
@@ -83,24 +84,39 @@ def board_to_s(board)
   s
 end
 
+def enagies_to_s(enagies)
+  s = ''
+  enagies.each do |line|
+    line.each do |a|
+      if a == -1
+        s += ' '
+      else
+        s += a.to_s
+      end
+    end
+    s += "\n"
+  end
+  s
+end
+
 def calc
   enagies = create_enagies
   board, s, t = create_board
 
-  pp enagies if $debug
   puts board_to_s(board) if $debug
+  puts enagies_to_s(enagies) if $debug
   pp s if $debug
   pp t if $debug
   
   
   foots = {}
   foots[0] = [s]
-  board[s[0]- 1][s[1] - 1] = 0
+  board[s[0]][s[1]] = 0
   while true
     pp "-" * 100 if $debug
     pp foots if $debug
-    pp enagies if $debug
     puts board_to_s(board) if $debug
+    puts enagies_to_s(enagies) if $debug
     result = calc_one(enagies, s, t, board, foots)
     return result if result != nil
   end
