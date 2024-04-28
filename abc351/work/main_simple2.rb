@@ -33,28 +33,21 @@ end
 
 def calc_sum(xys)
   n = xys.length
-
-  rx = 0
-  xs = xys.map { |x,y| x }.sort
-  nx = n
-  while 1 < nx
-    x0 = xs.shift
-    x1 = xs.pop
-    nx -= 2
-    rx += (x1 - x0) * (1 + nx)
+  rx = (1..n).sum do |i|
+    (1..n).sum do |j|
+      x0, y0 = xys[i - 1]
+      x1, y1 = xys[j - 1]
+      (x0 - x1).abs
+    end
   end
-
-  ry = 0
-  ys = xys.map { |x,y| y }.sort
-  ny = n
-  while 1 < ny
-    y0 = ys.shift
-    y1 = ys.pop
-    ny -= 2
-    ry += (y1 - y0) * (1 + ny)
+  ry = (1..n).sum do |i|
+    (1..n).sum do |j|
+      x0, y0 = xys[i - 1]
+      x1, y1 = xys[j - 1]
+      (y0 - y1).abs
+    end
   end
-
-  rx + ry
+  (rx + ry) / 2
 end
 
 d = 0
