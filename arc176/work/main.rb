@@ -9,12 +9,75 @@ $debug = !ARGV[0].nil?
 #   STDIN.gets.chomp.split.map(&:to_i)
 # end
 
+def r(ns)
+  rns = []
+  (1..N).each do |k|
+    rns[ns[k - 1] - 1] = k
+  end
+  rns
+end
+
+def convert_data(data, nsi, nsj)
+  (1..N).map do |a|
+    (1..N).map do |b|
+      data[nsi[a - 1] - 1][nsj[b - 1] - 1]
+    end
+  end
+end
+
+def convert_points(points, nsi, nsj)
+end
+
+def create_river_points
+  result = []
+  N.times do |j|
+    M.times do |i|
+      result << [(j + i) % N, j]
+    end
+  end
+  result
+end
+
+if $debug
+  def print_abs(abs, nsi=(1..N).to_a, nsj=(1..N).to_a)
+    rnsi = r(nsi)
+    rnsj = r(nsj)
+
+    pp ['nsi', nsi]
+    pp ['nsj', nsj]
+    pp ['rnsi', rnsi]
+    pp ['rnsj', rnsj]
+    data = Array.new(N) { ['.'] * N }
+    abs.each do |a, b|
+      data[a - 1][b - 1] = '@'
+    end
+    ABS.each do |a, b|
+      data[a - 1][b - 1] = (data[a - 1][b - 1] == '.' ? '#' : '1')
+    end
+    data2 = convert_data(data, nsi, nsj)
+    
+    puts '-' * 30
+    puts '   ' + (1..N).to_a.map{ |j| rnsj[j - 1].to_s.rjust(3) }.join('')
+    data.each.with_index do |line, i|
+      puts rnsi[i].to_s.rjust(3) + line.map{ |w| '  ' + w }.join('')
+    end
+    puts '^ ' * 15
+    puts '   ' + (1..N).to_a.map{ |j| j.to_s.rjust(3) }.join('')
+    data2.each.with_index do |line, i|
+      puts (i + 1).to_s.rjust(3) + line.map{ |w| '  ' + w }.join('')
+    end
+    puts '-' * 30
+  end
+end
+
 N, M = STDIN.gets.chomp.split.map(&:to_i)
 ABS = (1..M).map do
   STDIN.gets.chomp.split.map(&:to_i)
 end
 
 pp ABS if $debug
+print_abs(ABS) if $debug
+
 
 rotations_i = []
 rotations_j = []
@@ -47,19 +110,8 @@ end
 
 nj = rotations_j + ((1..N).to_a - rotations_j)
 
-pp ni if $debug
-pp nj if $debug
-
-pp '---' if $debug
-N.times do |j|
-  M.times do |i|
-    puts [(j + i) % N + 1, j + 1].join(" ") if $debug
-  end
-end
-
-
-
-pp '---' if $debug
+pp ['ni', ni] if $debug
+pp ['nj', nj] if $debug
 
 puts N * M
 result = []
@@ -73,22 +125,4 @@ result.each do |r|
   puts r.join(" ")
 end
 
-if $debug
-  data = []
-  N.times do |i|
-    data[i] = []
-    N.times do |j|
-      data[i][j] = '.'
-    end
-  end
-
-  result.each do |r|
-    a, b = r
-    data[a - 1][b - 1] = '1'
-  end
-
-  puts '----'
-  N.times do |i|
-    puts data[i].join(" ")
-  end
-end
+print_abs(result, ni, nj) if $debug
