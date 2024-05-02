@@ -36,7 +36,7 @@ check(ARGV) do |fi, fa|
   # pp [l, xys]
 
   next 'NG1' unless l == m * n
-  next 'NG2' unless xys & abs == abs # xysはabsを含んでいる
+  next 'NG2' unless ((xys & abs) - (abs)).empty? # xysはabsを含んでいる
   next 'NG3' unless xys.length == xys.uniq.length # xysは同じものを含んでいない
 
   xs = xys.group_by{ |x,y| x }.transform_values(&:length)

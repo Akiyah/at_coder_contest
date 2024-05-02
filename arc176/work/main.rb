@@ -79,45 +79,33 @@ pp ABS if $debug
 print_abs(ABS) if $debug
 
 
-rotations_i = []
-rotations_j = []
-pp ABS.group_by { |a, b| a } if $debug
-i = 0
-vs = []
-ABS.group_by { |a, b| a }.sort_by { |k, v| v.length }.each do |k, v|
-  pp [k, v] if $debug
-  i += 1
-  vs = (vs + v.map { |a, b| b }).uniq
-  i = vs.length if i < vs.length
-  pp ['rotations_i', i, k, vs] if $debug
-  rotations_i << [i, k]
-
-  v.each do |a, b|
-    unless rotations_j.include?(b)
-      pp ['rotations_j', b] if $debug
-      rotations_j << b
-    end
-  end
+nsi = []
+nsj = []
+ABS.each do |a, b|
+  nsi << a unless nsi.include?(a)
+  nsj << b unless nsj.include?(b)
 end
 
-pp rotations_i if $debug
-pp rotations_j if $debug
+nsi = nsi + ((1..N).to_a - nsi)
+nsj = nsj + ((1..N).to_a - nsj)
 
-ni = (1..N).to_a
-rotations_i.reverse.each do |i, k|
-  ni[i - 1], ni[k - 1] = ni[k - 1], ni[i - 1]
-end
+pp ['nsi', nsi] if $debug
+pp ['nsj', nsj] if $debug
 
-nj = rotations_j + ((1..N).to_a - rotations_j)
+rnsi = r(nsi)
+rnsj = r(nsj)
+m = ABS.map do |a, b|
+  rnsj[b - 1] - rnsi[a - 1]
+end.max
+pp m if $debug
 
-pp ['ni', ni] if $debug
-pp ['nj', nj] if $debug
+nsi = nsi[(-m)..-1] + nsi[0...(-m)]
 
 puts N * M
 result = []
 N.times do |j|
   M.times do |i|
-    result << [ni[(j + i) % N], nj[j]]
+    result << [nsi[(j + i) % N], nsj[j]]
   end
 end
 
@@ -125,4 +113,6 @@ result.each do |r|
   puts r.join(" ")
 end
 
-print_abs(result, ni, nj) if $debug
+print_abs(ABS, nsi, nsj) if $debug
+
+print_abs(result, nsi, nsj) if $debug
