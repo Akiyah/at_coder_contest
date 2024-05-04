@@ -25,20 +25,16 @@ dsu = AcLibraryRb::DSU.new(N)
 # pq = AcLibraryRb::PriorityQueue.new {|x, y| x[1] < y[1] }
 
 cost = 0
-edges = {}
-edges_size = 0
 KCAS.each do |k, c, as|
   (0...k).each do |j|
     a0 = as[j] - 1
     a1 = as[(j + 1) % k] - 1
     a0, a1 = a1, a0 if a1 < a0
 
-    if edges[[a0, a1]] == nil && !dsu.same?(a0, a1)
-      edges[[a0, a1]] = 1
-      edges_size += 1
+    if !dsu.same?(a0, a1)
       dsu.merge(a0, a1)
       cost += c
-      if edges_size == N - 1
+      if dsu.size(a0) == N
         puts cost
         exit
       end
