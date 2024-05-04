@@ -43,7 +43,7 @@ end
 
 pp dsu0.groups if $debug
 
-unless dsu0.groups.size == 1
+unless dsu0.size(0) == N
   puts '-1'
   exit
 end
