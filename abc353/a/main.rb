@@ -12,22 +12,12 @@ $debug = !ARGV[0].nil?
 # end
 
 N = STDIN.gets.chomp.to_i
-AS = STDIN.gets.chomp.split.map(&:to_i)
+HS = STDIN.gets.chomp.split.map(&:to_i)
 
-M = 998244353
+is = (1...N).map { |i| HS[0] < HS[i] ? i : nil }.compact
 
-
-def calc(as)
-  s = 0
-  (0...(N-1)).each do |i|
-    ((i + 1)...N).each do |j|
-      pp (as[i].to_s + as[j].to_s).to_i
-      s += (as[i].to_s + as[j].to_s).to_i % M
-    end
-  end
-  s % M
+if is.empty?
+  puts -1
+else
+  puts is[0] + 1
 end
-
-r = calc(AS)
-
-puts r

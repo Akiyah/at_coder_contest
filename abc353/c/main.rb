@@ -13,21 +13,38 @@ $debug = !ARGV[0].nil?
 
 N = STDIN.gets.chomp.to_i
 AS = STDIN.gets.chomp.split.map(&:to_i)
+as = AS.sort
 
-M = 998244353
+pp as if $debug
+
+M = 10 ** 8
 
 
-def calc(as)
-  s = 0
-  (0...(N-1)).each do |i|
-    ((i + 1)...N).each do |j|
-      pp (as[i].to_s + as[j].to_s).to_i
-      s += (as[i].to_s + as[j].to_s).to_i % M
+def calc_c(as)
+  c = 0
+  i = 0
+  j = N - 1
+  pp [i, j, c] if $debug
+  while i < j
+    if as[i] + as[j] < M
+      i += 1
+    else
+      c += (j - i)
+      j -= 1
     end
+    pp [i, j, c] if $debug
   end
-  s % M
+
+  c
 end
 
-r = calc(AS)
+c = calc_c(as)
+pp c if $debug
+
+sum = AS.sum
+
+pp sum if $debug
+
+r = ((N - 1) * sum) - (M * c)
 
 puts r

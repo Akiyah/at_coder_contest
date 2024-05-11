@@ -14,20 +14,14 @@ $debug = !ARGV[0].nil?
 N = STDIN.gets.chomp.to_i
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
-M = 998244353
+M = 10 ** 8
 
 
-def calc(as)
-  s = 0
-  (0...(N-1)).each do |i|
-    ((i + 1)...N).each do |j|
-      pp (as[i].to_s + as[j].to_s).to_i
-      s += (as[i].to_s + as[j].to_s).to_i % M
-    end
+s = 0
+(0...(N - 1)).each do |i|
+  ((i + 1)...N).each do |j|
+    s += (AS[i] + AS[j]) % M
   end
-  s % M
 end
 
-r = calc(AS)
-
-puts r
+puts s

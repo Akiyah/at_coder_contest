@@ -11,23 +11,24 @@ $debug = !ARGV[0].nil?
 #   STDIN.gets.chomp.split.map(&:to_i)
 # end
 
-N = STDIN.gets.chomp.to_i
+N, K = STDIN.gets.chomp.split.map(&:to_i)
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
-M = 998244353
 
-
-def calc(as)
-  s = 0
-  (0...(N-1)).each do |i|
-    ((i + 1)...N).each do |j|
-      pp (as[i].to_s + as[j].to_s).to_i
-      s += (as[i].to_s + as[j].to_s).to_i % M
+def calc(n, k, as)
+  i = 0
+  m = 0
+  as.each do |a|
+    if m + a <= k
+      m += a
+    else
+      i += 1
+      m = a
     end
+    pp [i, a, m] if $debug
   end
-  s % M
+
+  i + 1
 end
 
-r = calc(AS)
-
-puts r
+puts calc(N, K, AS)

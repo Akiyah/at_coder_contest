@@ -1,6 +1,6 @@
 # require "ac-library-rb/priority_queue"
 # require "ac-library-rb/segtree"
-require "ac-library-rb/dsu"
+# require "ac-library-rb/dsu"
 
 $debug = !ARGV[0].nil?
 
@@ -11,35 +11,27 @@ $debug = !ARGV[0].nil?
 #   STDIN.gets.chomp.split.map(&:to_i)
 # end
 
-N, M = STDIN.gets.chomp.split.map(&:to_i)
-KCAS = (1..M).map do
-  k, c = STDIN.gets.chomp.split.map(&:to_i)
-  as = STDIN.gets.chomp.split.map(&:to_i)
-  [k, c, as]
-end.sort_by { |k, c, as| c }
+N = STDIN.gets.chomp.to_i
+AS = STDIN.gets.chomp.split.map(&:to_i)
 
-pp N, M if $debug
-pp KCAS if $debug
+M = 998244353
 
-dsu = AcLibraryRb::DSU.new(N)
-# pq = AcLibraryRb::PriorityQueue.new {|x, y| x[1] < y[1] }
 
-cost = 0
-KCAS.each do |k, c, as|
-  (0...k).each do |j|
-    a0 = as[j] - 1
-    a1 = as[(j + 1) % k] - 1
-    a0, a1 = a1, a0 if a1 < a0
+def calc(as)
+  s = 0
+  si_sum = 0
+  (0...(N - 1)).each do |i|
+    si_sum += as[i]
+    aj = as[i + 1]
+    pp [si_sum, aj] if $debug
+    pp (si_sum.to_s + aj.to_s).to_i if $debug
+    k = aj.to_s.length
 
-    if !dsu.same?(a0, a1)
-      dsu.merge(a0, a1)
-      cost += c
-      if dsu.size(a0) == N
-        puts cost
-        exit
-      end
-    end
+    s += (si_sum * (10 ** k) + aj * (i + 1)) % M
   end
+  s % M
 end
 
-puts -1
+r = calc(AS)
+
+puts r
