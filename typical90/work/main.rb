@@ -1,23 +1,40 @@
 # require "ac-library-rb/segtree"
 
-N = gets.chomp.to_i
-ABS = (1..N).map do
-  gets.chomp.split.map(&:to_i)
+$debug = !ARGV[0].nil?
+
+N = STDIN.gets.chomp.to_i
+ABS = (1...N).map do
+  STDIN.gets.chomp.split.map(&:to_i)
 end
 
+paths = {}
+ABS.each do |a, b|
+  paths[a] ||= []
+  paths[a] << b
+  paths[b] ||= []
+  paths[b] << a
+end
 
-def check(d, cs, &block)
-  return if d < 0
-  return if cs.length < d
-  if N == cs.length
-    block.call(cs) if d == 0
-    return
+pp paths if $debug
+
+
+
+def create_leafs(leafs, paths, current_leaf, parent_leaf = nil, level = 0)
+  pp [leafs, paths, current_leaf, parent_leaf, level] if $debug
+  leafs[level] ||= []
+  leafs[level] << current_leaf
+  pp leafs if $debug
+  child_leafs = (paths[current_leaf] - [parent_leaf])
+  child_leafs.each do |child_leaf|
+    #if child_leaf != parent_leaf
+    create_leafs(leafs, paths, child_leaf, current_leaf, level + 1)
+    #end
   end
-
-  check(d + 1, cs + ['('], &block) 
-  check(d - 1, cs + [')'], &block)
 end
 
-if N % 2 == 0
-  check(0, []) { |cs| puts cs.join }
-end
+leafs = []
+create_leafs(leafs, paths, 1)
+
+
+pp leafs if $debug
+
