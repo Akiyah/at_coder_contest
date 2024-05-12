@@ -19,22 +19,57 @@ pp paths if $debug
 
 
 
-def create_leafs(leafs, paths, current_leaf, parent_leaf = nil, level = 0)
-  pp [leafs, paths, current_leaf, parent_leaf, level] if $debug
-  leafs[level] ||= []
-  leafs[level] << current_leaf
-  pp leafs if $debug
-  child_leafs = (paths[current_leaf] - [parent_leaf])
-  child_leafs.each do |child_leaf|
-    #if child_leaf != parent_leaf
-    create_leafs(leafs, paths, child_leaf, current_leaf, level + 1)
-    #end
+def create_depth_leafs(paths)
+  parent_child_nodes = [[nil, 1]]
+  depth_leafs = {}
+
+  depth = 0
+  while !parent_child_nodes.empty?
+    next_parent_child_nodes = []
+
+    parent_child_nodes.each do |parent_node, child_node|
+      descendant_nodes = paths[child_node] - [parent_node]
+      if descendant_nodes.empty?
+        depth_leafs[depth] ||= []
+        depth_leafs[depth] << child_node
+      else
+        descendant_nodes.each do |descendant_node|
+          next_parent_child_nodes << [child_node, descendant_node]
+        end
+      end    
+    end
+
+    parent_child_nodes = next_parent_child_nodes
+    depth += 1
   end
+
+  depth_leafs
 end
 
-leafs = []
-create_leafs(leafs, paths, 1)
+depth_leafs = create_depth_leafs(paths)
 
 
-pp leafs if $debug
+pp depth_leafs if $debug
 
+
+distances = Array.new(N)
+max_distance = 0
+depth_leafs.keys.sort.each do |depth|
+  depth_leafs[depth].each do |leaf|
+    # 親に登っていく
+    parend_child_nodes = [leaf, nil]
+    next_parend_child_nodes = []
+    d = 0
+    while !parend_child_nodes.empty?
+
+      parend_child_nodes.each do |parent_node, child_node|
+        distances[parent_node] = d
+      end
+
+      parend_child_nodes = next_parend_child_nodes
+      d += 1
+    end
+
+    puts leaf
+  end
+end
