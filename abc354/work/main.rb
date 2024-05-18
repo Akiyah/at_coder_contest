@@ -21,7 +21,26 @@ ABS = (1..N).map do
 end
 
 
+edges = {}
+ABS.each.with_index do |ab, i|
+  ABS.each.with_index do |ab2, j|
+    if i != j && (ab[0] == ab2[0] || ab[1] == ab2[1])
+      edges[i] ||= []
+      edges[j] ||= []
+      edges[i] << j
+      edges[j] << i
+    end
+  end
+end
 
 
 
-puts calc ? 'Takahashi' : 'Aoki'
+def calc(abs)
+
+
+
+end
+
+
+
+puts calc(ABS) ? 'Takahashi' : 'Aoki'
