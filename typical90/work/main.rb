@@ -12,20 +12,17 @@ M = 10 ** 9 + 7
 def calc_range
   rs = []
   (B + 1).times do |b|
-    pp b if $debug
     r = (10 ** b) % B
-    pp r if $debug
     a = rs.find_index(r)
-    pp a if $debug
     rs << r
-    pp rs if $debug
+    pp ['b, r, a, rs', b, r, a, rs] if $debug
     return [a, b] if a
   end
 end
 
 def calc_ranges
   r0, r1 = calc_range
-  pp [r0, r1] if $debug
+  pp ['r0, r1', r0, r1] if $debug
 
   d = r1 - r0
   c = (N - r0) / d
@@ -36,6 +33,7 @@ end
 
 def create_m
   r0, r1, d, c, s = calc_ranges
+  pp ['r0, r1, d, c, s ', r0, r1, d, c, s] if $debug
 
   m = Matrix.unit(B)
 
@@ -48,9 +46,10 @@ def create_m
       end
     end
     m *= m1
+    pp m1 if $debug
   end
 
-  m2 = Matrix.zero(B)
+  m2 = Matrix.unit(B)
   (r0...r1).each do |i|
     m1 = Matrix.zero(B)
     CS.each do |c|
@@ -60,11 +59,14 @@ def create_m
       end
     end
     m2 *= m1
+    pp m1 if $debug
   end
   m3 = m2 ** c
   m *= m3
+  pp m2 if $debug
+  pp m3 if $debug
 
-  (s...N).each do |i|
+  ((r0 + s)...N).each do |i|
     m1 = Matrix.zero(B)
     CS.each do |c|
       c2 = c * (10 ** i)
@@ -73,6 +75,7 @@ def create_m
       end
     end
     m *= m1
+    pp m1 if $debug
   end
 
   m
