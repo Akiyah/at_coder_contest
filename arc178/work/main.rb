@@ -22,6 +22,31 @@ A1A2A3S = (1..T).map do
 end
 
 
+P10_2 = []
+def p10_2(i)
+  return 10 % M if i == 0
+  if P10_2[i] == nil
+    P10_2[i] = p10_2(i - 1) ** 2 % M
+  end
+  P10_2[i]
+end
+
+
+def p10(a)
+  return 10.pow(a, M)
+  r = 1
+  a.digits(2).each.with_index do |b, i|
+    r = (r * p10_2(i)) % M if b == 1
+  end
+  r
+end
+
+def calc_r2(a)
+  return 45 if a == 1
+  # ((10 ** a) - 1) * (10 ** a) / 2 - (10 ** (a - 1)) * (10 ** (a - 1) - 1) / 2
+  (p10(a) - 1) * 5 * p10(a - 1) - 5 * p10(a - 2) * (p10(a - 1) - 1)
+end
+
 def calc(a, b, c)
   a, b = b, a if b < a
 
@@ -29,15 +54,20 @@ def calc(a, b, c)
   return 0 if c < b
 
   if b == c - 1
-    r = ((10 ** a) - 1) * (10 ** a) / 2 - (10 ** (a - 1)) * (10 ** (a - 1) - 1) / 2
-    pp r if $debug
-    return r % M
+    r2 = calc_r2(a)
+    pp r2 if $debug
+    return r2 % M
   end
 
-  r1 = (10 ** b - 10 ** (b - 1)) * (10 ** a - 10 ** (a - 1))
-  r2 = ((10 ** a) - 1) * (10 ** a) / 2 - (10 ** (a - 1)) * (10 ** (a - 1) - 1) / 2
-  pp (r1 - r2) if $debug
-  (r1 - r2) % M
+  if a < b
+    r1 = (p10(b) - p10(b - 1)) * (p10(a) - p10(a - 1))
+    r2 = calc_r2(a)
+    pp (r1 - r2) if $debug
+    return (r1 - r2) % M
+  end
+
+  r = (p10(a) - p10(a - 1)) * (p10(a) - 2 * p10(a - 1)) - (p10(a) - p10(a - 1)) * (p10(a) - p10(a - 1) - 1) / 2 + p10(a - 1) * (p10(a - 1) - 1) / 2
+  r % M
 end
 
 A1A2A3S.each do |a1, a2, a3|
