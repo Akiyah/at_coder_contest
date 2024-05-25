@@ -22,27 +22,22 @@ A1A2A3S = (1..T).map do
 end
 
 
-def calc(a1, a2, a3)
-  a1, a2 = a2, a1 if a2 < a1
+def calc(a, b, c)
+  a, b = b, a if b < a
 
-  return 0 if a2 < a3 - 1
+  return 0 if b < c - 1
+  return 0 if c < b
 
-  if a2 == a3 - 1
-    return 0 # todo
-
+  if b == c - 1
+    r = ((10 ** a) - 1) * (10 ** a) / 2 - (10 ** (a - 1)) * (10 ** (a - 1) - 1) / 2
+    pp r if $debug
+    return r % M
   end
 
-  # a2 == a3
-  r10 = (10 ** (a1 - 1))
-  r11 = (10 ** (a1) - 1)
-  r20 = (10 ** (a2 - 1))
-  r21 = (10 ** (a2) - 1)
-
-  r1 = r11 - r10 + 1
-  r2 = r21 - r20 + 1
-
-  r = r2 * r1 - (((r11 + 1) * r11) / 2 - ((r10 - 1 + 1) * r10 - 1) / 2)
-  r % M
+  r1 = (10 ** b - 10 ** (b - 1)) * (10 ** a - 10 ** (a - 1))
+  r2 = ((10 ** a) - 1) * (10 ** a) / 2 - (10 ** (a - 1)) * (10 ** (a - 1) - 1) / 2
+  pp (r1 - r2) if $debug
+  (r1 - r2) % M
 end
 
 A1A2A3S.each do |a1, a2, a3|
