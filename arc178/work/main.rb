@@ -21,30 +21,12 @@ A1A2A3S = (1..T).map do
   STDIN.gets.chomp.split.map(&:to_i)
 end
 
-
-P10_2 = []
-def p10_2(i)
-  return 10 % M if i == 0
-  if P10_2[i] == nil
-    P10_2[i] = p10_2(i - 1) ** 2 % M
-  end
-  P10_2[i]
+def sigma(n)
+  (n + 1) * n / 2
 end
-
 
 def p10(a)
   return 10.pow(a, M)
-  r = 1
-  a.digits(2).each.with_index do |b, i|
-    r = (r * p10_2(i)) % M if b == 1
-  end
-  r
-end
-
-def calc_r2(a)
-  return 45 if a == 1
-  # ((10 ** a) - 1) * (10 ** a) / 2 - (10 ** (a - 1)) * (10 ** (a - 1) - 1) / 2
-  (p10(a) - 1) * 5 * p10(a - 1) - 5 * p10(a - 2) * (p10(a - 1) - 1)
 end
 
 def calc(a, b, c)
@@ -55,11 +37,10 @@ def calc(a, b, c)
 
   if b == c - 1
     if a < b
-      r2 = calc_r2(a)
-      pp r2 if $debug
+      r2 = sigma(p10(a) - 1) - sigma(p10(a - 1) - 1)
       return r2 % M
     else
-      r1 = (p10(a) - p10(a - 1) + 1) * (p10(a) - p10(a - 1)) / 2 - p10(a - 1) * (p10(a - 1) - 1) / 2
+      r1 = sigma(p10(a) - p10(a - 1)) - sigma(p10(a - 1) - 1)
       r2 = (p10(a) - p10(a - 1)) * (p10(a - 1) - 1)
       return (r1 + r2) % M
     end
@@ -67,12 +48,11 @@ def calc(a, b, c)
 
   if a < b
     r1 = (p10(b) - p10(b - 1)) * (p10(a) - p10(a - 1))
-    r2 = calc_r2(a)
-    pp (r1 - r2) if $debug
+    r2 = sigma(p10(a) - 1) - sigma(p10(a - 1) - 1)
     return (r1 - r2) % M
   end
 
-  r = (p10(a) - p10(a - 1)) * (p10(a) - 2 * p10(a - 1)) - (p10(a) - p10(a - 1)) * (p10(a) - p10(a - 1) - 1) / 2 + p10(a - 1) * (p10(a - 1) - 1) / 2
+  r = (p10(a) - p10(a - 1)) * (p10(a) - 2 * p10(a - 1)) - sigma(p10(a) - p10(a - 1) - 1) + sigma(p10(a - 1) - 1)
   r % M
 end
 
