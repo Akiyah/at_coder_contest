@@ -19,69 +19,28 @@ N, T = STDIN.gets.chomp.split.map(&:to_i)
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
 def check
-  board = Array.new(N * N, false)
+  rows = Array.new(N, 0)
+  columns = Array.new(N, 0)
+  diagonal1 = 0
+  diagonal2 = 0
 
   AS.each.with_index do |a, i|
-    board[a - 1] = i + 1
+    x = (a - 1) % N
+    y = (a - 1) / N
+
+    columns[x] += 1
+    rows[y] += 1
+
+    diagonal1 += 1 if x == y
+    diagonal2 += 1 if x == N - y - 1
+
+    return i + 1 if columns[x] == N
+    return i + 1 if rows[y] == N
+    return i + 1 if diagonal1 == N
+    return i + 1 if diagonal2 == N
   end
 
-  pp board if $debug
-
-  max_t = nil
-
-  (0...N).each do |row|
-    r = (0...N).all? do |i| # 横
-      board[row * N + i]
-    end
-    if r
-      t = (0...N).map { |i| # 横
-        board[row * N + i]
-      }.max
-      pp '-' + "#{t}" if $debug
-      max_t = t if max_t == nil
-      max_t = [t, max_t].min
-    end
-  end
-
-  (0...N).each do |column|
-    r = (0...N).all? do |i| # 横
-      board[i * N + column]
-    end
-    if r
-      t = (0...N).map { |i| # 横
-        board[i * N + column]
-      }.max
-      pp '|' + "#{t}" if $debug
-      max_t = t if max_t == nil
-      max_t = [t, max_t].min
-    end
-  end
-
-  r = (0...N).all? do |i| # 斜め
-    board[i * N + i]
-  end
-  if r
-    t = (0...N).map { |i| # 横
-      board[i * N + i]
-    }.max
-    pp '\\' + "#{t}" if $debug
-    max_t = t if max_t == nil
-    max_t = [t, max_t].min
-  end
-
-  r = (0...N).all? do |i| # 逆斜め
-    board[i * N + (N - i - 1)]
-  end
-  if r
-    t = (0...N).map { |i| # 横
-      board[i * N + (N - i - 1)]
-    }.max
-    pp '/' + "#{t}" if $debug
-    max_t = t if max_t == nil
-    max_t = [t, max_t].min
-  end
-
-  max_t ? max_t : -1
+  -1
 end
 
 puts check
