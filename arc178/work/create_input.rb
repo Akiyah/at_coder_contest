@@ -1,4 +1,5 @@
-N = 1000000
 
-S = ('a'..'z').to_a.join * (N / 26)
-puts S
+puts 4 ** 3
+[1,2,3,4].repeated_permutation(3).each do |as|
+  puts as.join(' ')
+end
