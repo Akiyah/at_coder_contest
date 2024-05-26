@@ -54,9 +54,15 @@ def calc(a, b, c)
   return 0 if c < b
 
   if b == c - 1
-    r2 = calc_r2(a)
-    pp r2 if $debug
-    return r2 % M
+    if a < b
+      r2 = calc_r2(a)
+      pp r2 if $debug
+      return r2 % M
+    else
+      r1 = (p10(a) - p10(a - 1) + 1) * (p10(a) - p10(a - 1)) / 2 - p10(a - 1) * (p10(a - 1) - 1) / 2
+      r2 = (p10(a) - p10(a - 1)) * (p10(a - 1) - 1)
+      return (r1 + r2) % M
+    end
   end
 
   if a < b
