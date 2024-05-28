@@ -35,6 +35,7 @@ def calc_ranges
 
   d = r1 - r0
   c = (N - r0) / d
+  c = 0 if c < 0
   s = c * d
 
   [r0, r1, d, c, s]
@@ -63,6 +64,21 @@ def create_m
   pp ['r0, r1, d, c, s ', r0, r1, d, c, s] if $debug
 
   m = Matrix.unit(B)
+
+  if N < r0
+    pp "step 0" if $debug
+    (0...N).each do |i|
+      m1 = Matrix.zero(B)
+      CS.each do |c|
+        c2 = c * (10 ** i)
+        B.times do |b|
+          m1[(c2 + b) % B, b] += 1
+        end
+      end
+      m *= m1
+    end
+    return m
+  end
 
   pp "step 1" if $debug
   (0...r0).each do |i|
