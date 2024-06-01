@@ -13,8 +13,26 @@ def pow(n)
   $pow_cache[n] ||= 10.pow(n, B)
 end
 
+$bs_cache = {}
+def bs(b0)
+  return $bs_cache[b0] if $bs_cache[b0]
+
+  bs = (0...B).map do |b1|
+    b = (b0 + b1) % B
+    [b1, b]
+  end
+  $bs_cache[b0] = bs
+end
+
+
 $rs_cache = {}
 def calc_rs_nocache(n)
+  if n == 0
+    rs = Array.new(B, 0)
+    rs[0] = 1
+    return rs
+  end
+
   if n == 1
     rs = Array.new(B, 0)
     CS.each do |c|
@@ -27,17 +45,25 @@ def calc_rs_nocache(n)
   n1 = 2 ** m
   n2 = n - n1
   if n2 == 0
-    n1 = n2 = n1 / 2
+    n1 = n2 = n / 2
   end
+
+  # if n1.digits(2).all?(1)
+  #   n1 = n * 2 / 3
+  #   n2 = n - n1
+  # end
+
   pp "n: #{n}, n1: #{n1}, n2: #{n2}" if $debug
   rs1 = calc_rs(n1)
   rs2 = calc_rs(n2)
   rs = Array.new(B, 0)
   B.times do |b2|
     b0 = (b2 * pow(n1)) % B
-    B.times do |b1|
-      b = (b0 + b1) % B
-      rs[b] = (rs[b] + rs2[b2] * rs1[b1]) % M
+    r2 = rs2[b2]
+    bs(b0).each do |b1, b|
+    # B.times do |b1|
+      # b = (b0 + b1) % B
+      rs[b] = (rs[b] + r2 * rs1[b1]) % M
     end
   end
   rs
