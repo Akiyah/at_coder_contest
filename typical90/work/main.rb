@@ -1,5 +1,4 @@
 # require "ac-library-rb/segtree"
-require 'matrix'
 
 $debug = !ARGV[0].nil?
 
@@ -9,130 +8,52 @@ CS = STDIN.gets.chomp.split.map(&:to_i)
 M = 10 ** 9 + 7
 
 
-class Matrix
-  def %(other)
-    rows = @rows.collect {|row|
-      row.collect {|e| e % other }
-    }
-    return new_matrix rows, column_count
-  end
+$pow_cache = {}
+def pow(n)
+  $pow_cache[n] ||= 10.pow(n, B)
 end
 
-def calc_range
-  rs = []
-  (B + 1).times do |b|
-    r = (10 ** b) % B
-    a = rs.find_index(r)
-    rs << r
-    # pp ['b, r, a, rs', b, r, a, rs] if $debug
-    return [a, b] if a
-  end
-end
-
-def calc_ranges
-  r0, r1 = calc_range
-  pp ['r0, r1', r0, r1] if $debug
-
-  d = r1 - r0
-  c = (N - r0) / d
-  c = 0 if c < 0
-  s = c * d
-
-  [r0, r1, d, c, s]
-end
-
-def power(m, c)
-  m2 = m
-  pm = m ** 0
-
-  digits = c.to_s(2).split('').map(&:to_i)
-  # puts digits if $debug
-  digits.reverse.each do |d|
-    if d == 1
-      pm *= m2
-      pm %= M
-    end
-    m2 = m2 ** 2
-    m2 %= M
-  end
-
-  pm % M
-end
-
-def create_m
-  r0, r1, d, c, s = calc_ranges
-  pp ['r0, r1, d, c, s ', r0, r1, d, c, s] if $debug
-
-  m = Matrix.unit(B)
-
-  if N < r0
-    pp "step 0" if $debug
-    (0...N).each do |i|
-      m1 = Matrix.zero(B)
-      CS.each do |c|
-        c2 = c * (10 ** i)
-        B.times do |b|
-          m1[(c2 + b) % B, b] += 1
-        end
-      end
-      m *= m1
-    end
-    return m
-  end
-
-  pp "step 1" if $debug
-  (0...r0).each do |i|
-    m1 = Matrix.zero(B)
+$rs_cache = {}
+def calc_rs_nocache(n)
+  if n == 1
+    rs = Array.new(B, 0)
     CS.each do |c|
-      c2 = c * (10 ** i)
-      B.times do |b|
-        m1[(c2 + b) % B, b] += 1
-      end
+      rs[c % B] += 1
     end
-    m *= m1
+    return rs
   end
 
-  pp "step 2" if $debug
-  m2 = Matrix.unit(B)
-  pp "step 2 a" if $debug
-  (r0...r1).each do |i|
-    pp "step 2 b0 #{i}" if $debug
-    m1 = Matrix.zero(B)
-    pp "step 2 b1 #{i}" if $debug
-    CS.each do |c|
-      c2 = c * (10 ** i)
-      B.times do |b|
-        m1[(c2 + b) % B, b] += 1
-      end
-    end
-    pp "step 2 b2 #{i}" if $debug
-    # pp m1 if $debug
-    # pp m2 if $debug
-    
-    m2 *= m1
-    pp "step 2 b3 #{i}" if $debug
+  m = n.digits(2).length - 1
+  n1 = 2 ** m
+  n2 = n - n1
+  if n2 == 0
+    n1 = n2 = n1 / 2
   end
-  pp "step 2 c" if $debug
-  m3 = power(m2, c)
-  pp "step 2 d" if $debug
-  m *= m3
-
-  pp "step 3" if $debug
-  (r0...(N - s)).each do |i|
-    m1 = Matrix.zero(B)
-    CS.each do |c|
-      c2 = c * (10 ** i)
-      B.times do |b|
-        m1[(c2 + b) % B, b] += 1
-      end
+  pp "n: #{n}, n1: #{n1}, n2: #{n2}" if $debug
+  rs1 = calc_rs(n1)
+  rs2 = calc_rs(n2)
+  rs = Array.new(B, 0)
+  B.times do |b2|
+    b0 = (b2 * pow(n1)) % B
+    B.times do |b1|
+      b = (b0 + b1) % B
+      rs[b] = (rs[b] + rs2[b2] * rs1[b1]) % M
     end
-    m *= m1
   end
-
-  m
+  rs
 end
 
+def calc_rs(n)
+  pp "calc_rs(#{n})" if $debug
+  $rs_cache[n] ||= calc_rs_nocache(n)
+end
 
-m = create_m
-# pp m if $debug
-puts m[0, 0] % M
+rs = calc_rs(N)
+pp $rs_cache.keys if $debug
+if $debug
+  $rs_cache.keys.sort.each do |k|
+    puts "k: #{k}, #{k.digits(2)}"
+  end
+end
+pp $rs_cache.keys.count if $debug
+puts rs[0] % M
