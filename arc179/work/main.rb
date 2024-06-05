@@ -19,48 +19,42 @@ XS = STDIN.gets.chomp.split.map(&:to_i)
 
 R = 998244353
 
-
-
-
-# pp (1..M).to_a.repeated_permutation(N).to_a if $debug
-
-def check(as)
-  as.each.with_index do |a, l|
-    r0 = as[(l + 1)..-1].find_index(a)
-    unless r0.nil?
-      r = r0 + l + 1
-      x = XS[a - 1]
-      return false unless as[l..r].include?(x)
-    end
-  end
-  true
+rxs = Hash.new { |hash, key| hash[key] = [] }
+XS.zip(1..N).each do |x, i|
+  rxs[x] << i
 end
 
-c = 0
-(1..M).to_a.repeated_permutation(N).each do |as|
-  r = check(as)
-  pp [as, r, c] if $debug
-  c += 1 if r
+pp rxs if $debug
+
+iss = (0...(2 ** M)).map do |ds|
+  ds.digits(2).zip(1..M).select { |d, i| d != 0 }.map { |d, i| i }
 end
 
+pp iss if $debug
 
 
+def count(rxs, iss)
+  dp = Hash.new(0)
+  dp[(1..M).to_a] = 1 # first status
+  pp dp if $debug
 
-def count
-  dp = {}
-  # dp[i][true] iを含んでいて、iの右側にxiを持つ、場合の和
-  # dp[i][false] iを含んでいて、iの右側にxiをたない、場合の和
   (1..N).each do |i|
-    dp_next = {}
-
-
-
-  
-
+    dp_next = Hash.new(0)
+    iss.each do |is|
+      n = dp[is]
+      if 0 < n
+        is.each do |i|
+          is2 = (is - [i] + rxs[i]).uniq.sort
+          pp [i, is, is2] if $debug
+          dp_next[is2] += n
+        end
+      end
+    end
     dp = dp_next
+    pp dp if $debug
   end
+
+  dp.sum { |k, v| v }
 end
 
-
-c = count
-puts c % R
+puts count(rxs, iss) % R
