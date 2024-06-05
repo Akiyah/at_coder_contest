@@ -24,14 +24,21 @@ XS.zip(1..N).each do |x, i|
   rxs[x] << i
 end
 
-pp rxs if $debug
+# pp rxs if $debug
 
 iss = (0...(2 ** M)).map do |ds|
   ds.digits(2).zip(1..M).select { |d, i| d != 0 }.map { |d, i| i }
 end
 
-pp iss if $debug
+# pp iss if $debug
 
+$is_2_is2 = {}
+iss.each do |is|
+  is.each do |i|
+    $is_2_is2[is] ||= {}
+    $is_2_is2[is][i] = (is - [i] + rxs[i]).uniq.sort
+  end
+end
 
 def count(rxs, iss)
   dp = Hash.new(0)
@@ -42,8 +49,9 @@ def count(rxs, iss)
     pp i if $debug
     dp_next = Hash.new(0)
     dp.each do |is, n|
+      is2_ = $is_2_is2[is]
       is.each do |i|
-        is2 = (is - [i] + rxs[i]).uniq.sort
+        is2 = is2_[i]
         dp_next[is2] += n
         dp_next[is2] %= R
       end
