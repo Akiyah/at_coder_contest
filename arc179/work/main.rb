@@ -36,25 +36,23 @@ pp iss if $debug
 def count(rxs, iss)
   dp = Hash.new(0)
   dp[(1..M).to_a] = 1 # first status
-  pp dp if $debug
+  # pp dp if $debug
 
   (1..N).each do |i|
+    pp i if $debug
     dp_next = Hash.new(0)
-    iss.each do |is|
-      n = dp[is]
-      if 0 < n
-        is.each do |i|
-          is2 = (is - [i] + rxs[i]).uniq.sort
-          pp [i, is, is2] if $debug
-          dp_next[is2] += n
-        end
+    dp.each do |is, n|
+      is.each do |i|
+        is2 = (is - [i] + rxs[i]).uniq.sort
+        dp_next[is2] += n
+        dp_next[is2] %= R
       end
     end
     dp = dp_next
-    pp dp if $debug
+    # pp dp if $debug
   end
 
-  dp.sum { |k, v| v }
+  dp.sum { |k, v| v } % R
 end
 
-puts count(rxs, iss) % R
+puts count(rxs, iss)
