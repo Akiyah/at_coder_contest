@@ -32,28 +32,35 @@ end
 
 # pp iss if $debug
 
-$is_2_is2 = {}
+def is2n(is)
+  is.sum { |i| 2 ** (i - 1) }
+end
+
+def n2is(n)
+  n.digits(2).zip(1..).select { |d, i| 0 < d }.map { |d, i| i }.uniq.sort
+end
+
+$n_2_n2 = {}
 iss.each do |is|
   is.each do |i|
-    $is_2_is2[is] ||= {}
-    $is_2_is2[is][i] = (is - [i] + rxs[i]).uniq.sort
+    $n_2_n2[is2n(is)] ||= {}
+    $n_2_n2[is2n(is)][i] = is2n((is - [i] + rxs[i]).uniq)
   end
 end
 
 def count(rxs, iss)
   dp = Hash.new(0)
-  dp[(1..M).to_a] = 1 # first status
+  dp[is2n(1..M)] = 1 # first status
   # pp dp if $debug
 
   (1..N).each do |i|
     pp i if $debug
     dp_next = Hash.new(0)
-    dp.each do |is, n|
-      is2_ = $is_2_is2[is]
-      is.each do |i|
-        is2 = is2_[i]
-        dp_next[is2] += n
-        dp_next[is2] %= R
+    dp.each do |n, c|
+      n2_ = $n_2_n2[n]
+      n2_.each do |i, n2|
+        dp_next[n2] += c
+        dp_next[n2] %= R
       end
     end
     dp = dp_next
