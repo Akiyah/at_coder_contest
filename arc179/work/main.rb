@@ -20,11 +20,11 @@ XS = STDIN.gets.chomp.split.map(&:to_i)
 R = 998244353
 
 rxs = Hash.new { |hash, key| hash[key] = [] }
-XS.zip(1..N).each do |x, i|
+XS.zip(1..).each do |x, i|
   rxs[x] << i
 end
 
-# pp rxs if $debug
+pp rxs if $debug
 
 iss = (0...(2 ** M)).map do |ds|
   ds.digits(2).zip(1..M).select { |d, i| d != 0 }.map { |d, i| i }
@@ -42,32 +42,36 @@ end
 
 $n_2_n2 = {}
 iss.each do |is|
+  $n_2_n2[is2n(is)] ||= {}
   is.each do |i|
-    $n_2_n2[is2n(is)] ||= {}
     $n_2_n2[is2n(is)][i] = is2n((is - [i] + rxs[i]).uniq)
   end
 end
 
 def count(rxs, iss)
-  dp = Hash.new(0)
+  dp = Array.new(2 ** M, 0)
   dp[is2n(1..M)] = 1 # first status
   # pp dp if $debug
 
   (1..N).each do |i|
     pp i if $debug
-    dp_next = Hash.new(0)
-    dp.each do |n, c|
+    dp_next = Array.new(2 ** M, 0)
+    (0...(2 ** M)).each do |n|
+      c = dp[n]
+      #dp.each do |n, c|
+      next if c == nil || c == 0
       n2_ = $n_2_n2[n]
+      next if n2_ == nil
       n2_.each do |i, n2|
-        dp_next[n2] += c
-        dp_next[n2] %= R
+        dp_next[n2] = (dp_next[n2] + c) % R
+        #dp_next[n2] %= R
       end
     end
     dp = dp_next
     # pp dp if $debug
   end
 
-  dp.sum { |k, v| v } % R
+  dp.sum % R
 end
 
 puts count(rxs, iss)
