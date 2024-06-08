@@ -48,6 +48,8 @@ iss.each do |is|
   end
 end
 
+# pp $n_2_n2 if $debug
+
 def count(rxs, iss)
   dp = Array.new(2 ** M, 0)
   dp[is2n(1..M)] = 1 # first status
@@ -58,11 +60,7 @@ def count(rxs, iss)
     dp_next = Array.new(2 ** M, 0)
     (0...(2 ** M)).each do |n|
       c = dp[n]
-      #dp.each do |n, c|
-      next if c == nil || c == 0
-      n2_ = $n_2_n2[n]
-      next if n2_ == nil
-      n2_.each do |i, n2|
+      $n_2_n2[n].each do |i, n2|
         dp_next[n2] = (dp_next[n2] + c) % R
         #dp_next[n2] %= R
       end
