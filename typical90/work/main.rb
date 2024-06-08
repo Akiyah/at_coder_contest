@@ -57,12 +57,14 @@ def calc_rs_nocache(n)
   rs1 = calc_rs(n1)
   rs2 = calc_rs(n2)
   rs = Array.new(B, 0)
+  p1 = pow(n1)
   B.times do |b2|
-    b0 = (b2 * pow(n1)) % B
+    b0 = (b2 * p1) % B
     r2 = rs2[b2]
-    bs(b0).each do |b1, b|
-    # B.times do |b1|
-      # b = (b0 + b1) % B
+    # bs(b0).each do |b1, b|
+    #rs_ = Array.new(B, 0)
+    B.times do |b|
+      b1 = (-b0 + b) % B
       rs[b] = (rs[b] + r2 * rs1[b1]) % M
     end
   end
