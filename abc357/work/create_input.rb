@@ -1,6 +1,6 @@
-N = 5 * (10 ** 5)
+N = 2 * (10 ** 3)
 
-puts N
-(1..N).each do |i|
-  puts "#{i} #{i + 1}"
-end
+as = [N] + (1...N).to_a
+
+puts as.length
+puts as.join(' ')

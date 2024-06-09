@@ -18,28 +18,24 @@ $debug = !ARGV[0].nil?
 N = STDIN.gets.chomp.to_i
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
-path = {}
-AS.each.with_index do |a, i|
-  path[a - 1] ||= []
-  path[a - 1] << i
-end
-
-def count(i, path)
-  vs = [i]
+def count(i)
+  v = i
+  vs = [v]
+  
   while true
-    vs_next = vs.dup
-    vs.each do |v|
-      vs_next += (path[v] || [])
-      vs_next.uniq!
+    pp [v, vs] if $debug
+    w = AS[v - 1]
+    if vs.include?(w)
+      return vs.length
     end
-    return vs.length unless vs.length < vs_next.length
-    vs = vs_next
+    vs << w
+    v = w
   end
 end
 
 c = 0
-(0...N).each do |i|
-  c0 = count(i, path)
+(1..N).each do |i|
+  c0 = count(i)
   pp [i, c0] if $debug
   c += c0
 end
