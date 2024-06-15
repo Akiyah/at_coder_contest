@@ -1,7 +1,7 @@
 N = 100000
+K = 1000
 
-S = ('a'..'z').to_a.join * (N / 26)
-puts N
-(1...N).each do |i|
-  puts "#{i} #{i + 1}"
-end
+S = ('a'..'z').to_a.sample(K).join('')
+
+puts [N, K].join(' ')
+puts S

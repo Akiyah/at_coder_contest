@@ -2,13 +2,13 @@
 
 $debug = !ARGV[0].nil?
 
-N, B, K = STDIN.gets.chomp.split.map(&:to_i)
-CS = STDIN.gets.chomp.split.map(&:to_i)
+N, K = STDIN.gets.chomp.split.map(&:to_i)
+S = STDIN.gets.chomp
 
-M = 10 ** 9 + 7
-
-r = CS.repeated_permutation(N).count do |cs|
-  cs.map.with_index { |c, i| c * (10 ** i) }.sum % B == 0
+s_min = S[0...K]
+S.split('').combination(K).each do |ss|
+  s = ss.join('')
+  s_min = s if s < s_min
 end
 
-puts r % M
+puts s_min
