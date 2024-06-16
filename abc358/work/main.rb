@@ -36,20 +36,13 @@ $inverse_factorial = [] # 1/n!
   $inverse_factorial[i] = $factorial[i].pow(R - 2, R) % R
 end
 
-$cache_count_combination = []
-def count_combination(n, m) # (n+m)Cm
-  m = n - m if n < m * 2
-
-  if $cache_count_combination[n] && $cache_count_combination[n][m]
-    return $cache_count_combination[n][m]
+$count_combination = []
+(0..K).map do |k|
+  $count_combination[k] = []
+  (0..k).sum do |i|
+    r = $factorial[k] * $inverse_factorial[k - i] * $inverse_factorial[i]
+    $count_combination[k][i] = r % R
   end
-
-  $cache_count_combination[n] ||= []
-
-  r = $factorial[n] * $inverse_factorial[n - m] * $inverse_factorial[m]
-  # r = $factorial[n] / $factorial[n - m] / $factorial[m]
-  $cache_count_combination[n][m] = r % R
-  return $cache_count_combination[n][m]
 end
 
 def product(rs1, rs2)
@@ -57,7 +50,7 @@ def product(rs1, rs2)
     (0..k).sum do |i|
       j = k - i
       # pp [k, i, j, rs1[j], rs2[i], count_combination(k, i)] if $debug
-      rs1[j] * rs2[i] * count_combination(k, i) % R
+      rs1[j] * rs2[i] * $count_combination[k][i] % R
     end
   end
 end
@@ -76,11 +69,6 @@ def calc # 一文字ずつ足していく
 end
 
 puts calc % R
-
-if $debug
-  pp $cache_count_combination.length
-  pp $cache_count_combination[0..10]
-end
 
 # irb(main):011> (1..1000).sum {|k| 26.pow(k, 998244353) } % 998244353
 # => 270274035
