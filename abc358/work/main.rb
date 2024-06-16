@@ -50,22 +50,30 @@ def product(rs1, rs2)
     (0..k).sum do |i|
       j = k - i
       # pp [k, i, j, rs1[j], rs2[i], count_combination(k, i)] if $debug
-      rs1[j] * rs2[i] * $count_combination[k][i] % R
-    end
+      rs1[j] * rs2[i] * $count_combination[k][i]
+    end % R
   end
 end
 
 def calc # 一文字ずつ足していく
-  rs = Array.new(K + 1, 0)
-  rs[0] = 1
+  rs = nil # Array.new(K + 1, 0)
+  # rs[0] = 1
   # pp rs if $debug
   CS.each do |c|
     next if c == 0
     rs2 = create_one(c)
-    rs = product(rs, rs2)
+    if rs
+      rs = product(rs, rs2)
+    else
+      rs = rs2
+    end
     # pp rs if $debug
   end
-  rs[1..-1].sum
+  if rs
+    rs[1..-1].sum
+  else
+    0
+  end
 end
 
 puts calc % R
