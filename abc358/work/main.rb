@@ -36,15 +36,20 @@ $inverse_factorial = [] # 1/n!
   $inverse_factorial[i] = $factorial[i].pow(R - 2, R) % R
 end
 
-$cache_count_combination = {}
+$cache_count_combination = []
 def count_combination(n, m) # (n+m)Cm
-  key = "#{n}C#{m}"
-  return $cache_count_combination[key] if $cache_count_combination[key]
+  m = n - m if n < m * 2
+
+  if $cache_count_combination[n] && $cache_count_combination[n][m]
+    return $cache_count_combination[n][m]
+  end
+
+  $cache_count_combination[n] ||= []
 
   r = $factorial[n] * $inverse_factorial[n - m] * $inverse_factorial[m]
   # r = $factorial[n] / $factorial[n - m] / $factorial[m]
-  $cache_count_combination[key] = r % R
-  return $cache_count_combination[key]
+  $cache_count_combination[n][m] = r % R
+  return $cache_count_combination[n][m]
 end
 
 def product(rs1, rs2)
@@ -74,6 +79,7 @@ puts calc % R
 
 if $debug
   pp $cache_count_combination.length
+  pp $cache_count_combination[0..10]
 end
 
 # irb(main):011> (1..1000).sum {|k| 26.pow(k, 998244353) } % 998244353
