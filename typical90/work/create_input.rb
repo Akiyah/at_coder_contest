@@ -1,7 +1,10 @@
 N = 100000
 K = 1000
 
-S = ('a'..'z').to_a.sample(K).join('')
+
+S = (1..N).map do 
+  ('a'..'z').to_a.sample(1)
+end.join('')
 
 puts [N, K].join(' ')
 puts S
