@@ -2,13 +2,16 @@
 
 $debug = !ARGV[0].nil?
 
-N, K = STDIN.gets.chomp.split.map(&:to_i)
-S = STDIN.gets.chomp
-
-s_min = S[0...K]
-S.split('').combination(K).each do |ss|
-  s = ss.join('')
-  s_min = s if s < s_min
+N = STDIN.gets.chomp.to_i
+AS = STDIN.gets.chomp.split.map(&:to_i)
+Q = STDIN.gets.chomp.to_i
+BS = (1..Q).map do
+  STDIN.gets.chomp.to_i
 end
 
-puts s_min
+BS.each do |b|
+  r = AS.map { |a| (a - b).abs }.min
+  puts r
+end
+
+
