@@ -10,19 +10,34 @@ BS = (1..Q).map do
   STDIN.gets.chomp.to_i
 end
 
-def calc(b, as)
-  i = as.find_index { |a| b < a }
+def calc(bs, as)
+  as = as.sort
+  bs = bs.zip((0...(bs.length)))
+  bs = bs.sort_by { |b, i| b }
 
-  return b - as[-1] if i == nil
+  pp as if $debug
+  pp bs if $debug
 
-  return as[0] - b if i == 0
+  i = 0
+  j = 0
 
-  [as[i] - b, b - as[i - 1]].min
+  while j < bs.length
+    unless as.length <= i
+      bs[j][2] = bs[j][0] - as[-1]
+      j += 1
+      next
+    end
+
+    if as[i] < bs[j][0]
+      i += 1
+      next
+    end
+
+  end
+
+  []
 end
 
-as = AS.sort
-BS.each do |b|
-  puts calc(b, as)
-end
-
+rs = calc(BS, AS)
+rs.each { |r| puts r }
 
