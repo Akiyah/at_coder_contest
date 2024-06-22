@@ -22,8 +22,14 @@ def calc(bs, as)
   j = 0
 
   while j < bs.length
-    unless as.length <= i
-      bs[j][2] = bs[j][0] - as[-1]
+    if as.length == i
+      d1 = (bs[j][0] - as[i - 1]).abs
+      if 1 < i
+        d2 = (bs[j][0] - as[i - 2]).abs
+        bs[j][2] = [d1, d2].min
+      else
+        bs[j][2] = d1
+      end
       j += 1
       next
     end
@@ -33,9 +39,18 @@ def calc(bs, as)
       next
     end
 
+    d1 = (bs[j][0] - as[i]).abs
+    if 0 < i
+      d2 = (bs[j][0] - as[i - 1]).abs
+      bs[j][2] = [d1, d2].min
+    else
+      bs[j][2] = d1
+    end
+    j += 1
   end
 
-  []
+  pp bs if $debug
+  bs.sort_by { |b, i, d| i }.map { |b, i, d| d }
 end
 
 rs = calc(BS, AS)
