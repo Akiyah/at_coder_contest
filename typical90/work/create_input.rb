@@ -1,10 +1,6 @@
-N = 300000
-Q = 300000
+N = 100000
 
-as = (1..N).map { rand(10**9) }
-bs = (1..N).map { rand(10**9) }
+S = ('atcoder' * N)[0...N]
 
 puts N
-puts as.join(' ')
-puts Q
-bs.each { |b| puts b }
+puts S

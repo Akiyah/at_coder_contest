@@ -4,55 +4,28 @@
 $debug = !ARGV[0].nil?
 
 N = STDIN.gets.chomp.to_i
-AS = STDIN.gets.chomp.split.map(&:to_i)
-Q = STDIN.gets.chomp.to_i
-BS = (1..Q).map do
-  STDIN.gets.chomp.to_i
-end
+S = STDIN.gets.chomp
 
-def calc(bs, as)
-  as = as.sort
-  bs = bs.zip((0...(bs.length)))
-  bs = bs.sort_by { |b, i| b }
+R = 10 ** 9 + 7
 
-  pp as if $debug
-  pp bs if $debug
+def calc
+  ss = S.split('')
+  as = 'atcoder'.split('')
 
-  i = 0
-  j = 0
+  rs = Array.new(as.length + 1, 0)
+  rs[0] = 1
+  pp rs if $debug
 
-  while j < bs.length
-    if as.length == i
-      d1 = (bs[j][0] - as[i - 1]).abs
-      if 1 < i
-        d2 = (bs[j][0] - as[i - 2]).abs
-        bs[j][2] = [d1, d2].min
-      else
-        bs[j][2] = d1
-      end
-      j += 1
-      next
+  ss.each do |s|
+    i = as.find_index(s)
+    if i
+      rs[i + 1] += rs[i]
+      rs[i + 1] %= R
     end
-
-    if as[i] < bs[j][0]
-      i += 1
-      next
-    end
-
-    d1 = (bs[j][0] - as[i]).abs
-    if 0 < i
-      d2 = (bs[j][0] - as[i - 1]).abs
-      bs[j][2] = [d1, d2].min
-    else
-      bs[j][2] = d1
-    end
-    j += 1
+    pp rs if $debug
   end
 
-  pp bs if $debug
-  bs.sort_by { |b, i, d| i }.map { |b, i, d| d }
+  rs[-1] % R
 end
 
-rs = calc(BS, AS)
-rs.each { |r| puts r }
-
+puts calc
