@@ -30,7 +30,7 @@ def calc_steps
   steps = []
   c = 0
   while true
-    puts (c += 1)
+    # puts (c += 1)
     # pair = paires.select { |i, j| data[i][j] < 0 }.sort_by { |i, j| data[i][j] }.last
     d = d_paires.find_index do |paires|
       paires && 0 < paires.length
