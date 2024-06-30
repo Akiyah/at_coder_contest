@@ -57,8 +57,8 @@ r1 = 1
 rn = 0
 pp [r1, rn] if $debug
 (1..K).each do |i|
-  r1_ = (r1 * N + rn * 2 * (N - 1) + r1 * (N - 1) * (N - 2)) * n_2
-  rn_ = (rn * N + r1 * 2 * (N - 1) + rn * (N - 1) * (N - 2)) * n_2
+  r1_ = (r1 * N + r1 * (N - 1) * (N - 2) + rn * 2 * (N - 1)) * n_2
+  rn_ = (rn * (N ** 2 - 2) + r1 * 2) * n_2
   r1 = r1_ % R
   rn = rn_ % R
 
