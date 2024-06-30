@@ -1,26 +1,30 @@
-require "ac-library-rb/segtree"
-include AcLibraryRb
+# require "ac-library-rb/segtree"
+# include AcLibraryRb
 
 $debug = !ARGV[0].nil?
 
 N = STDIN.gets.chomp.to_i
-CPS = (1..N).map do
+DCSS = (1..N).map do
   STDIN.gets.chomp.split(' ').map(&:to_i)
 end
-Q = STDIN.gets.chomp.to_i
-LRS = (1..Q).map do
-  STDIN.gets.chomp.split(' ').map(&:to_i)
+pp DCSS if $debug
+
+
+dcss = DCSS.sort_by { |d, c, s| d }
+pp dcss if $debug
+
+def calc(dcss, day = 0)
+  return 0 if dcss.length == 0
+
+  d, c, s = dcss[0]
+
+  s1 = 0
+  if day + c <= d # 今回のjobを行える
+    s1 = s + calc(dcss[1..-1], day + c) # 今回のjobを行った場合
+  end
+  s2 = calc(dcss[1..-1], day) # 今回のjobを行わなかった場合
+
+  return [s1, s2].max
 end
 
-
-cps1 = CPS.map { |c, p| c == 1 ? p : 0 }
-cps2 = CPS.map { |c, p| c == 2 ? p : 0 }
-
-seg_tree1 = Segtree.new(cps1, 0) { |x, y| x + y } 
-seg_tree2 = Segtree.new(cps2, 0) { |x, y| x + y } 
-
-LRS.each do |l, r|
-  s1 = seg_tree1.prod(l - 1, r)
-  s2 = seg_tree2.prod(l - 1, r)
-  puts [s1, s2].join(' ')
-end
+puts calc(dcss)
