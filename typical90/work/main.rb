@@ -9,15 +9,36 @@ XYS = (1..N).map do
 end
 pp XYS if $debug
 
-r = (0...N).to_a.permutation(3).map do |p1, p2, p3|
-  pp [p1, p2, p3, XYS[p1], XYS[p2], XYS[p3]] if $debug
-  ax = XYS[p1][0] - XYS[p2][0]
-  ay = XYS[p1][1] - XYS[p2][1]
-  bx = XYS[p3][0] - XYS[p2][0]
-  by = XYS[p3][1] - XYS[p2][1]
-  cos = (ax * bx + ay * by).to_f / Math.sqrt((ax ** 2 + ay ** 2) * (bx ** 2 + by ** 2))
-  pp [[ax, ay], [bx, by], cos, Math.acos(cos)] if $debug
-  Math.acos(cos) / Math::PI * 180
-end.max
 
+def calc_one(i)
+  pp "calc_one(#{i})" if $debug
+  x0, y0 = XYS[i]
+
+  cs = []
+  N.times do |j|
+    next if j == i
+
+    x1, y1 = XYS[j]
+    x, y = x1 - x0, y1 - y0
+    cs << Math.atan2(y, x)
+  end
+  # pp cs.map {|c| c / Math::PI * 180} if $debug
+
+  c_max = cs.map do |c0|
+    cs.map do |c1|
+      c = (c1 - c0).abs
+      (c < Math::PI) ? c : 2 * Math::PI - c
+    end.max
+  end.max
+
+  c_max / Math::PI * 180
+end
+
+def calc
+  (0...N).map do |i|
+    calc_one(i)
+  end.max
+end
+
+r = calc
 puts r.to_i == r ? r.to_i : r
