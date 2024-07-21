@@ -14,64 +14,42 @@ $debug = !ARGV[0].nil?
 N, K = STDIN.gets.chomp.split.map(&:to_i)
 S = STDIN.gets.chomp
 
-ss = S.split('').sort
+h = S.chars.tally
 
-h = S.split('').group_by {|s| s}.transform_values {|k|k.count}
-
-pattern_count = (1..N).inject(:*)
-
-h.each do |k, v|
-  pattern_count /= (1..v).inject(:*)
-end
-
-pp ["pattern_count", pattern_count] if $debug
-
-
-def kaibun?(s)
-  s == s.reverse
-end
-
-
-def calc_pattern_count()
-  
-end
-
-
-def check(s)
-  (0..(N - K)).each do |i|
-    if kaibun?(s[i..(i + K - 1)].join(''))
-      return false
-    end
-  end
-  true
-end
-
-
-r = 0
-ss.permutation(N).to_a.uniq.each do |s|
-  r += 1 if check(s)
-end
-
-
-
-def calc_not_kaibun(a, ss)
-  pp [a, ss] if $debug
+def calc_not_kaibun(a, h, n)
+  pp [a, h] if $debug
   if K <= a.length
     b = a[(-K)..(-1)]
     pp ['a:', a, 'b:', b] if $debug
     return 0 if b == b.reverse
   end
-  if ss.length == 0
+  if n == 0
+    pp ['ok', 'a:', a] if $debug
     return 1
   end
+
+  if n == h.keys.length # values all 1
+    pp ['h: ', h, 'a: ', a] if $debug
+    b = (K - 1 <= a.length) ? a[(-K + 1)..(-1)].chars : a.chars
+    pp ['b: ', b] if $debug
+    if (h.keys & b).length == 0 # バラバラの場合
+      return (1..n).inject(:*)
+    end
+  end
+
   r = 0
-  (0...(ss.length)).each do |i|
-    r += calc_not_kaibun(a + ss[i], ss[0...i] + ss[(i+1)..-1])
+  h.each do |k, v|
+    if 0 < v
+      h2 = h.dup
+      h2[k] -= 1
+      h2.delete(k) if h2[k] == 0
+      r += calc_not_kaibun(a + k, h2, n - 1)
+    end
   end
   r
 end
 
-r = calc_not_kaibun('', ss)
+r = calc_not_kaibun('', h, N)
 
 
 puts r
