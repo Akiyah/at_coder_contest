@@ -27,11 +27,17 @@ def check(as, i, b, k)
     if (b - as[i - 1]).abs < d
       return -1
     end
+    if b < as[i] && b < as[i - 1] # as[i]とas[i - 1]がbからみて右側
+      return -2
+    end
   end
 
   if i + k - 1 < N - 1
-    if (b - as[i + k - 1 + 1]).abs <= d
+    if (b - as[i + k - 1 + 1]).abs < d
       return 1
+    end
+    if as[i + k - 1] < b && as[i + k - 1 + 1] < b # as[i + k - 1]とas[i + k - 1 + 1]がbからみて左側
+      return 2
     end
   end
 
@@ -42,10 +48,10 @@ def find(as, b, k)
   d = N - 1
   i = 0
 
-  (0...N).each do |i|
-    c = check(as, i, b, k)
-    pp ['test, ', 'i: ', i, 'c: ', c] if $debug
-  end
+  # (0...N).each do |i|
+  #   c = check(as, i, b, k)
+  #   pp ['test, ', 'b: ', b, 'k: ', k, 'i: ', i, 'c: ', c] if $debug
+  # end
 
   while true
     c = check(as, i, b, k)
