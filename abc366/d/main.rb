@@ -53,7 +53,15 @@ end
       # sz += AS[x][y][z]
       sz = ss(x, y, z - 1) - ss(x, y - 1, z - 1) - ss(x - 1, y, z - 1) + ss(x - 1, y - 1, z - 1)
 
-      v = sx + sy + sz + AS[x][y][z]
+      v = 0
+      v += ss(x - 1, y, z)
+      v += ss(x, y - 1, z)
+      v += ss(x, y, z - 1)
+      v -= ss(x - 1, y - 1, z)
+      v -= ss(x, y - 1, z - 1)
+      v -= ss(x - 1, y, z - 1)
+      v += ss(x - 1, y - 1, z - 1)
+      v += AS[x][y][z]
       pp [x, y, z, sx, sy, sz, v] if $debug
       ss_(x, y, z, v)
 
