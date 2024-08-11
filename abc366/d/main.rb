@@ -50,9 +50,10 @@ end
     (0...N).each do |z|
       sx = ss(x - 1, y, z)
       sy = ss(x, y - 1, z) - ss(x - 1, y - 1, z)
-      sz += AS[x][y][z]
+      # sz += AS[x][y][z]
+      sz = ss(x, y, z - 1) - ss(x, y - 1, z - 1) - ss(x - 1, y, z - 1) + ss(x - 1, y - 1, z - 1)
 
-      v = sx + sy + sz
+      v = sx + sy + sz + AS[x][y][z]
       pp [x, y, z, sx, sy, sz, v] if $debug
       ss_(x, y, z, v)
 
