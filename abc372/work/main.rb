@@ -17,7 +17,7 @@ HS = STDIN.gets.chomp.split.map(&:to_i)
 
 inf = 10 ** 6
 
-seg = AcLibraryRb::Segtree.new(2 * 10 ** 5, inf) { |x, y| [x, y].min }
+seg = AcLibraryRb::Segtree.new(2 * 10 ** 5 + 1, inf) { |x, y| [x, y].min }
 
 
 hs = HS.map.with_index do |h, i|
@@ -26,7 +26,7 @@ end
 
 rs = []
 hs.reverse.each do |h, i|
-  j = seg.prod(h, 2 * 10 ** 5) # indexが一番小さいもの
+  j = seg.prod(h, 2 * 10 ** 5 + 1) # indexが一番小さいもの
   seg.set(h, i)
   pp j if $debug
   # pp seg if $debug

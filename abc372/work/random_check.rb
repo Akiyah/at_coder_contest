@@ -1,6 +1,7 @@
 
 def random_check
-  n = 1 + rand(2 * 10 ** 5)
+  # n = 1 + rand(2 * 10 ** 5)
+  n = 1 + rand(2 * 10 ** 2)
   hs = (1..n).to_a.shuffle
 
   File.open('input.txt', 'w') do |f|
@@ -8,14 +9,14 @@ def random_check
     f.puts hs.join(' ')
   end
 
-  command = "ruby main.rb < input.txt > actual/actual.txt"
-  `#{command}`
+  command = "ruby main.rb < input.txt"
+  actual = `#{command}`
 
-  command2 = "ruby main_simple.rb < input.txt > actual/actual_simple.txt"
-  `#{command2}`
+  command2 = "ruby main_simple.rb < input.txt"
+  actual_simple = `#{command2}`
 
-  actual = File.read('actual/actual.txt')
-  actual_simple = File.read('actual/actual_simple.txt')
+  puts "actual:\n#{actual}"
+  puts "actual_simple:\n#{actual_simple}"
 
   if actual != actual_simple
     puts "actual: #{actual}"
