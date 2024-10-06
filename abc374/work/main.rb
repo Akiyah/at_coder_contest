@@ -21,25 +21,27 @@ end
 def calc_w_i(w, i)
   a, p, b, q = APBQS[i]
 
-  w0 = w / (a * b)
-  w1 = w % (a * b)
-
-  s0 = w0 * [b * p, a * q].min
-
-  s1 = (0..b).map do |k| # Aの個数
-    if w1 <= k * a
+  sa = (0..b).map do |k| # Aの個数
+    if w <= k * a
       k * p
     else
-      w2 = w1 - k * a
+      w2 = w - k * a
       j = (w2 % b == 0 ? w2 / b : w2 / b + 1)
-      # pp ['**', [w, w0, w1], i, [k, j], [a, p, b, q], p * i + q * j] if $debug
       k * p + j * q
     end
   end.min
 
-  pp ['*', [w, w0, w1], i, [a, p, b, q], [s0, s1, s0 + s1]] if $debug
+  sb = (0..a).map do |k| # Bの個数
+    if w <= k * b
+      k * q
+    else
+      w2 = w - k * b
+      j = (w2 % a == 0 ? w2 / a : w2 / a + 1)
+      j * p + k * q
+    end
+  end.min
 
-  s0 + s1
+  [sa, sb].min
 end
 
 def calc_w(w)
@@ -48,7 +50,7 @@ end
 
 def calc
   w0 = 0 # 初期状態：成立
-  w1 = 10 ** 9 # 初期状態：不成立のはず
+  w1 = 10 ** (7 + 2 + 2) # 初期状態：不成立のはず
 
   return w1 if calc_w(w1) <= X
 
