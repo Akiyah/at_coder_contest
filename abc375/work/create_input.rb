@@ -1,16 +1,24 @@
-N = (10 ** 5)
-# N = (10 ** 3)
-# N = (10 ** 4)
+N = 100
+B_MAX = 1500
 
+def create
+  abs = []
 
-abs = []
+  (1..N).each do |i|
+    abs << [rand(3) + 1, rand(30) + 1]
+  end
 
-(1...N).each do |i|
-  abs << [i, i + 1]  
+  return nil unless abs.sum { |a, b| b } <= B_MAX
+  return nil unless abs.sum { |a, b| b } % 3 == 0
+
+  abs
 end
 
-puts [N, 2].join(' ')
-abs.each do |a, b|
-  puts [a, b].join(' ')  
+
+abs = create
+while !abs
+  abs = create
 end
-puts [1, N].join(' ')
+
+puts abs.length
+abs.each { |a, b| puts [a, b].join(' ') }
