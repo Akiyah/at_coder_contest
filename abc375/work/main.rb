@@ -25,6 +25,7 @@ def calc
   sum_b = 0
   pp dp if $debug
   ABS.each do |a, b|
+    pp [a, b, dp.length]
     dp_new = {}
     [1, 2, 3].each do |a2|
       c2 = (a2 == a ? 0 : 1)
@@ -32,13 +33,16 @@ def calc
       y2 = (a2 == 2 ? b : 0)
       z2 = (a2 == 3 ? b : 0)
       dp.each do |x, dp_x|
+        next unless x + x2 <= s / 3
+
+        dp_new[x + x2] ||= {}
         dp_x.each do |y, c|
           z = sum_b - x - y
-          if x + x2 <= s / 3 && y + y2 <= s / 3 && z + z2 <= s / 3
-            dp_new[x + x2] ||= {}
-            d = dp_new[x + x2][y + y2]
-            dp_new[x + x2][y + y2] = (d ? [c + c2, d].min : c + c2)
-          end
+          next unless y + y2 <= s / 3
+          next unless z + z2 <= s / 3
+
+          d = dp_new[x + x2][y + y2]
+          dp_new[x + x2][y + y2] = (d ? [c + c2, d].min : c + c2)
         end
       end
     end
