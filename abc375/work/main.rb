@@ -20,30 +20,46 @@ def calc
   s = ABS.map { |a, b| b}.sum
   return -1 unless s % 3 == 0
 
+  s_3 = s / 3
 
   dp = { 0 => { 0 => 0}}
   sum_b = 0
   pp dp if $debug
   ABS.each do |a, b|
-    pp [a, b, dp.length]
+    s_3_b = s_3 - b
+
+    # pp [a, b, dp.length]
     dp_new = {}
-    [1, 2, 3].each do |a2|
-      c2 = (a2 == a ? 0 : 1)
-      x2 = (a2 == 1 ? b : 0)
-      y2 = (a2 == 2 ? b : 0)
-      z2 = (a2 == 3 ? b : 0)
-      dp.each do |x, dp_x|
-        next unless x + x2 <= s / 3
+    dp.each do |x, dp_x|
+      # next unless x + x2 <= s / 3
 
-        dp_new[x + x2] ||= {}
-        dp_x.each do |y, c|
-          z = sum_b - x - y
-          next unless y + y2 <= s / 3
-          next unless z + z2 <= s / 3
+      # dp_new[x + x2] ||= {}
+      dp_new[x] ||= {}
+      dp_new[x + b] ||= {}
 
-          d = dp_new[x + x2][y + y2]
-          dp_new[x + x2][y + y2] = (d ? [c + c2, d].min : c + c2)
+      dp_x.each do |y, c|
+        if a == 1 # もとの所属がxの場合
+          cx = 0
+          cy = 1
+          cz = 1
+        elsif a == 2 # もとの所属がyの場合
+          cx = 1
+          cy = 0
+          cz = 1
+        else # もとの所属がzの場合
+          cx = 1
+          cy = 1
+          cz = 0
         end
+
+        # x に追加の場合
+        dp_new[x + b][y] = [c + cx, dp_new[x + b][y] || (c + cx)].min if x <= s_3_b
+
+        # y に追加の場合
+        dp_new[x][y + b] = [c + cy, dp_new[x][y + b] || (c + cy)].min if y <= s_3_b
+
+        # z に追加の場合
+        dp_new[x][y] = [c + cz, dp_new[x][y] || (c + cz)].min if sum_b - x - y <= s_3_b
       end
     end
 
