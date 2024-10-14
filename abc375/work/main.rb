@@ -22,22 +22,18 @@ def calc
 
   s_3 = s / 3
 
-  dp = { 0 => { 0 => 0}}
+  dp = Array.new(s_3 + 1) { Array.new(s_3 + 1) }
+  dp[0][0] = 0
   sum_b = 0
   pp dp if $debug
   ABS.each do |a, b|
     s_3_b = s_3 - b
 
     # pp [a, b, dp.length]
-    dp_new = {}
-    dp.each do |x, dp_x|
-      # next unless x + x2 <= s / 3
-
-      # dp_new[x + x2] ||= {}
-      dp_new[x] ||= {}
-      dp_new[x + b] ||= {}
-
-      dp_x.each do |y, c|
+    dp_new = Array.new(s_3 + 1) { Array.new(s_3 + 1) }
+    dp.each_with_index do |dp_x, x|
+      dp_x.each_with_index do |c, y|
+        next unless c
         if a == 1 # もとの所属がxの場合
           cx = 0
           cy = 1
