@@ -20,27 +20,40 @@ end
 def calc(as)
   pp as if $debug
   n = as.length
-  ds = [1000000] + (1...n).map { |i| as[i] - as[i - 1] } # 長さ n
-  pp ds if $debug
+  x = 0 # 借りている分
+  last_a = as[0]
+  s = as[0]
+  i = 1
 
-  loop do
-    return true if ds.all? { |d| 0 <= d }
-    return false if ds.all? { |d| d <= 0 }
-    
-    j = ds.rindex { |d| 0 < d }
-    i = ds.index { |d| d < 0 }
+  pp ['n', n, 'last_a', last_a, 'a', nil, 'x', x] if $debug
 
-    pp ['i', i, 'j', j] if $debug
+  as[1..-1].each do |a|
+    s += a
+    i += 1
 
-    return false unless i - 1 <= j
+    pp ['n', n, 'last_a', last_a, 'a', a, 'x', x] if $debug
 
-    ds[i] += 1
-    ds[i + 1] -= 1 if i + 1 < n
-    ds[j] -= 1
-    ds[j + 1] += 1 if j + 1 < n
+    if a < last_a
+      d = last_a - a
+      x += d # 未来から借りる
+      a += d # 借りた分でaを増やす
+    else # last_a <= a、返却できる場合
+      d = a - last_a
+      if d < x
+        x -= d # 0 <= x
+        a -= d
+      else # 仮をすべて返せる場合
+        a = (s + i - 1) / i
+        x = 0
+      end
+    end
 
-    pp ds if $debug
+    pp ['n', n, 'last_a', last_a, 'a', a, 'x', x] if $debug
+
+    last_a = a
   end
+
+  0 == x # 借りがない
 end
 
 
