@@ -19,29 +19,36 @@ end
 
 paths = {}
 ABS.each do |a, b|
-  paths[a - 1] ||= []
-  paths[a - 1] << b - 1
+  paths[a] ||= Set.new
+  paths[a] << b
 end
 
 def calc(paths)
-  vs = [0]
-  cs = [nil] * N
-  cs[0] = 0
+  vs = Set[1]
+  visited_vs = Set.new
 
+  i = 0
   loop do
-    return -1 if vs.empty?
+    pp [vs, visited_vs] if $debug
+    next_vs = Set.new
 
-    v = vs.shift
-
-    if paths[v]
-      paths[v].each do |v2|
-        return cs[v] + 1 if v2 == 0
-        if cs[v2] == nil
-          cs[v2] = cs[v] + 1
-          vs << v2
-        end
+    vs.each do |v|
+      next if visited_vs.include?(v)
+      visited_vs << v
+      if paths[v]
+        return (i + 1) if paths[v].include?(1)
+        next_vs += paths[v]
       end
     end
+
+
+    pp next_vs if $debug
+    return -1 if next_vs.empty?
+
+    # visited_vs += vs
+
+    i += 1
+    vs = next_vs
   end
 end
 
