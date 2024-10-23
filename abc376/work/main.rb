@@ -1,4 +1,4 @@
-require "ac-library-rb/priority_queue"
+# require "ac-library-rb/priority_queue"
 # require "ac-library-rb/segtree"
 # require "ac-library-rb/dsu"
 
@@ -21,12 +21,13 @@ end
 # pp [N, Q, NTS] if $debug
 
 
-def move_l_plus(t, (l, r)) # lをプラス方向に動かす
+def move_plus(t, l, r) # lをプラス方向に動かす
   # pp ['move_l_plus', t, l, r] if $debug
-  return [[l, r], 0] if l == t
+  #return [[l, r], 0] if l == t
 
   t += N if t < l
   r += N if r < l
+  # l <= t, l < r
 
   if r <= t # rがlとtの間にある場合
     l2 = t % N
@@ -38,7 +39,7 @@ def move_l_plus(t, (l, r)) # lをプラス方向に動かす
     c2 = t - l
   end
 
-  [[l2, r2], c2]
+  [l2, r2, c2]
 end
 
 dp = {}
@@ -47,19 +48,28 @@ dp[[0, 1]] = 0
 
 NTS.each do |h, t|
   dp_next = {}
-  dp.each do |(l, r), c|
-    l, r = r, l if h == 'R'
+  if h == 'L'
+    dp.each do |(l, r), c|
+      # プラス方向
+      l2, r2, c2 = move_plus(t, l, r)
+      dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
 
-    # プラス方向
-    (l2, r2), c2 = move_l_plus(t, [l, r])
-    l2, r2 = r2, l2 if h == 'R'
-    dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
+      # マイナス方向
+      l2, r2, c2 = move_plus(N - t, N - l, N - r)
+      l2, r2 = N - l2, N - r2
+      dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
+    end
+  else # h == 'R'
+    dp.each do |(l, r), c|
+      # プラス方向
+      r2, l2, c2 = move_plus(t, r, l)
+      dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
 
-    # マイナス方向    
-    (l2, r2), c2 = move_l_plus(N - t, [N - l, N - r])
-    l2, r2 = r2, l2 if h == 'R'
-    l2, r2 = N - l2, N - r2
-    dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
+      # マイナス方向
+      r2, l2, c2 = move_plus(N - t, N - r, N - l)
+      r2, l2 = N - r2, N - l2
+      dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
+    end
   end
 
   dp = dp_next
