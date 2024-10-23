@@ -41,26 +41,6 @@ def move_l_plus(t, (l, r)) # lをプラス方向に動かす
   [[l2, r2], c2]
 end
 
-def move_l_minus(t, (l, r)) # lをマイナス方向に動かす
-  # pp ['move_l_minus', t, l, r] if $debug
-  return [[l, r], 0] if l == t
-
-  t -= N if l < t
-  r -= N if l < r
-
-  if t <= r # rがlとtの間にある場合
-    l2 = t % N
-    r2 = (t - 1) % N
-    c2 = (l - t) + (r - (t - 1))
-  else
-    l2 = t % N
-    r2 = r % N
-    c2 = l - t
-  end
-
-  [[l2, r2], c2]
-end
-
 dp = {}
 dp[[0, 1]] = 0
 # pp dp if $debug
@@ -76,8 +56,9 @@ NTS.each do |h, t|
     dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
 
     # マイナス方向    
-    (l2, r2), c2 = move_l_minus(t, [l, r])
+    (l2, r2), c2 = move_l_plus(N - t, [N - l, N - r])
     l2, r2 = r2, l2 if h == 'R'
+    l2, r2 = N - l2, N - r2
     dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
   end
 
