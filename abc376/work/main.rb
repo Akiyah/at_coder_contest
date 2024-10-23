@@ -67,18 +67,18 @@ dp[[0, 1]] = 0
 
 NTS.each do |h, t|
   dp_next = {}
-  dp.each do |lr, c|
-    lr.reverse! if h == 'R'
+  dp.each do |(l, r), c|
+    l, r = r, l if h == 'R'
 
     # プラス方向
-    lr2, c2 = move_l_plus(t, lr)
-    lr2.reverse! if h == 'R'
-    dp_next[lr2] = [dp_next[lr2] || c + c2, c + c2].min
+    (l2, r2), c2 = move_l_plus(t, [l, r])
+    l2, r2 = r2, l2 if h == 'R'
+    dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
 
     # マイナス方向    
-    lr2, c2 = move_l_minus(t, lr)
-    lr2.reverse! if h == 'R'
-    dp_next[lr2] = [dp_next[lr2] || c + c2, c + c2].min
+    (l2, r2), c2 = move_l_minus(t, [l, r])
+    l2, r2 = r2, l2 if h == 'R'
+    dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
   end
 
   dp = dp_next
