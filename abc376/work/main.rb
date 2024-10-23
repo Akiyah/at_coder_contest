@@ -25,21 +25,15 @@ def move_plus(t, l, r) # lをプラス方向に動かす
   # pp ['move_l_plus', t, l, r] if $debug
   #return [[l, r], 0] if l == t
 
-  t += N if t < l
-  r += N if r < l
-  # l <= t, l < r
+  t2 = (t < l ? t + N : t)
+  r2 = (r < l ? r + N : r)
+  # l <= t2, l < r2
 
-  if r <= t # rがlとtの間にある場合
-    l2 = t % N
-    r2 = (t + 1) % N
-    c2 = (t - l) + (t + 1 - r)
+  if r2 <= t2 # rがlとtの間にある場合
+    [t, (t + 1) % N, (t2 - l) + (t2 + 1 - r2)]
   else
-    l2 = t % N
-    r2 = r % N
-    c2 = t - l
+    [t, r, t2 - l]
   end
-
-  [l2, r2, c2]
 end
 
 dp = {}
@@ -52,23 +46,25 @@ NTS.each do |h, t|
     dp.each do |(l, r), c|
       # プラス方向
       l2, r2, c2 = move_plus(t, l, r)
-      dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
+      lr2 = [l2, r2]
+      dp_next[lr2] = c + c2 if !dp_next[lr2] || c + c2 < dp_next[lr2]
 
       # マイナス方向
       l2, r2, c2 = move_plus(N - t, N - l, N - r)
-      l2, r2 = N - l2, N - r2
-      dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
+      lr2 = [N - l2, N - r2]
+      dp_next[lr2] = c + c2 if !dp_next[lr2] || c + c2 < dp_next[lr2]
     end
   else # h == 'R'
     dp.each do |(l, r), c|
       # プラス方向
       r2, l2, c2 = move_plus(t, r, l)
-      dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
+      lr2 = [l2, r2]
+      dp_next[lr2] = c + c2 if !dp_next[lr2] || c + c2 < dp_next[lr2]
 
       # マイナス方向
       r2, l2, c2 = move_plus(N - t, N - r, N - l)
-      r2, l2 = N - r2, N - l2
-      dp_next[[l2, r2]] = [dp_next[[l2, r2]] || c + c2, c + c2].min
+      lr2 = [N - l2, N - r2]
+      dp_next[lr2] = c + c2 if !dp_next[lr2] || c + c2 < dp_next[lr2]
     end
   end
 
