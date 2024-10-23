@@ -18,11 +18,11 @@ NTS = (1..Q).map do
   [h, t.to_i - 1]
 end
 
-pp [N, Q, NTS] if $debug
+# pp [N, Q, NTS] if $debug
 
 
 def move_l_plus(t, (l, r)) # lをプラス方向に動かす
-  pp ['move_l_plus', t, l, r] if $debug
+  # pp ['move_l_plus', t, l, r] if $debug
   return [[l, r], 0] if l == t
 
   t += N if t < l
@@ -42,7 +42,7 @@ def move_l_plus(t, (l, r)) # lをプラス方向に動かす
 end
 
 def move_l_minus(t, (l, r)) # lをマイナス方向に動かす
-  pp ['move_l_minus', t, l, r] if $debug
+  # pp ['move_l_minus', t, l, r] if $debug
   return [[l, r], 0] if l == t
 
   t -= N if l < t
@@ -63,7 +63,7 @@ end
 
 dp = {}
 dp[[0, 1]] = 0
-pp dp if $debug
+# pp dp if $debug
 
 NTS.each do |h, t|
   dp_next = {}
@@ -82,7 +82,9 @@ NTS.each do |h, t|
   end
 
   dp = dp_next
-  pp dp if $debug
+  puts dp.size if $debug
 end
+
+pp dp if $debug
 
 puts dp.values.min
