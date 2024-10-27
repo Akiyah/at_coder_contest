@@ -22,12 +22,30 @@ N, K = STDIN.gets.chomp.split.map(&:to_i)
 PS = STDIN.gets.chomp.split.map(&:to_i)
 
 
-rs = PS
-# (K % N).times do |k|
-100.times do |k|
+def calc
+  rs = PS
+  rss = []
+  k = 0
+  while k < K
     pp k if $debug
-  pp rs.join(' ') if $debug
-  rs = rs.map { |r| rs[r - 1] }
+    pp rs.join(' ') if $debug
+    rs = rs.map { |r| rs[r - 1] }
+
+    k2 = rss.find_index(rs)
+    if k2
+      d = k - k2
+      k3 = k2 + ((K - 1 - k2) % d)
+      pp [k, K, k2, k3, rss.count] if $debug
+      return rss[k3]
+    end
+
+    k += 1
+    rss << rs
+  end
+
+  rs
 end
+
+rs = calc()
 
 puts rs.join(' ')
