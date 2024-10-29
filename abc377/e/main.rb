@@ -9,6 +9,8 @@
 # require "ac-library-rb/segtree"
 # require "ac-library-rb/dsu"
 
+require "ac-library-rb/dsu"
+
 $debug = !ARGV[0].nil?
 
 # N = STDIN.gets.chomp.to_i
@@ -21,21 +23,27 @@ $debug = !ARGV[0].nil?
 N, K = STDIN.gets.chomp.split.map(&:to_i)
 PS = STDIN.gets.chomp.split.map(&:to_i)
 
+dsu = AcLibraryRb::DSU.new(N)
+PS.each_with_index do |p, i|
+  dsu.merge(p - 1, i)
+end
+pp dsu.groups if $debug
+
 
 def calc
   rs = PS
   rss = []
   k = 0
   while k < K
-    pp k if $debug
-    pp rs.join(' ') if $debug
+    # pp k if $debug
+    # pp rs.join(' ') if $debug
     rs = rs.map { |r| rs[r - 1] }
 
     k2 = rss.find_index(rs)
     if k2
       d = k - k2
       k3 = k2 + ((K - 1 - k2) % d)
-      pp [k, K, k2, k3, rss.count] if $debug
+      # pp [k, K, k2, k3, rss.count] if $debug
       return rss[k3]
     end
 
