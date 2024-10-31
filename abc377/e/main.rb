@@ -34,24 +34,7 @@ end
 pp dsu.groups if $debug
 
 def calc_count(k, m) # 2とmは互いに素
-  # (2 ** k) % m
-  # pp "calc_count(#{m}, #{k})"
-  return 0 if m == 1
-
-  # ms = m.prime_division.to_h
-  ms = m.prime_division.to_h
-  if ms[2]
-    if k < ms[2]
-      2 ** k
-    else
-      calc_count(k - ms[2], m / (2 ** ms[2])) * (2 ** ms[2])
-    end
-  else
-    # オイラー関数
-    f = ms.map { |p, i| (p - 1) * p ** (i - 1) }.inject(:*)
-    # pp f
-    (2 ** (k % f)) % m
-  end
+  return 2.pow(k, m)
 end
 
 def calc_one(h)
