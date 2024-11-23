@@ -22,21 +22,27 @@ N = STDIN.gets.chomp.to_i
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
 def calc_one(bs)
-  positions = {}
+  pairs = []
+  positions = []
 
   n = bs.length
-  m_max = 0
-  j_last = n
-  bs.reverse.each_with_index do |b, k|
-    i = n - k - 1
+  bs.zip(0...n).reverse.each do |b, i|
     j = positions[b]
-    if j && j < j_last
-      m = j_last - i - 1
-      m_max = m if m_max < m
-
-      j_last = j
+    if j
+      pairs << [i, j]
     end
     positions[b] = i
+  end
+
+  m_max = 0
+  j_last = n
+  pairs.each do |i, j|
+    next if j_last <= j
+
+    m = j_last - i - 1
+    m_max = m if m_max < m
+
+    j_last = j
   end
 
   m_max = j_last if m_max < j_last
@@ -45,14 +51,13 @@ def calc_one(bs)
 end
 
 
-def calc2(d)
-  n = AS.length - d
+def calc2(as)
+  n = as.length
   m_max = 0
   bs = []
   (0...(n / 2)).each do |i|
-    a = AS[i * 2 + d]
-    if a == AS[i * 2 + d + 1]
-      bs << a
+    if as[i * 2] == as[i * 2 + 1]
+      bs << as[i * 2]
     else
       m = calc_one(bs)
       m_max = m if m_max < m
@@ -61,16 +66,16 @@ def calc2(d)
   end
 
   m = calc_one(bs)
-  m_max = m if m_max < m
+  m_max = [m_max, m].max
 
   m_max
 end
 
-def calc
-  m1 = calc2(0)
-  m2 = calc2(1)
+def calc(n, as)
+  m1 = calc2(as)
+  m2 = calc2(as[1..])
   m = [m1, m2].max
   m * 2
 end
 
-puts calc
+puts calc(N, AS)

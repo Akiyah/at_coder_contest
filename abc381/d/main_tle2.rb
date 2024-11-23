@@ -22,7 +22,7 @@ N = STDIN.gets.chomp.to_i
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
 def calc_one(bs)
-  positions = {}
+  positions = []
 
   n = bs.length
   m_max = 0
