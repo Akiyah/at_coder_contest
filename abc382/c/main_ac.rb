@@ -39,12 +39,14 @@ pp ais if $debug
 pp bis if $debug
 
 def calc(ais, bis)
+  max_k = 0
   rs = {}
   bis.each do |b, i|
-    k = ais.bsearch_index { |a, k| a <= b }
+    k = ais[max_k..].find_index { |a, k| a <= b }
     if k
-      pp [[b, i], k] if $debug
-      rs[i] = ais[k]
+      pp [[b, i], k, max_k] if $debug
+      rs[i] = ais[max_k + k]
+      max_k += k
     else
       break
     end
