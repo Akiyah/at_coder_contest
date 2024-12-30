@@ -22,23 +22,25 @@ N, K = STDIN.gets.chomp.split.map(&:to_i)
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
 
-if K == N
-  puts AS.inject(:^)
-  exit
+def calc(z, k, i_max)
+  pp [z, k, i_max] if $debug
+  if k == 0
+    return z
+  end
+
+  unless i_max < N - (k - 1)
+    return 0
+  end
+
+  if k == 1
+    return (i_max...(N - k + 1)).map { |i| z ^ AS[i] }.max    
+  end
+
+  (i_max...(N - k + 1)).map do |i|
+    calc(z ^ AS[i], k - 1, i + 1)
+  end.max
 end
 
-if K < N - K
-  r = AS.combination(K).map { |as|
-    as.inject(:^)
-  }.max
 
-  puts r
-else
-  s = AS.inject(:^)
 
-  r = AS.combination(N - K).map { |as|
-    s ^ as.inject(:^)
-  }.max
-
-  puts r
-end
+puts calc(0, K, 0)
