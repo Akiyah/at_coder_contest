@@ -13,47 +13,37 @@ $debug = !ARGV[0].nil?
 
 N, M = STDIN.gets.chomp.split.map(&:to_i)
 PS = STDIN.gets.chomp.split.map(&:to_i)
-PS2 = PS.sort
 
-# 一番高いものを買って良い数
-k_min = (0..(10**9)).bsearch do |k|
-  p_max = PS2[-1].to_f
-  M < PS2.map { |p| ((k * Math.sqrt(p_max / p)).floor ** 2) * p }.sum
+
+def calc_price(a) # a 円以下のものを全部買ったときの金額
+  pp ['calc_price(a)', a] if $debug
+
+  PS.map do |p|
+    k = (((a.to_f / p) + 1) / 2).floor
+    p * (k ** 2)
+  end.sum
 end
 
-
-pp({k_min:}) if $debug
-
-def calc(k_min)
-  p_max = PS2[-1].to_f
-  rs = PS2.map { |p| (k_min * Math.sqrt(p_max / p)).floor }
-  pp({PS2:, rs:})
-
-  m = M
-  rs.each_with_index do |r, i|
-    m -= PS2[i] * (r ** 2)
-  end
-
-  while true
-    qs = (0...N).map do |i|
-      k = rs[i] + 1
-      q = PS2[i] * (2 * k - 1) 
-      [q, i]
-    end
-
-    q = qs.min_by {|q| q[0]}
-    j = q[1]
-
-    if m < q[0]
-      pp rs if $debug
-      return rs.sum
-    end
-
-    m -= q[0]
-    rs[j] += 1
-  end
+def calc_count(a) # a 円以下のものを全部買ったときの個数
+  PS.map do |p|
+    k = (((a.to_f / p) + 1) / 2).floor
+    k
+  end.sum
 end
 
-puts calc(k_min - 1)
+def calc
+  a_over = (0..(10**14)).bsearch do |a|
+    M < calc_price(a)
+  end
+
+  # ちょうど a_over 円のものをいくつか取り除くと、答えになる
+  m = calc_price(a_over) - M
+
+  pp [a_over, calc_price(a_over), calc_count(a_over), M, m] if $debug
+
+  calc_count(a_over) - m.ceildiv(a_over)
+end
+
+puts calc
 
 
