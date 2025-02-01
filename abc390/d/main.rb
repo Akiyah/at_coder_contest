@@ -15,31 +15,29 @@ N = STDIN.gets.chomp.to_i
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
 
-def calc1(as)
+def calc1(as, bs, rs)
   n = as.length
-  pp n if $debug
 
-  if n == 1
-    return as
+  if n == 0
+    rs << bs.inject(:^)
+    return
   end
 
-  rs = []
-  # as[0] が単独の場合
-  rs += calc1(as[1..]).map { |r| r ^ as[0] }
-  
-  # as[0] が単独じゃない場合
-  (1...n).each do |i|
-    as2 = as[1..]
-    # next if (as2[i - 1] + as[0]) == (as2[i - 1] ^ as[0])
-    as2[i - 1] += as[0]
-    rs += calc1(as2)
+  m = bs.length
+  bs2 = bs.dup
+  (0...m).each do |j|
+    bs2[j] += as[0]
+    calc1(as[1..], bs2, rs)
+    bs2[j] -= as[0]
   end
-
-  rs.uniq
+  calc1(as[1..], bs + [as[0]], rs)
 end
 
 def calc(as)
-  calc1(as).size
+  rs = []
+  calc1(as, [], rs)
+  pp rs.length if $debug
+  rs.uniq.length
 end
 
 puts calc(AS)
