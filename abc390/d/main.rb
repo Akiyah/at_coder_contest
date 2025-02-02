@@ -9,6 +9,8 @@
 # require "ac-library-rb/segtree"
 # require "ac-library-rb/dsu"
 
+# require "set"
+
 $debug = !ARGV[0].nil?
 
 N = STDIN.gets.chomp.to_i
@@ -24,7 +26,8 @@ def calc1(as, bs, rs)
   end
 
   m = bs.length
-  bs2 = bs.dup
+  # bs2 = bs.dup
+  bs2 = bs
   (0...m).each do |j|
     bs2[j] += as[0]
     calc1(as[1..], bs2, rs)
@@ -34,10 +37,10 @@ def calc1(as, bs, rs)
 end
 
 def calc(as)
-  rs = []
+  rs = Set.new
   calc1(as, [], rs)
   pp rs.length if $debug
-  rs.uniq.length
+  rs.length
 end
 
 puts calc(AS)
