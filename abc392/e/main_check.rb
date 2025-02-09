@@ -20,6 +20,7 @@ def test(fi, fa)
   end
 
   # pp dsu.groups
+  #vpp({r:, dsu_groups: dsu.groups})
   return false unless dsu.groups.length == r + 1
 
   abs2 = abs.dup
@@ -39,7 +40,7 @@ def test(fi, fa)
     dsu2.merge(a - 1, b - 1)
   end
 
-  # pp dsu2.groups
+  # pp({dsu2_groups: dsu2.groups})
   return false unless dsu2.groups.length == 1
 
   true

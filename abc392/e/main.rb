@@ -20,55 +20,62 @@ end
 
 dsu = AcLibraryRb::DSU.new(N)
 
-removables = {}
+removable_iabs = []
 ABS.each_with_index do |ab, i|
   a, b = ab
   if dsu.same?(a - 1, b - 1)
-    l = dsu.leader(a - 1)
-    removables[l] ||= []
-    removables[l] << [i, a - 1, b - 1]
+    removable_iabs << [i, a - 1, b - 1]
   else
     dsu.merge(a - 1, b - 1)
   end
 end
 
+removables1 = {}
+removables2 = []
+removable_iabs.each do |i, a, b|
+  l = dsu.leader(a)
+  if removables1[l]
+    removables2 << [i, a, b, l]
+  else
+    removables1[l] = [i, a, b, l]
+  end
+end
 
-pp dsu.groups if $debug
-pp removables if $debug
+pp({removables1:,removables2:}) if $debug
 
 groups = dsu.groups
+ls = groups.map { |group| dsu.leader(group[0]) }
 
-if groups.length == 1
+if ls.length == 1
   puts 0
   exit
 end
 
-
-gls = groups.map do |group|
-  a = group[0]
-  l = dsu.leader(a)
-  [group, removables[l] || []]
+ls0 = []
+ls1 = []
+ls.each do |l|
+  if removables1[l]
+    ls1 << l
+  else
+    ls0 << l
+  end
 end
 
-pp gls if $debug
+l_base = ls1.shift
 
-gls = gls.sort_by { |group, removables| removables ? removables.length : 0 }
-
-removables3 = []
-gls.reverse.each do |group, removables|
-  removables3 += (removables || [])
-end
+removables2 << removables1[l_base]
+removables1[l_base] = nil
 
 rs = []
-gls[0...-1].each do |group, removables|
-  removable = removables3.shift
-  i, a_, b_ = removable
-  # a = group[0]
-  rs << [i + 1, a_ + 1, group[0] + 1]
+ls1.each do |l|
+  i, a, b = removables1[l]
+  rs << [i + 1, a + 1, l_base + 1]
 end
 
-pp rs if $debug
-
+ls0.each do |l0|
+  i, a, b, l = removables2.pop
+  rs << [i + 1, a + 1, l0 + 1]
+end
 
 puts rs.length
 rs.each do |r|
