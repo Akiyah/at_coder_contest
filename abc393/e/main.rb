@@ -17,22 +17,21 @@ N, K = STDIN.gets.chomp.split.map(&:to_i)
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
 
-
-def divisions_pd(pd)
-  if pd.length == 0
-    return [1]
-  end
-
-  p, i = pd[0]
-
-  (0..i).map do |j|
-    divisions_pd(pd[1..]).map { |a| a * (p ** j) }
-  end.flatten
-end
-
 def divisions(a)
+  return [1] if a == 1
+
   pd = Prime.prime_division(a)
-  divisions_pd(pd)
+  pp({a:, pd:}) if $debug
+
+  ps = pd.map { |p, i| p }
+  js = pd.map do |p, i|
+    (0..i).to_a
+  end
+  iss = js[0].product(*js[1..])
+
+  iss.map do |is|
+    ps.zip(is).map { |p, i| p ** i }.inject(:*)
+  end
 end
 
 def calc
