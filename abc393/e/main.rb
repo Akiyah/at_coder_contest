@@ -5,10 +5,10 @@
 # acc s 
 
 
-require "ac-library-rb/priority_queue"
+# require "ac-library-rb/priority_queue"
 # require "ac-library-rb/segtree"
 # require "ac-library-rb/dsu"
-require 'prime'
+# require 'prime'
 
 
 $debug = !ARGV[0].nil?
@@ -16,53 +16,49 @@ $debug = !ARGV[0].nil?
 N, K = STDIN.gets.chomp.split.map(&:to_i)
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
-
-def divisions(a)
-  return [1] if a == 1
-
-  pd = Prime.prime_division(a)
-  pp({a:, pd:}) if $debug
-
-  ps = pd.map { |p, i| p }
-  js = pd.map do |p, i|
-    (0..i).to_a
-  end
-  iss = js[0].product(*js[1..])
-
-  iss.map do |is|
-    ps.zip(is).map { |p, i| p ** i }.inject(:*)
-  end
-end
-
 def calc
-  # pq = AcLibraryRb::PriorityQueue.new
-  data = {}
+  m = AS.max
+  ss = Array.new(m + 1, 0)
   AS.each do |a|
-    divisions(a).each do |a2|
-      data[a2] = (data[a2] || 0) + 1
+    ss[a] += 1
+  end
+
+  pp({ss:, m:}) if $debug
+
+  ts = ss.dup
+  ts[1] = N
+  # ts = Array.new(m + 1, 0)
+  (2..(m / 2)).each do |d|
+    # ((d * 2)..m).step(d).each do |n|
+    #   ts[d] += ss[n]
+    # end
+    n = d * 2
+    while n <= m
+      ts[d] += ss[n]
+      n += d
     end
   end
 
-  pp({data:}) if $debug
+  pp({ts:}) if $debug
 
-  pq = AcLibraryRb::PriorityQueue.new(data.keys) {|x, y| x < y }
-  data2 = {}
-  while !pq.empty?
-    a = pq.pop
-    if K <= data[a]
-      data2[a] = a
-    else
-      pd = Prime.prime_division(a)
-      data2[a] = pd.map do |p, i|
-        data2[a / p]
-      end.max
+  us = Array.new(m + 1, 1)
+  (2..m).each do |d|
+    next if ts[d] < K
+    # (d..m).step(d).each do |n|
+    #   us[n] = d if us[n] < d
+    #   # us[n] = [d, us[n]].max
+    # end
+    n = d
+    while n <= m
+      us[n] = d
+      n += d
     end
   end
 
-  pp({data2:}) if $debug
+  pp({us:}) if $debug
 
   AS.map do |a|
-    data2[a]
+    us[a]
   end
 end
 
