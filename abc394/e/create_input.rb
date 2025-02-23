@@ -1,5 +1,7 @@
 N = 100
-chars = 'abcdefghijklmnopqrstuvwxyz-'.split('')
+# chars = 'abcdefghijklmnopqrstuvwxyz-'.split('')
+# chars = 'abc-'.split('')
+chars = 'ab-'.split('')
 
 puts N
 (0...N).each do |i|
