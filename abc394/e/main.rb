@@ -25,69 +25,78 @@ end
 pp({N:, CS:}) if $debug
 
 
+def update(ss, rs, cs)
+  ss2 = []
+  updated = false
+  ss.each do |i, j, d|
+    cs.each do |c, csc|
+      i2s = csc[:desc][i] || []
+      j2s = csc[:asc][j] || []
+      i2s.each do |i2|
+        j2s.each do |j2|
+          unless rs[i2][j2]
+            rs[i2][j2] = d + 2
+            updated = true
+          end
+          ss2 << [i2, j2, d + 2]
+        end
+      end
+    end
+  end
+
+  return [ss2, updated]
+end
+
 def calc
-  m = 0
-  cs = [] # i, j, char
+  cs = {} # char => i => [j]
   (0...N).each do |i|
-    (0...N).each do |i|
-      cs << [i, j, CS[i][j]] if CS[i][j] != '-'
+    (0...N).each do |j|
+      c = CS[i][j]
+      next if c == '-'
+      cs[c] ||= { asc: {}, desc: {}}
+      cs[c][:asc][i] ||= []
+      cs[c][:desc][j] ||= []
+      cs[c][:asc][i] << j
+      cs[c][:desc][j] << i
     end
   end
   pp({cs:}) if $debug
 
-  # 0歩
   rs = Array.new(N) { Array.new(N) }
+
+  # 0歩
+  ss_even = []
   (0...N).each do |i|
     rs[i][i] = 0
-    m += 1
+    ss_even << [i, i, 0]
   end
-  pp({rs:}) if $debug
+  # pp({rs:, ss:}) if $debug
 
-  # 1歩、この時点では回分確定
-  ss = Array.new(N) { Array.new(N) { [] } }
-  cs.each do |i, j, c|
-    ss[i][j] << c
-    unless rs[i][j]
-      rs[i][j] = 1
-      m += 1
+  # 1歩
+  ss_odd = []
+  cs.each do |c, csc|
+    csc[:asc].each do |i, js|
+      js.each do |j|
+        unless rs[i][j]
+          rs[i][j] = 1
+          ss_odd << [i, j, 1]
+        end
+      end
     end
   end
-  pp({rs:, ss:}) if $debug
+  # pp({rs:, ss:}) if $debug
+
+  pp({'ss_even.length' => ss_even.length, 'ss_even.uniq.length' => ss_even.uniq.length}) if $debug
+  pp({'ss_odd.length' => ss_odd.length, 'ss_odd.uniq.length' => ss_odd.uniq.length}) if $debug
 
   # 2歩以降
-  d = 2
-  while d <= 2 * N
-    ss2 = Array.new(N) { Array.new(N) { [] } }
-    ss3 = Array.new(N) { Array.new(N) { [] } }
-    cs.each do |i, j, c|
-      cs.each do |i2, j2, c2|
-
-      end
-      
-      if CS[k][j] != '-'
-        ss2[i][j] += ss[i][k].map { |r| r + CS[k][j] }
-      end
-
-    end
-
-
-    (0...N).each do |i|
-      (0...N).each do |j|
-        (0...N).each do |k|
-          if CS[k][j] != '-'
-            ss2[i][j] += ss[i][k].map { |r| r + CS[k][j] }
-          end
-        end
-        unless rs[i][j]
-          if ss2[i][j].any? { |s| s == s.reverse }
-            rs[i][j] = d
-          end
-        end
-      end
-    end
-    ss = ss2
-    pp({d:, rs:, ss:}) if $debug
-    d += 1
+  updated_even = true
+  updated_odd = true
+  while updated_even || updated_odd
+    ss_even, updated_even = update(ss_even, rs, cs)
+    pp({'ss_even.length' => ss_even.length, 'ss_even.uniq.length' => ss_even.uniq.length, updated_even:}) if $debug
+    ss_odd, updated_odd = update(ss_odd, rs, cs)
+    pp({'ss_odd.length' => ss_odd.length, 'ss_odd.uniq.length' => ss_odd.uniq.length, updated_odd:}) if $debug
   end
 
   rs
