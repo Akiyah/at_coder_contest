@@ -21,19 +21,18 @@ CS = (1..N).map do
   STDIN.gets.chomp.split('')
 end
 
-
 pp({N:, CS:}) if $debug
 
-
 def update(ss, rs, cs, d)
-  #ss2 = []
   ss2 = {}
   updated = false
   ss.each do |i, js|
     js.each do |j, _|
       cs.each do |c, csc|
-        i2s = csc[:desc][i] || []
-        j2s = csc[:asc][j] || []
+        i2s = csc[:desc][i]
+        next unless i2s
+        j2s = csc[:asc][j]
+        next unless j2s
         i2s.each do |i2|
           j2s.each do |j2|
             unless rs[i2][j2]
@@ -52,7 +51,7 @@ def update(ss, rs, cs, d)
 end
 
 def calc
-  cs = {} # char => i => [j]
+  cs = {}
   (0...N).each do |i|
     (0...N).each do |j|
       c = CS[i][j]
@@ -64,6 +63,7 @@ def calc
       cs[c][:desc][j] << i
     end
   end
+
   pp({cs:}) if $debug
 
   rs = Array.new(N) { Array.new(N) }
@@ -83,6 +83,7 @@ def calc
   # ss_odd = []
   ss_odd = {}
   cs.each do |c, csc|
+    # next if c == :i2sj2s
     csc[:asc].each do |i, js|
       js.each do |j|
         unless rs[i][j]
@@ -106,8 +107,10 @@ def calc
   while updated_even || updated_odd
     ss_even, updated_even = update(ss_even, rs, cs, d)
     pp({'ss_even.length' => ss_even.length, 'ss_even.uniq.length' => ss_even.uniq.length, updated_even:}) if $debug
+    pp({cs:}) if $debug
     ss_odd, updated_odd = update(ss_odd, rs, cs, d + 1)
     pp({'ss_odd.length' => ss_odd.length, 'ss_odd.uniq.length' => ss_odd.uniq.length, updated_odd:}) if $debug
+    pp({cs:}) if $debug
     d += 2
   end
 
