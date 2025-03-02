@@ -22,24 +22,26 @@ OPS = (1..Q).map do
 end
 
 
-ps = (0...N).to_a # 鳩->巣
-ss = (0...N).to_a # 巣->巣番号
-rss = (0...N).to_a # 巣番号->巣
+ps = (0..N).to_a # 鳩->巣
+ss = (0..N).to_a # 巣->巣番号
+rss = (0..N).to_a # 巣番号->巣
 
 OPS.each do |i, a, b|
   if i == '1'
-    a = a.to_i
-    b = b.to_i
-    ps[a - 1] = ss[b - 1]
+    a = a.to_i # 鳩
+    b = b.to_i # 巣番号
+    ps[a] = rss[b]
   elsif i == '2'
-    a = a.to_i
-    b = b.to_i
-    ssa, ssb = ss[a - 1], ss[b - 1]
-    ss[a - 1], ss[b - 1] = ssb, ssa
-    rss[ssa], rss[ssb] = rss[ssb], rss[ssa]
+    a = a.to_i # 巣番号
+    b = b.to_i # 巣番号
+    a1 = rss[a] # 巣
+    b1 = rss[b] # 巣
+    ss[a1], ss[b1] = ss[b1], ss[a1]
+    rss[ss[a1]] = a1
+    rss[ss[b1]] = b1
   else # i == '3'
-    a = a.to_i
-    puts rss[ps[a - 1]] + 1
+    a = a.to_i # 鳩
+    puts ss[ps[a]]
   end
 
   p [i, a, b] if $debug
