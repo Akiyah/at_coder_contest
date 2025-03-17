@@ -36,23 +36,19 @@ $debug = !ARGV[0].nil?
 N = STDIN.gets.chomp.to_i
 
 def calc
-  n_3 = N ** (1.0/3)
-  (1..n_3).each do |m|
-    # next if nn < m
-
-    m2 = m**2
-    # return nil if N < m * (3 + 3 * m + m2)
+  (1..N).each do |m|
+    return nil if N < m * (3 + 3 * m + m ** 2)
 
     next unless N % m == 0
     n = N / m
 
-    d = 9 * m2 - 4 * 3 * (m2 - n.to_i)
+    d = 9 * m ** 2 - 4 * 3 * (m ** 2 - n)
     next if d < 0
 
     d2 = Math.sqrt(d).to_i
     next unless d2 ** 2 == d
 
-    y2 = -3 * m + d2.to_i
+    y2 = -3 * m + d2
     if 0 < y2 && y2 % 6 == 0
       y = y2 / 6
       pp({m:, y:, y2:, d2:, d:, n:, m2:}) if $debug
