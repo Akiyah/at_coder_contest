@@ -20,15 +20,15 @@ S = STDIN.gets.chomp
 
 def calc
   ss = S.split('')
+  rs = ss.reverse
   n = ss.length
   
-  r = S.reverse
-
-  (n..1).step(-1).each do |m|
-    x = r[0...m]
-    if x == x.reverse
-      return S[0...(n - m)] + x + S[0...(n - m)].reverse
+  n.times do |i|
+    if ss == rs
+      return S[0...i] + ss.join('') + S[0...i].reverse
     end
+    ss = ss[1..]
+    rs = rs[...-1]
   end
 end
 
