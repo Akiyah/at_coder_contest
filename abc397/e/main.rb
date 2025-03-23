@@ -20,6 +20,11 @@ UVS = (1...(N * K)).map do
   STDIN.gets.chomp.split.map(&:to_i)
 end
 
+if K == 1
+  puts 'Yes'
+  exit
+end
+
 pp({N:, K:, UVS:}) if $debug
 
 
@@ -34,7 +39,7 @@ end
 pp({paths:}) if $debug
 
 # edges = AcLibraryRb::PriorityQueue.new {|(u, du, lu), (v, dv, lv)| dv < du } # 深いものを先に取る
-edges = []
+edges = {}
 
 cps = [{ current: 1, parent: nil }]
 parents = { 1 => nil}
@@ -52,7 +57,7 @@ while 0 < cps.length
       # edges.push([u, d, 1])
       d_max = d if d_max < d
       edges[d] ||= {}
-      edges[d][u] = 1
+      edges[d][u] = []
     else
       next_cps += children.map{|child| { current: child, parent: u } }
     end
@@ -65,53 +70,40 @@ pp({edges:, d_max:, parents:}) if $debug
 
 
 def calc(edges, d_max, parents)
+  count = 0
   (d_max..0).step(-1).each do |d|
     pp({d:}) if $debug
-    edges[d].each do |u, l|
-      pp({u:, l:}) if $debug
-
-      if d == 0
-        if l == K
-          return true
-        else
-          return false
-        end
-      end
+    edges[d - 1] ||= {}
+    edges[d].each do |u, ls|
+      pp({u:, ls:}) if $debug
 
       parent = parents[u]
-      # return true unless parent
 
-      edges[d - 1] ||= {}
-
-      if edges[d - 1][parent] == nil || edges[d - 1][parent] == 1
-        if l == K
-          edges[d - 1][parent] = 1
+      if ls.length == 0 # start
+        edges[d - 1][parent] ||= []
+        edges[d - 1][parent] << 2 # 線を伸ばす
+      elsif ls.length == 1
+        if ls[0] == K
+          count += 1
+          edges[d - 1][parent] ||= [] # 次のスタート
         else
-          edges[d - 1][parent] = l + 1
+          edges[d - 1][parent] ||= []
+          edges[d - 1][parent] << ls[0] + 1 # 線を伸ばす
         end
-      elsif edges[d - 1][parent] == -1
-        if l == K
+      elsif ls.length == 2
+        if ls[0] + ls[1] == K + 1 # ２つの線がつながった
+          count += 1
+          edges[d - 1][parent] ||= [] # 次のスタート
         else
           return false
         end
       else
-        if l == K
-          # なにもしない
-        else
-          return false unless edges[d - 1][parent] + l == K
-
-          edges[d - 1][parent] = -1 # 使用不可
-
-          if 0 <= d - 2
-            edges[d - 2] ||= {}
-            edges[d - 2][parents[parent]] = 1
-          end
-        end
+        return false
       end
     end
   end
 
-  true
+  count == N && edges[-1][nil].length == 0
 end
 
 
