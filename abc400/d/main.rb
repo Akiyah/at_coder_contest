@@ -32,10 +32,12 @@ def calc()
 
   while !pq.empty?
     pp pq if $debug
+    pp board if $debug
     d, i, j = pq.pop
 
-    if i == C - 1 && j == D - 1 && board[i][j] <= d
-      return d
+
+    if board[C - 1][D - 1] && board[C - 1][D - 1] <= d
+      return board[C - 1][D - 1]
     end
 
     if board[i][j] != nil && board[i][j] < d
@@ -205,7 +207,7 @@ def calc()
       else
         if board[i][j + 1] == nil || d + 1 < board[i][j + 1]
           board[i][j + 1] = d + 1
-          pq.push([d + 1, i, j + 1])\
+          pq.push([d + 1, i, j + 1])
         end
       end
     end
