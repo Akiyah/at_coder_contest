@@ -61,7 +61,7 @@ def calc_group(paths, group) # return [count, use_chars, free_char_exist]
   if ll == nil
     [gl - 1, gl, true]
   elsif ll == 1
-    [gl - 1, gl, false]
+    [gl - 1, gl, true]
   else
     [gl + 1, gl, false]
   end
