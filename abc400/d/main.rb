@@ -51,6 +51,17 @@ def build_next(board, pq, l, (i, j), (di, dj))
   end
 end
 
+def board_to_s(board, i0, j0)
+  board.map.with_index do |line, i|
+    line.map.with_index do |l, j|
+      next '*' if i == i0 && j == j0
+      next 'S' if i == A - 1 && j == B - 1
+      next 'G' if i == C - 1 && j == D - 1
+      next (SS[i][j] ? '.' : '#') if l == 10000
+      l
+    end.join(' ')
+  end.join("\n") + "\n" + '---'
+end
 
 def calc()
   pq = AcLibraryRb::PriorityQueue.new {|x, y| x[0] < y[0] }
@@ -60,8 +71,7 @@ def calc()
   board[A - 1][B - 1] = 0
 
   while !pq.empty?
-    pp pq if $debug
-    pp board if $debug
+    # pp pq if $debug
     l, i, j = pq.pop
 
     if board[i][j] < l
@@ -72,6 +82,8 @@ def calc()
     build_next(board, pq, l, [i, j], [ 1,  0])
     build_next(board, pq, l, [i, j], [ 0, -1])
     build_next(board, pq, l, [i, j], [ 0,  1])
+
+    puts board_to_s(board, i, j) if $debug
 
     if board[C - 1][D - 1] <= l
       return board[C - 1][D - 1]
