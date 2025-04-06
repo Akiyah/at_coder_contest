@@ -18,7 +18,7 @@ $debug = !ARGV[0].nil?
 
 H, W = STDIN.gets.chomp.split.map(&:to_i)
 SS = (1..H).map do
-  STDIN.gets.chomp.split('')
+  STDIN.gets.chomp.split('').map { |s| s == '.' }
 end
 
 A, B, C, D = STDIN.gets.chomp.split.map(&:to_i)
@@ -29,7 +29,7 @@ def build_next(board, pq, l, (i, j), (di, dj))
 
   return unless 0 <= i1 && i1 < H && 0 <= j1 && j1 < W
     
-  if SS[i1][j1] == '.'
+  if SS[i1][j1] # '.'
     if board[i1][j1] == nil || l < board[i1][j1]
       board[i1][j1] = l
       pq.push([l, i1, j1])
@@ -37,7 +37,7 @@ def build_next(board, pq, l, (i, j), (di, dj))
     return
   end
 
-  # SS[i1][j1] == '#'
+  # '#'
   if board[i1][j1] == nil || l + 1 < board[i1][j1]
     board[i1][j1] = l + 1
     pq.push([l + 1, i1, j1])
@@ -64,12 +64,7 @@ def calc()
     pp board if $debug
     l, i, j = pq.pop
 
-
-    if board[C - 1][D - 1] && board[C - 1][D - 1] <= l
-      return board[C - 1][D - 1]
-    end
-
-    if board[i][j] != nil && board[i][j] < l
+    if board[i][j] && board[i][j] < l
       next
     end
 
@@ -77,6 +72,10 @@ def calc()
     build_next(board, pq, l, [i, j], [ 1,  0])
     build_next(board, pq, l, [i, j], [ 0, -1])
     build_next(board, pq, l, [i, j], [ 0,  1])
+
+    if board[C - 1][D - 1] && board[C - 1][D - 1] <= l
+      return board[C - 1][D - 1]
+    end
   end
 
   board[C - 1][D - 1]
