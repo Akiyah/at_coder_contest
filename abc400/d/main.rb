@@ -5,7 +5,7 @@
 # acc s 
 
 
-require "ac-library-rb/priority_queue"
+# require "ac-library-rb/priority_queue"
 # require "ac-library-rb/segtree"
 # require "ac-library-rb/dsu"
 
@@ -23,31 +23,40 @@ end
 
 A, B, C, D = STDIN.gets.chomp.split.map(&:to_i)
 
-def build_next(board, pq, l, (i, j), (di, dj))
+def build_next(board, queue, l, (i, j), (di, dj))
   i1, j1 = i + di, j + dj
   i2, j2 = i1 + di, j1 + dj
 
   return unless 0 <= i1 && i1 < H && 0 <= j1 && j1 < W
     
   if SS[i1][j1] # '.'
-    if l < board[i1][j1]
+    if !board[i1][j1] || l < board[i1][j1]
+      queue[board[i1][j1]].delete(i1 * W + j1) if board[i1][j1]
+
       board[i1][j1] = l
-      pq.push([l, i1, j1])
+      # pq.push([l, i1, j1])
+      queue[l] << i1 * W + j1
     end
     return
   end
 
   # '#'
-  if l + 1 < board[i1][j1]
+  if !board[i1][j1] || l + 1 < board[i1][j1]
+    queue[board[i1][j1]].delete(i1 * W + j1) if board[i1][j1]
+
     board[i1][j1] = l + 1
-    pq.push([l + 1, i1, j1])
+    # pq.push([l + 1, i1, j1])
+    queue[l + 1] << i1 * W + j1
   end
 
   return unless 0 <= i2 && i2 < H && 0 <= j2 && j2 < W
 
-  if l + 1 < board[i2][j2]
+  if !board[i2][j2] || l + 1 < board[i2][j2]
+    queue[board[i2][j2]].delete(i2 * W + j2) if board[i2][j2]
+
     board[i2][j2] = l + 1
-    pq.push([l + 1, i2, j2])
+    # pq.push([l + 1, i2, j2])
+    queue[l + 1] << i2 * W + j2
   end
 end
 
@@ -64,28 +73,42 @@ def board_to_s(board, i0, j0)
 end
 
 def calc()
-  pq = AcLibraryRb::PriorityQueue.new {|x, y| x[0] < y[0] }
-  pq.push([0, A - 1, B - 1])
+  # pq = AcLibraryRb::PriorityQueue.new {|x, y| x[0] < y[0] }
+  queue = []
+  queue[0] ||= Set.new
+  queue[1] ||= Set.new
+  queue[0] << (A - 1) * W + (B - 1)
 
-  board = Array.new(H) { Array.new(W, 10000) }
+  board = Array.new(H) { Array.new(W) }
   board[A - 1][B - 1] = 0
 
-  while !pq.empty?
+  l = 0
+  while true
     # pp pq if $debug
-    l, i, j = pq.pop
+    pp queue if $debug
+    while queue[l].empty?
+      l += 1
+      queue[l] ||= Set.new
+      queue[l + 1] ||= Set.new
+    end
+
+    ij = queue[l].first
+    queue[l].delete(ij)
+    i = ij / W
+    j = ij % W
 
     if board[i][j] < l
       next
     end
 
-    build_next(board, pq, l, [i, j], [-1,  0])
-    build_next(board, pq, l, [i, j], [ 1,  0])
-    build_next(board, pq, l, [i, j], [ 0, -1])
-    build_next(board, pq, l, [i, j], [ 0,  1])
+    build_next(board, queue, l, [i, j], [-1,  0])
+    build_next(board, queue, l, [i, j], [ 1,  0])
+    build_next(board, queue, l, [i, j], [ 0, -1])
+    build_next(board, queue, l, [i, j], [ 0,  1])
 
     puts board_to_s(board, i, j) if $debug
 
-    if board[C - 1][D - 1] <= l
+    if board[C - 1][D - 1] && board[C - 1][D - 1] <= l
       return board[C - 1][D - 1]
     end
   end
