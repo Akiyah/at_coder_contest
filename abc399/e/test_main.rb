@@ -46,15 +46,14 @@ test_data = [
     input: [
       'abcdefghijklmnopqrstuvwxyz',
       # abcde 0
-      # abcbe 1 d -> b
-      # abcbd 2 e -> d
-      # aeced 3 b -> e
-      # beced 4 a -> b
-      # beaed 5 c -> a
-      # bcacd 6 e -> c
+      # adcde 1 b -> d
+      # bdcde 2 a -> b
+      # bdade 3 c -> a
+      # bcace 4 d -> c
+      # bcacd 5 e -> d
       'bcacdfghijklmnopqrstuvwxyz',
     ],
-    expected: 6, # (3 + 1) + 2
+    expected: 5, # 3 + 2
   },
 ]
 
