@@ -35,6 +35,27 @@ test_data = [
     ],
     expected: 25,
   },
+  {
+    input: [
+      'abcdefghijklmnopqrstuvwxyz',
+      'bcadefghijklmnopqrstuvwxyz',
+    ],
+    expected: -1,
+  },
+  {
+    input: [
+      'abcdefghijklmnopqrstuvwxyz',
+      # abcde 0
+      # abcbe 1 d -> b
+      # abcbd 2 e -> d
+      # aeced 3 b -> e
+      # beced 4 a -> b
+      # beaed 5 c -> a
+      # bcacd 6 e -> c
+      'bcacdfghijklmnopqrstuvwxyz',
+    ],
+    expected: 6, # (3 + 1) + 2
+  },
 ]
 
 test_data.each do |test|

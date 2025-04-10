@@ -62,8 +62,10 @@ def calc_group(paths, group) # return [count, use_chars, free_char_exist]
     [gl - 1, gl, true]
   elsif ll == 1
     [gl - 1, gl, true]
-  else
+  elsif ll == gl
     [gl + 1, gl, false]
+  else
+    [gl + 1, gl, true]
   end
 end
 
