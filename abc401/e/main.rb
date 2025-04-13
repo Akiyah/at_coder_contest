@@ -48,6 +48,7 @@ vs = Set.new # []
     paths[u].each do |v|
       vs.add(v)
     end
+    # vs += paths[u]
   end
   vs.delete(u) # vsはu以下を含まない
 
