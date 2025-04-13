@@ -28,7 +28,7 @@ dsu = AcLibraryRb::DSU.new(N)
 paths = {}
 r_paths = {}
 UVS.each do |u, v|
-  paths[u - 1] ||= []
+  paths[u - 1] ||= Set.new
   paths[u - 1] << v - 1
   r_paths[v - 1] ||= Set.new
   r_paths[v - 1] << u - 1
@@ -44,11 +44,15 @@ vs = Set.new # []
   end
 
   # vs = (vs + (paths[u] || []) - [u]).uniq # vsはu以下を含まない
-  vs = (vs + (paths[u] || []) - [u]) # vsはu以下を含まない
+  if paths[u]
+    vs += paths[u]
+  end
+  vs.delete(u) # vsはu以下を含まない
 
-  pp({u:, dsu_l: dsu.groups.length, vs:, rs:, dsu: dsu.groups}) if $debug
+  pp({u:, dsu_l: dsu.groups.length, dsu_s: dsu.size(0), vs:, rs:, dsu: dsu.groups}) if $debug
 
-  if N - u < dsu.groups.length
+  #if N - u < dsu.groups.length
+  if dsu.size(0) < u + 1
     r = -1
   else
     r = vs.length
