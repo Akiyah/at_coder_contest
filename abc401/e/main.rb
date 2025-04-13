@@ -45,7 +45,9 @@ vs = Set.new # []
 
   # vs = (vs + (paths[u] || []) - [u]).uniq # vsはu以下を含まない
   if paths[u]
-    vs += paths[u]
+    paths[u].each do |v|
+      vs.add(v)
+    end
   end
   vs.delete(u) # vsはu以下を含まない
 
