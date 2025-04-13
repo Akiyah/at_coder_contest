@@ -2,15 +2,18 @@
 
 N = 10000
 M = 100
-s = Set.new
+s = {}
 
 data = []
 N.times do |i|
-  data[i] = Set.new((1..M).map { |j| i * M/10 + j })
+  data[i] = {}
+  (1..M).each do |j|
+    data[i][i * M/10 + j] = true
+  end
 end
 
 N.times do |i|
-  s += data[i]
+  s.update(data[i])
 end  
 
 pp s.length # N * M

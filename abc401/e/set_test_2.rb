@@ -10,7 +10,8 @@ N.times do |i|
 end
 
 N.times do |i|
-  s += data[i]
+  # s += data[i]
+  s.merge(data[i])
 end  
 
 pp s.length # N * M
