@@ -1,0 +1,30 @@
+[INFO] GET: https://pypi.org/pypi/online-judge-tools/json
+[INFO] 200 OK
+[INFO] GET: https://pypi.org/pypi/online-judge-api-client/json
+[INFO] 200 OK
+[INFO] online-judge-tools 11.5.1 (+ online-judge-api-client 10.10.1)
+[INFO] 5 cases found
+[WARNING] GNU time is not available: time
+
+[INFO] sample-1
+[INFO] time: 0.659718 sec
+[SUCCESS] AC
+
+[INFO] sample-2
+[INFO] time: 0.454728 sec
+[SUCCESS] AC
+
+[INFO] sample-3
+[INFO] time: 0.680805 sec
+[SUCCESS] AC
+
+[INFO] sample-4
+[INFO] time: 10.781316 sec
+[SUCCESS] AC
+
+[INFO] sample-5
+[INFO] time: 657.066017 sec
+[SUCCESS] AC
+
+[INFO] slowest: 657.066017 sec  (for sample-5)
+[SUCCESS] test success: 5 cases
