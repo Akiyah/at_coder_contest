@@ -38,14 +38,34 @@ TSS.each do |t, s|
     # 新しい接頭詞
     xs = insert(xs, s)
 
-    ys = ys.select { |y| !y.start_with?(s) }
+    i = ys.bsearch_index { |y| s <= y }
+    if i
+      j = ys[i..].bsearch_index { |y| !y.start_with?(s) }
+      if j
+        ys = ys[0...i] + ys[(i + j)..]
+      else
+        ys = ys[0...i]
+      end
+      # ys = ys.select { |y| !y.start_with?(s) } # todo
+    end
   else
-    if xs.all? { |x| !s.start_with?(x) }
+    # r = xs.all? { |x| !s.start_with?(x) } # todo
+    r = (0...(s.length)).any? do |i|
+      s2 = s[0..i]
+      i = xs.bsearch_index { |x| s2 < x }
+      if i
+        s2 == xs[i - 1]
+      else
+        s2 == xs[-1]
+      end
+    end
+
+    if !r
       # 新しい文字列
       ys = insert(ys, s)
     end
   end
-  pp({xs:, ys:, t:, s:, r:}) if $debug
+  pp({xs:, ys:, t:, s:}) if $debug
 
   puts ys.length
 end
