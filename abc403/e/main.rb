@@ -23,31 +23,40 @@ end
 
 xs = []
 ys = []
-zs = [] # yはxsのどれも接頭詞として持たない
+# zs = [] # yはxsのどれも接頭詞として持たない
 r = 0
-l = 0
 TSS.each do |t, s|
   if t == '1'
-    xs << s # 新しい接頭詞
+    # xs << s # 新しい接頭詞
+    i = xs.bsearch_index { |x| s < x }
+    if i
+      xs = xs[0...i] + [s] + xs[i..-1]
+    else
+      xs = xs + [s]
+    end
 
-    (0...l).each do |i|
-      if zs[i] && ys[i].start_with?(s)
-        zs[i] = false
+    ys.each do |yz|
+      y, z = yz
+      if z && y.start_with?(s)
+        yz[1] = false
         r -= 1
       end
     end
   else
-    ys << s # 新しい文字列
-    l += 1
-
-    if xs.all? { |x| !s.start_with?(x) }
-      zs << true
+    z = xs.all? { |x| !s.start_with?(x) }
+    if z
       r += 1
+    end
+
+    # ys << [s, z] # 新しい文字列
+    i = ys.bsearch_index { |y, z| s < y }
+    if i
+      ys = ys[0...i] + [[s, z]] + ys[i..-1]
     else
-      zs << false
+      ys = ys + [[s, z]]
     end
   end
-  pp({xs:, ys:}) if $debug
+  pp({xs:, ys:, t:, s:, r:}) if $debug
 
   puts r
 end
