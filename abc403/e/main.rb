@@ -23,26 +23,26 @@ end
 
 xs = []
 ys = []
+
+def insert(xs, s)
+  i = xs.bsearch_index { |x| s < x }
+  if i
+    xs[0...i] + [s] + xs[i..-1]
+  else
+    xs + [s]
+  end
+end
+
 TSS.each do |t, s|
   if t == '1'
     # 新しい接頭詞
-    i = xs.bsearch_index { |x| s < x }
-    if i
-      xs = xs[0...i] + [s] + xs[i..-1]
-    else
-      xs = xs + [s]
-    end
+    xs = insert(xs, s)
 
     ys = ys.select { |y| !y.start_with?(s) }
   else
     if xs.all? { |x| !s.start_with?(x) }
       # 新しい文字列
-      i = ys.bsearch_index { |y| s < y }
-      if i
-        ys = ys[0...i] + [s] + ys[i..-1]
-      else
-        ys = ys + [s]
-      end
+      ys = insert(ys, s)
     end
   end
   pp({xs:, ys:, t:, s:, r:}) if $debug
