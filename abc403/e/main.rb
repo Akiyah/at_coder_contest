@@ -21,44 +21,55 @@ TSS = (1..Q).map do
   STDIN.gets.chomp.split
 end
 
-xs = []
+xs = {}
 ys = []
 
-def insert(xs, s)
-  i = xs.bsearch_index { |x| s < x }
+def insert(ys, new_y)
+  i = ys.bsearch_index { |y| new_y < y }
   if i
-    xs[0...i] + [s] + xs[i..-1]
+    ys[0...i] + [new_y] + ys[i..-1]
   else
-    xs + [s]
+    ys + [new_y]
+  end
+end
+
+def remove_start_with(ys, s)
+  i = ys.bsearch_index { |y| s <= y }
+  return ys unless i
+
+  j = ys[i..].bsearch_index { |y| !y.start_with?(s) }
+  if j
+    ys[0...i] + ys[(i + j)..]
+  else
+    ys[0...i]
+  end
+end
+
+def update_xs(xs, ss)
+  if ss.length == 0
+    xs[:edge] = true    
+  else
+    s, *ss2 = ss
+    xs[s] ||= {}
+    update_xs(xs[s], ss2)
+  end
+end
+
+def has_edge?(xs, ss)
+  n = ss.length
+  (0...n).any? do |i|
+    xs.dig(*ss[0..i], :edge)
   end
 end
 
 TSS.each do |t, s|
   if t == '1'
     # 新しい接頭詞
-    xs = insert(xs, s)
+    update_xs(xs, s.chars)
 
-    i = ys.bsearch_index { |y| s <= y }
-    if i
-      j = ys[i..].bsearch_index { |y| !y.start_with?(s) }
-      if j
-        ys = ys[0...i] + ys[(i + j)..]
-      else
-        ys = ys[0...i]
-      end
-      # ys = ys.select { |y| !y.start_with?(s) } # todo
-    end
+    ys = remove_start_with(ys, s)
   else
-    # r = xs.all? { |x| !s.start_with?(x) } # todo
-    r = (0...(s.length)).any? do |i|
-      s2 = s[0..i]
-      i = xs.bsearch_index { |x| s2 < x }
-      if i
-        s2 == xs[i - 1]
-      else
-        s2 == xs[-1]
-      end
-    end
+    r = has_edge?(xs, s.chars)
 
     if !r
       # 新しい文字列
