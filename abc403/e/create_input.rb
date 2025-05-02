@@ -1,8 +1,8 @@
 chars = ('a'..'z').to_a
 
-puts 2 * 10 ** 4 * 5
+puts 2 * 10 ** 4
 
-(10 ** 4 * 5).times do |i|
+(10 ** 4).times do |i|
   c1 = (1..4).map { chars.sample }
   c2 = (1..6).map { chars.sample }
 
