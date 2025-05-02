@@ -33,15 +33,15 @@ def insert(ys, new_y)
   end
 end
 
-def remove_start_with(ys, s)
+def remove_start_with(ys, l, s) # ys.length == l
   i = ys.bsearch_index { |y| s <= y }
-  return ys unless i
+  return [ys, 0] unless i
 
   j = ys[i..].bsearch_index { |y| !y.start_with?(s) }
   if j
-    ys[0...i] + ys[(i + j)..]
+    [ys[0...i] + ys[(i + j)..], j]
   else
-    ys[0...i]
+    [ys[0...i], l - i]
   end
 end
 
@@ -55,7 +55,7 @@ def update_xs(xs, ss)
 end
 
 def has_edge?(xs, ss)
-  n = ss.length
+  # n = ss.length
   xs2 = xs
   ss.each do |s|
     xs2 = xs2[s]
@@ -65,22 +65,28 @@ def has_edge?(xs, ss)
   false
 end
 
+ls = []
+l = 0
 TSS.each do |t, s|
   if t == '1'
     # 新しい接頭詞
     update_xs(xs, s.chars)
 
-    ys = remove_start_with(ys, s)
+    ys, dl = remove_start_with(ys, l, s)
+    l -= dl
   else
     r = has_edge?(xs, s.chars)
 
     if !r
       # 新しい文字列
       ys = insert(ys, s)
+      l += 1
     end
   end
-  pp({xs:, ys:, t:, s:}) if $debug
+  pp({xs:, ys:, t:, s:, l:}) if $debug
 
-  puts ys.length
+  # pp 'error' unless ys.length == l
+  ls << l
 end
 
+puts ls
