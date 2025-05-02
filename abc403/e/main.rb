@@ -46,19 +46,21 @@ def remove_start_with(ys, s)
 end
 
 def update_xs(xs, ss)
-  if ss.length == 0
-    xs[:edge] = true    
-  else
-    s, *ss2 = ss
-    xs[s] ||= {}
-    update_xs(xs[s], ss2)
+  xs2 = xs
+  ss.each do |s|
+    xs2[s] ||= {}
+    xs2 = xs2[s]
   end
+  xs2[:edge] = true
 end
 
 def has_edge?(xs, ss)
   n = ss.length
-  (0...n).any? do |i|
-    xs.dig(*ss[0..i], :edge)
+  xs2 = xs
+  ss.each do |s|
+    xs2 = xs2[s]
+    return false unless xs2
+    return true if xs2[:edge]
   end
 end
 
