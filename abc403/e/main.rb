@@ -62,6 +62,7 @@ def has_edge?(xs, ss)
     return false unless xs2
     return true if xs2[:edge]
   end
+  false
 end
 
 TSS.each do |t, s|
