@@ -19,19 +19,32 @@ $debug = !ARGV[0].nil?
 S = STDIN.gets.chomp
 
 def calc
-  ss = S.split('')
-  rs = ss.reverse
+  ss = S.chars.join('*').chars
   n = ss.length
-  
-  n.times do |i|
-    if ss == rs
-      return S[0...i] + ss.join('') + S[0...i].reverse
+  rs = Array.new(n) { 0 }
+  j = 0
+  (0...n).each do |i|
+    if i < j + rs[j]
+      rs[i] = [rs[j - (i - j)], j + rs[j] - i].min
     end
-    ss = ss[1..]
-    rs = rs[...-1]
+
+    if j + rs[j] <= i + rs[i]
+      while 0 <= i - rs[i] && i + rs[i] < n && ss[i - rs[i]] == ss[i + rs[i]]
+        rs[i] += 1
+      end
+      j = i
+    end
   end
+
+  pp ss if $debug
+  pp rs if $debug
+
+  r_max = 0
+  rs.each.with_index do |r, i|
+    r_max = [r, r_max].max if r + i == n
+  end
+  
+  S + S[0...-r_max].reverse
 end
 
-
 puts calc
-
