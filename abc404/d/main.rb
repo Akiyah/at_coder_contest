@@ -43,15 +43,27 @@ def calc_one(zs, zoos, animals)
   cost = 0
 
   s = 0
+  s2 = 0
   zs.each.with_index do |z, i|
-    pp({zs:, i:, t: animals[i]}) if $debug
     if 0 < z
-      s |= (zoos[i] || 0)
       cost += CS[i] * z
     end
+
+    if z == 1
+      t = zoos[i] || 0
+      s2 |= s & t
+      s |= t
+    end
+
+    if z == 2
+      t = zoos[i] || 0
+      s2 |= t
+      s |= t
+    end
+    pp({z:, i:, s:, s2:}) if $debug
   end
 
-  if s == 2 ** M - 1
+  if s2 == 2 ** M - 1
     cost
   else
     nil
@@ -61,15 +73,15 @@ end
 
 def calc(zoos, animals)
   rs = []
-  (0...(2 ** N)).each do |z|
-    zs = z.to_s(2).split('').map(&:to_i).reverse
+  (0...(3 ** N)).each do |z|
+    zs = z.to_s(3).split('').map(&:to_i).reverse
     r = calc_one(zs, zoos, animals)
     pp({r:, z:, zs:}) if $debug
     if r
       rs << r
     end
   end
-  rs.min * 2
+  rs.min
 end
 
 
