@@ -43,8 +43,7 @@ XYS.each do |x, y|
   map_rows[y][x] = true
 end
 
-pp(map_columns) if $debug
-pp(map_rows) if $debug
+pp(map_columns:, map_rows:) if $debug
 
 
 QUERIES.each do |t, i|
@@ -54,13 +53,11 @@ QUERIES.each do |t, i|
 
     if 0 < count_columns[x]
       count_columns[x] = 0
-      map_columns.delete(x)
-      map_rows.each do |y, columns|
-        if columns && columns[x]
-          columns.delete(x)
-          count_rows[y] -= 1
-        end
+      map_columns[x].keys.each do |y|
+        map_rows[y].delete(x)
+        count_rows[y] -= 1
       end
+      map_columns.delete(x)
     end
   else # t == 2
     y = i - 1
@@ -68,14 +65,14 @@ QUERIES.each do |t, i|
 
     if 0 < count_rows[y]
       count_rows[y] = 0
-      map_rows.delete(y)
-      map_columns.each do |x, rows|
-        if rows && rows[y]
-          rows.delete(y)
-          count_columns[x] -= 1
-        end
+      map_rows[y].keys.each do |x|
+        map_columns[x].delete(y)
+        count_columns[x] -= 1
       end
+      map_rows.delete(y)
     end
   end
+
+  pp(map_columns:, map_rows:) if $debug
 end
 
