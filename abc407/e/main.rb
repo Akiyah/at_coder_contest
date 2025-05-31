@@ -6,7 +6,7 @@
 
 
 require "ac-library-rb/priority_queue"
-# require "ac-library-rb/segtree"
+require "ac-library-rb/segtree"
 # require "ac-library-rb/dsu"
 
 # require 'prime'
@@ -16,53 +16,50 @@ $debug = !ARGV[0].nil?
 
 T = STDIN.gets.chomp.to_i
 
+def check(n, bs, i)
+  # pp 'check'
+  r = 0
+  (2 * n).times do |j|
+    if bs[-(j + 1)] || j == 2 * n - 1 - i
+      r += 1
+    else
+      r -= 1
+    end
+    # pp(i:, j:, r:)
+    return false if 0 < r
+  end
+  true
+end
+
 def calc(n, as)
-  paires = (0...(2 * n - 1)).map do |i|
-    { i:, j: i + 1, d: as[i] - as[i + 1], enable: true, prev: nil, next: nil }
-  end
-  paires.each_cons(2) { |pair1, pair2| pair1[:next] = pair2; pair2[:prev] = pair1 }
-  pq = AcLibraryRb::PriorityQueue.new(paires) do |pair1, pair2|
-    pair1[:d] > pair2[:d]
-  end
-  # is = Array.new(2 * n, true)
+  # ( : [1, 1]
+  # ) : [0, 1]
+  # segtree = AcLibraryRb::Segtree.new(2 * n, [0, 1]) do |(s1, d1), (s2, d2)|
+  #   [s1 + s2, d1 + d2]
+  # end
+
+  bs = Array.new(2 * n, false)
+  ais = as.zip(0...(2 * n)).sort_by { |a, i| a }.reverse
+
+  pp(n:, as:, ais:) if $debug
+
   co = 0
   r = 0
 
-  pp(co:, r:) if $debug
-
-  if $debug
-    pp paires.map { |pair| [pair[:i], pair[:j], pair[:d], pair[:enable], pair[:prev] != nil, pair[:next] != nil] }
-  end
-
-  while co < n
-    pair = pq.pop
-    pp(co:, n:, r:, i: pair[:i], j: pair[:j]) if $debug
-    next unless pair[:enable]
-
-    co += 1
-    r += as[pair[:i]]
-
-    if pair[:prev] && pair[:next]
-      pq.push(
-        {
-          i: pair[:prev][:i],
-          j: pair[:next][:j],
-          d: pair[:prev][:d] + pair[:d] + pair[:next][:d],
-          enable: true,
-          prev: pair[:prev][:prev],
-          next: pair[:next][:next],
-        }
-      )
-    end
-    pair[:prev][:enable] = false if pair[:prev]
-    pair[:next][:enable] = false if pair[:next]
-
-    if $debug
-      pp paires.map { |pair| [pair[:i], pair[:j], pair[:d], pair[:enable], pair[:prev] != nil, pair[:next] != nil] }
+  ais.each do |a, i|
+    # segtree.set(2 * n - i - 1, [1, 1])
+    # x = segtree.max_right(0) { |s, d| s * 2 <= d }
+    pp(a:, i:, r:, co:, bs:) if $debug
+    if check(n, bs, i)
+      co += 1
+      r += a
+      bs[i] = true
+      pp(a:, i:, r:, co:, bs:) if $debug
+      return r if co == n
+    else
     end
   end
-
-  r
+  pp 'end'
 end
 
 
