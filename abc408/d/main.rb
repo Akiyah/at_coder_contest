@@ -26,39 +26,43 @@ T = STDIN.gets.chomp.to_i
 
 
 def calc(n, s)
-  i = s.index('1')
-  j = s.rindex('1')
-
-  return 0 if i == nil # すべて0
-
-  s2 = s[i..j]
-  ss = s2.split('').map(&:to_i)
-
-  dp = [0, 0]
-  last_s = 0
+  ss = []
+  last_c = '0'
   l = 1
-  r = 0
-  ss.each do |s|
-    if last_s == s
+  s.chars do |c|
+    if last_c == c
       l += 1
     else
-      if s == 0
-
-      else
-      end
-
-      l = 0
+      ss << [last_c.to_i, l]
+      l = 1
     end
+
+    last_c = c
   end
 
-  r0 = s2.count('0')
-  ls = s2.split('0').map do |as|
-    as.length
+  if 0 < l
+    ss << [s[-1].to_i, l]
   end
 
-  r1 = ls.sum - ls.max
+  pp(n:, s:, ss:) if $debug
 
-  [r0, r1].min
+  dp = [0, n, n] # 0->, 0->1->, 0->1->0->
+  ss.each do |c, l|
+    dp_new = [] # 0->, 0->1->, 0->1->0->
+    if c == 1
+      dp_new[0] = dp[0] + l
+      dp_new[1] = [dp[0], dp[1]].min
+      dp_new[2] = [dp[1] + l,  dp[2] + l].min
+    else # c == 0
+      dp_new[0] = dp[0]
+      dp_new[1] = [dp[0] + l,  dp[1] + l].min
+      dp_new[2] = [dp[1],  dp[2]].min
+    end
+    dp = dp_new
+    pp(dp:) if $debug
+  end
+
+  dp.min
 end
 
 
