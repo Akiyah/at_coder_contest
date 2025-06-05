@@ -6,7 +6,8 @@
 
 
 # require "ac-library-rb/priority_queue"
-require "ac-library-rb/segtree"
+# require "ac-library-rb/segtree"
+require "ac-library-rb/lazy_segtree"
 # require "ac-library-rb/dsu"
 
 # require 'prime'
@@ -16,53 +17,30 @@ $debug = !ARGV[0].nil?
 
 T = STDIN.gets.chomp.to_i
 
-def pick(aibs_sorted, bs, pq, n)
-  while true
-    aib1 = aibs_sorted.pop
-    a1, i1, b1 = aib1
-    next if bs[i1] != nil
-
-    aib2 = pq.prod(i1 + 1, 2 * n)
-    a2, i2, b2 = aib2
-    next if !i2 || bs[i2] != nil
-
-    return [aib1, aib2]
-  end
-end
-
 def calc(n, as)
-  bs = Array.new(2 * n)
-  aibs = as.map.with_index { |a, i| [a, i, true]}
-  aibs_sorted = aibs.sort_by { |a, i, b| a }
+  ais = as.map.with_index { |a, i| [a, i]}
+  ais_sorted = ais.sort_by { |a, i| a }.reverse
 
-  pq = AcLibraryRb::SegTree.new(aibs, [10 ** 9 + 1, nil, false]) do |aib1, aib2|
-    a1, i1, b1 = aib1
-    a2, i2, b2 = aib2
+  vector = (2 * n).times.map { |i| i - 2 * n }
+  e = - 10 ** 6
+  id = 0
 
-    if b1 == b2
-      a1 < a2 ? aib1 : aib2
-    else
-      b1 ? aib1 : aib2
-    end
-  end
+  seg = AcLibraryRb::LazySegtree.new(vector, e, id) { |x, y| [x, y].max }
+  seg.set_mapping{ |f, x| f + x }
+  seg.set_composition{ |f, g| f + g }
 
-  pp(n:, bs:, aibs:, aibs_sorted:) if $debug
+  pp(vector:, seg:) if $debug
 
   co = 0
   r = 0
 
-  while true
-    aib1, aib2 = pick(aibs_sorted, bs, pq, n)
-    a1, i1, b1 = aib1
-    a2, i2, b2 = aib2
+  ais_sorted.each do |a, i|
+    next if 0 < seg.prod(0, i + 1) + 2
 
-    bs[i1] = '('
-    bs[i2] = ')'
+    seg.range_apply(0, i + 1, 2)
+    pp(a:, i:, all_prod: seg.all_prod) if $debug
 
-    pq.set(i1, [a1, i1, false])
-    pq.set(i2, [a2, i2, false])
-
-    r += a1
+    r += a
     co += 1
 
     return r if co == n
@@ -75,7 +53,7 @@ T.times do |t|
   as = (2 * n).times.map do
     STDIN.gets.chomp.to_i
   end
-  # pp(t:, n:, as:) if $debug
+  pp(t:, n:, as:) if $debug
   puts calc(n, as)
 end
 
