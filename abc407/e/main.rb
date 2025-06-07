@@ -33,12 +33,26 @@ def calc(n, as)
 
   co = 0
   r = 0
+  i_min = 2 * n - 1
 
   ais_sorted.each do |a, i|
-    next if 0 < seg.prod(0, i + 1) + 2
+    next if i_min <= i
+
+    # if 0 < seg.prod(0, i + 1) + 2
+    #   # i_min = i
+    #   next
+    # end
 
     seg.range_apply(0, i + 1, 2)
-    pp(a:, i:, all_prod: seg.all_prod) if $debug
+
+    if -2 < seg.prod(0, i + 1)
+      i_min = seg.max_right(0) do |x|
+        x <= -2 # x <= -2 を満たさない最初のi
+      end
+    end
+    # i_min = seg.min_left(i_min) { |v| -2 < v }
+
+    pp(a:, i:, i_min:, all_prod: seg.all_prod) if $debug
 
     r += a
     co += 1
