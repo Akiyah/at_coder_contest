@@ -27,20 +27,18 @@ end
 def move_up(board, h)
   # pp(board:, h:) if $debug
   if h <= H + 1
-    board[h..] #  + Array.new(h) { Array.new(M + 1) }
+    board[h..] + Array.new(h) { Array.new(M + 1) }
   else
-    []
-    # Array.new(H + 1) { Array.new(M + 1) }
+    Array.new(H + 1) { Array.new(M + 1) }
   end
 end
 
 def move_left(board, m)
   (0..H).map do |h|
     if m <= M + 1
-      board[h][m..] #  + Array.new(m)
+      board[h][m..] + Array.new(m)
     else
-      []
-      # Array.new(M + 1)
+      Array.new(M + 1)
     end
   end
 end
@@ -48,7 +46,7 @@ end
 def merge(board1, board2)
   (0..H).map do |h|
     (0..M).map do |m|
-      (board1[h] || [])[m] || (board2[h] || [])[m]
+      board1[h][m] || board2[h][m]
     end
   end
 end
