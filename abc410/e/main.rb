@@ -22,24 +22,43 @@ ABS = (1..N).map do
   STDIN.gets.chomp.split.map(&:to_i)
 end
 
+def update(h, m, m_max_by_h, h_max_by_m)
+  return false if h < 0
+  return false if m < 0
 
-def next_board(board, h, m)
-  (0...(board.length)).map do |i|
-    (board[i + h] || 0) | ((board[i] || 0) >> m)
-  end
+  return false if m_max_by_h[h] && m < m_max_by_h[h]
+  return false if h_max_by_m[m] && h < h_max_by_m[m]
+
+  m_max_by_h[h] = m
+  h_max_by_m[m] = h
+  true
 end
 
 def calc
-  board = Array.new(H + 1)
-  board[H] = 2 ** M
+  m_max_by_h_old = { H => M }
+  h_max_by_m_old = { M => H }
 
   r = 0
   ABS.each do |a, b|
-    pp(a:, b:, r:) if $debug
-    board = next_board(board, a, b)
+    # pp(r:, l: hms.length) if $debug
+    # hms_new = []
+    updated = false
+    m_max_by_h = {}
+    h_max_by_m = {}
+    m_max_by_h_old.each do |h, m|
+      if update(h - a, m, m_max_by_h, h_max_by_m)
+        updated = true
+      end
+      if update(h, m - b, m_max_by_h, h_max_by_m)
+        updated = true
+      end
+    end
 
-    return r if board.all? { |line| line == 0 }
+    return r unless updated
 
+    # hms = hms_new
+    m_max_by_h_old = m_max_by_h
+    h_max_by_m_old = h_max_by_m
     r += 1
   end
 
