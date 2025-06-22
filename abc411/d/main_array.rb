@@ -20,16 +20,15 @@ N, Q = STDIN.gets.chomp.split.map(&:to_i)
 
 
 ss = {
-  server: { left: nil, string: '' },
-  pcs: [{ left: nil, string: '' }] * N
+  server: [''],
+  pcs: [['']] * N
 }
-
 
 def calc(ss, t, p, s)
   if t == 1
     ss[:pcs][p] = ss[:server]
   elsif t == 2
-    ss[:pcs][p] = { left: ss[:pcs][p], string: s }
+    ss[:pcs][p] = [ss[:pcs][p], s]
   else # t == 3
     ss[:server] = ss[:pcs][p]
   end
@@ -43,11 +42,7 @@ Q.times do
 end
 
 ss = ss[:server]
-rs = []
-while ss != nil
-  rs << ss[:string]
-  ss = ss[:left]
-end
+s = ss.flatten.join('')
 
-puts rs.reverse.join('')
+puts s
 
