@@ -27,46 +27,45 @@ end
 
 
 def calc()
-  inv_6 = 6.pow(MOD - 2, MOD)
+  pp('calc') if $debug
+  # bs = []
+  bs = AS.map.with_index do |as, i|
+    # pp(as:, i:) if $debug
+    as.map { |a| [a, i] }
+  end.flatten(1)
+  bs = bs.sort_by { |a, i| a }.reverse
+  # pp(bs:) if $debug
 
-  bs = AS.map do |as|
-    as.sort
-  end.sort_by { |as| as[-1] }.reverse
+  cs = [6] * N
+  c_all = 6.pow(N, MOD)
 
-  pp(AS:, bs:) if $debug
-
-  dp = { 0 => 1 }
-  dp_fix = Hash.new(0)
-  bs.each do |as|
-    dp_new = Hash.new(0)
-    dp.each do |k, v|
-      if as[-1] < k # 今後asの中にはk以上のものが現れない
-        dp_fix[k] = (dp_fix[k] + v) % MOD
-      else
-        as.each do |a|
-          m = [a, k].max
-          dp_new[m] = (dp_new[m] + v * inv_6) % MOD
-        end
-      end
-    end
-    dp = dp_new
-    pp(dp:dp.length, dp_fix:dp_fix.length) if $debug
+  c_invs = []
+  (1..6).each do |c|
+    c_invs[c] = c.pow(MOD - 2, MOD)
   end
 
+  # pp(bs:, cs:, c_all:) if $debug
 
-  r1 = dp.sum do |k, v|
-    k * v
-  end % MOD
-  r2 = dp_fix.sum do |k, v|
-    k * v
-  end % MOD
-  r = (r1 + r2) % MOD
-  # b = 6.pow(N, MOD)
-  # b_inv = b.pow(MOD - 2, MOD)
+  r = 0
+  x = 0
+  bs.each do |a, i|
+    pp(x:, a:, i:, r:, c_all:) if $debug
+    c = cs[i]
+    c_inv = c_invs[c]
 
-  # r = (a * b_inv) % MOD
-  pp(r:) if $debug
-  r
+    r += a * c_all * c_inv
+    r %= MOD
+
+    cs[i] -= 1
+    c_all *= c_inv * (c - 1)
+    c_all %= MOD
+    if cs[i] == 0
+      return (r * (6.pow(N, MOD).pow(MOD - 2, MOD))) % MOD
+    end
+    x += 1
+  end
+
+  (r * (6.pow(N, MOD).pow(MOD - 2, MOD))) % MOD
 end
 
 
