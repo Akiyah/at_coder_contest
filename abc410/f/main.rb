@@ -23,43 +23,41 @@ T = STDIN.gets.chomp.to_i
 #   STDIN.gets.chomp.split.map(&:to_i)
 # end
 
+def count(i, j, i0, j0, bss)
+  bss[i][j] - bss[i0][j] - bss[i][j0] + bss[i0][j0]
+end
 
-def count(dh, dw, i, j, h, w, is)
-  pp(dh:, dw:, i:, j:, h:, w:) if $debug
-  r = is.dig(dh, dw, i, j)
-  return r if r
+def sum_ass(ass, h, w)
+  bss = Array.new(h + 1) { Array.new(w + 1, 0) }
 
-  is[dh] ||= {}
-  is[dh][dw] ||= []
-  is[dh][dw][i] ||= []
-
-  if 1 < dw
-    is[dh][dw][i][j] = is[dh][dw - 1][i][j] + is[dh][1][i][j + dw - 1]
-  else
-    is[dh][dw][i][j] = is[dh - 1][dw][i][j] + is[1][dw][i + dh - 1][j]
+  (1..h).each do |i|
+    (1..w).each do |j|
+      bss[i][j] = bss[i - 1][j] + bss[i][j - 1] - bss[i - 1][j - 1] + ass[i - 1][j - 1]
+    end
   end
 
-  is[dh][dw][i][j]
+  bss
 end
 
 def calc()
   h, w = STDIN.gets.chomp.split.map(&:to_i)
-  ss = h.times.map do
+  sss = h.times.map do
     STDIN.gets.chomp.split('')
   end
 
-  is = {}
-  is[1] = {}
-  is[1][1] = ss.map do |line|
-    line.map { |s| s == '#' ? 1 : -1 }
+  ass = sss.map do |ss|
+    ss.map { |s| s == '#' ? 1 : -1 }
   end
 
+  bss = sum_ass(ass, h, w)
+  pp(ass:, bss:) if $debug
+
   r = 0
-  (1..h).each do |dh|
-    (1..w).each do |dw|
-      (0...(h - dh + 1)).each do |i|
-        (0...(w - dw + 1)).each do |j|
-          r0 = count(dh, dw, i, j, h, w, is)
+  (0...h).each do |i0|
+    (0...w).each do |j0|
+      ((i0 + 1)..h).each do |i|
+        ((j0 + 1)..w).each do |j|
+          r0 = count(i, j, i0, j0, bss)
           r += 1 if r0 == 0
         end
       end
