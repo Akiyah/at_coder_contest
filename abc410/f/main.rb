@@ -49,18 +49,32 @@ def calc()
     ss.map { |s| s == '#' ? 1 : -1 }
   end
 
+  if w < h
+    ass = ass.transpose
+    h, w = w, h
+  end
+
   bss = sum_ass(ass, h, w)
   pp(ass:, bss:) if $debug
 
   r = 0
   (0...h).each do |i0|
-    (0...w).each do |j0|
-      ((i0 + 1)..h).each do |i|
-        ((j0 + 1)..w).each do |j|
-          r0 = count(i, j, i0, j0, bss)
-          r += 1 if r0 == 0
-        end
+    ((i0 + 1)..h).each do |i|
+      cs = Hash.new(0)
+      cs[0] = 1
+      w.times do |j|
+        # c = count(i, j + 1, i0, 0, bss)
+        # c = count(i, j + 1, i0, j, bss)
+        c = bss[i][j + 1] - bss[i0][j + 1] #  - bss[i][0] + bss[i0][0]
+        pp(j:, c:) if $debug
+        cs[c] += 1
       end
+      r0 = 0
+      cs.each do |c, v|
+        r0 += v * (v - 1) / 2
+      end
+      r += r0
+      pp(i0:, i:, cs:, r0:, r:) if $debug
     end
   end
 

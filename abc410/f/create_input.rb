@@ -1,8 +1,8 @@
 T = 1
 puts T
 
-h = 50
-w = 50
+h = 548
+w = 547
 puts [h, w].join(' ')
 
 h.times do
