@@ -59,20 +59,20 @@ def calc()
 
   r = 0
   (0...h).each do |i0|
+    bssi0 = bss[i0]
     ((i0 + 1)..h).each do |i|
+      bssi = bss[i]
       cs = Hash.new(0)
       cs[0] = 1
+      r0 = 0
       w.times do |j|
-        # c = count(i, j + 1, i0, 0, bss)
-        # c = count(i, j + 1, i0, j, bss)
-        c = bss[i][j + 1] - bss[i0][j + 1] #  - bss[i][0] + bss[i0][0]
+        # c = bss[i][j + 1] - bss[i0][j + 1] #  - bss[i][0] + bss[i0][0]
+        c = bssi[j + 1] - bssi0[j + 1] #  - bss[i][0] + bss[i0][0]
         pp(j:, c:) if $debug
+        r0 += cs[c]
         cs[c] += 1
       end
-      r0 = 0
-      cs.each do |c, v|
-        r0 += v * (v - 1) / 2
-      end
+
       r += r0
       pp(i0:, i:, cs:, r0:, r:) if $debug
     end
