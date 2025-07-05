@@ -29,14 +29,17 @@ end
 
 def sum_ass(ass, h, w)
   bss = Array.new(h + 1) { Array.new(w + 1, 0) }
+  bss_plus_hw = Array.new(h + 1) { Array.new(w + 1, 0) }
 
   (1..h).each do |i|
     (1..w).each do |j|
       bss[i][j] = bss[i - 1][j] + bss[i][j - 1] - bss[i - 1][j - 1] + ass[i - 1][j - 1]
+      bss_plus_hw[i][j] = bss[i][j] + h * w
     end
   end
 
-  bss
+
+  [bss, bss_plus_hw]
 end
 
 def calc()
@@ -54,24 +57,38 @@ def calc()
     h, w = w, h
   end
 
-  bss = sum_ass(ass, h, w)
-  pp(ass:, bss:) if $debug
+  bss, bss_plus_hw = sum_ass(ass, h, w)
+  pp(ass:, bss:, bss_plus_hw:) if $debug
 
+  hw = h * w
+  cs = Array.new(2 * hw + 1, 0)
   r = 0
   (0...h).each do |i0|
     bssi0 = bss[i0]
     ((i0 + 1)..h).each do |i|
-      bssi = bss[i]
-      cs = Hash.new(0)
-      cs[0] = 1
+      bssi = bss_plus_hw[i]
+      # cs = Hash.new(0)
+      ds = []
+      # cs = Array.new() # Array.new(2 * hw + 1, 0)
+      cs[hw + 0] = 1
       r0 = 0
-      w.times do |j|
+      (1..w).each do |j|
         # c = bss[i][j + 1] - bss[i0][j + 1] #  - bss[i][0] + bss[i0][0]
-        c = bssi[j + 1] - bssi0[j + 1] #  - bss[i][0] + bss[i0][0]
+        # c = bssi[j + 1] + hw - bssi0[j + 1] #  - bss[i][0] + bss[i0][0]
+        c = bssi[j] - bssi0[j] #  - bss[i][0] + bss[i0][0]
         pp(j:, c:) if $debug
+        # cs[c] ||= 0
         r0 += cs[c]
         cs[c] += 1
+        ds << c
       end
+      ds.each do |c|
+        # r0 += cs[c] * (cs[c] - 1) / 2
+        cs[c] = 0
+      end
+      # cs.each do |c, v|
+      #   r0 += v * (v - 1) / 2
+      # end
 
       r += r0
       pp(i0:, i:, cs:, r0:, r:) if $debug

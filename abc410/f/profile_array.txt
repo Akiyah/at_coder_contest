@@ -1,0 +1,58 @@
+819716
+[34m
+[LineProf] ===============================================================[0m
+
+main.rb
+[90m               |  29  
+[0m[90m               |  30  def sum_ass(ass, h, w)
+[0m[37m   0.8ms   204 |  31    bss = Array.new(h + 1) { Array.new(w + 1, 0) }
+[0m[90m               |  32  
+[0m[31m 661.6ms     1 |  33    (1..h).each do |i|
+[0m[31m 660.9ms   100 |  34      (1..w).each do |j|
+[0m[31m 320.8ms 190000 |  35        bss[i][j] = bss[i - 1][j] + bss[i][j - 1] - bss[i - 1][j - 1] + ass[i - 1][j - 1]
+[0m[90m               |  36      end
+[0m[90m               |  37    end
+[0m[90m              .......[0m
+[90m               |  42  def calc()
+[0m[90m               |  43    h, w = STDIN.gets.chomp.split.map(&:to_i)
+[0m[33m  12.2ms     2 |  44    sss = h.times.map do
+[0m[33m  11.4ms   300 |  45      STDIN.gets.chomp.split('')
+[0m[90m               |  46    end
+[0m[90m               |  47  
+[0m[33m  48.5ms     1 |  48    ass = sss.map do |ss|
+[0m[33m  48.2ms 10100 |  49      ss.map { |s| s == '#' ? 1 : -1 }
+[0m[90m               |  50    end
+[0m[90m               |  51  
+[0m[90m              .......[0m
+[90m               |  55    end
+[0m[90m               |  56  
+[0m[31m 662.4ms     1 |  57    bss = sum_ass(ass, h, w)
+[0m[90m               |  58    pp(ass:, bss:) if $debug
+[0m[90m               |  59  
+[0m[90m               |  60    r = 0
+[0m[31m 25388.5ms     1 |  61    (0...h).each do |i0|
+[0m[37m   0.2ms   100 |  62      bssi0 = bss[i0]
+[0m[31m 25385.9ms   200 |  63      ((i0 + 1)..h).each do |i|
+[0m[33m  10.0ms  5050 |  64        bssi = bss[i]
+[0m[90m               |  65        #cs = Hash.new(0)
+[0m[31m 550.1ms 20200 |  66        cs = Array.new(2 * h * w + 1, 0)
+[0m[33m  28.4ms 15150 |  67        cs[h * w + 0] = 1
+[0m[90m               |  68        r0 = 0
+[0m[31m 24671.0ms  5050 |  69        w.times do |j|
+[0m[90m               |  70          # c = bss[i][j + 1] - bss[i0][j + 1] #  - bss[i][0] + bss[i0][0]
+[0m[31m 4253.3ms 2525000 |  71          c = bssi[j + 1] - bssi0[j + 1] #  - bss[i][0] + bss[i0][0]
+[0m[90m               |  72          pp(j:, c:) if $debug
+[0m[31m 3387.5ms 2020000 |  73          r0 += cs[h * w + c]
+[0m[31m 4257.5ms 2525000 |  74          cs[h * w + c] += 1
+[0m[90m               |  75        end
+[0m[90m               |  76  
+[0m[33m   8.9ms  5050 |  77        r += r0
+[0m[90m               |  78        pp(i0:, i:, cs:, r0:, r:) if $debug
+[0m[90m               |  79      end
+[0m[90m              .......[0m
+[90m               |  84  
+[0m[90m               |  85  
+[0m[31m 26111.9ms     1 |  86  T.times do
+[0m[31m 26111.8ms     2 |  87    puts calc()
+[0m[90m               |  88  end
+[0m
