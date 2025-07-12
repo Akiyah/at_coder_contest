@@ -1,15 +1,16 @@
 $debug = false
 
-N = 1000000
+N = 100000
 
 as = []
 
-N.times do
-  as << 0
+N.times do |i|
+  as << [i, i * i]
 end
 
-N.times do
-  as.pop
+N.times do |i|
+  as << [i, i * i]
+  as.shift
   pp({ l: as.length }) if $debug
 end
 
@@ -19,11 +20,12 @@ end
 
 as = []
 
-N.times do
-  as << 0
+N.times do |i|
+  as << [i, i * i]
 end
 
-N.times do
+N.times do |i|
+  as << [i, i * i]
   as = as[1..]
   pp({ l: as.length }) if $debug
 end

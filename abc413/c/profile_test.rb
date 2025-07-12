@@ -8,6 +8,6 @@ require 'rblineprof-report'
 target = /#{Dir.pwd}\/./
 
 profile = lineprof(target) do
-  require './main_a.rb'
+  require './test.rb'
 end
 LineProf.report(profile)
