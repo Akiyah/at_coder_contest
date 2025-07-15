@@ -24,13 +24,52 @@ MOD = 998244353
 
 
 def calc
+  return 1 if N == 3
+
+
   r = 0
-  (2...N).each do |b|
-    r0 = (N - b) - (N - b) / b
-    pp(b:, r0:) if $debug
-    r += r0
+
+  r += (N + 1) * (N - 1 - 1)
+  r %= MOD
+
+  r -= (N - 1) * (N) / 2 - 1
+  r %= MOD
+
+  n1 = Math.sqrt(N).to_i
+
+  b = N - 1
+  while n1 <= b
+    r1 = (N / b)
+    b_min = 1 + N / (1 + N / b)
+    db = b - (b_min - 1)
+    pp(N:, b:, b_min:, r1:, r:) if $debug
+    r -= r1 * db
     r %= MOD
+    b = b_min - 1
   end
+
+
+  while 2 <= b
+    r1 = (N / b)
+    r -= r1
+    r %= MOD
+    b -= 1
+  end
+
+
+  
+  # (2...n1).each do |b|
+  #   r1 = (N / b)
+  #   r -= r1
+  #   r %= MOD
+  # end
+
+  # (n1...N).each do |b|
+  #   r1 = (N / b)
+  #   r -= r1
+  #   r %= MOD
+  # end
+
   r
 end
 
