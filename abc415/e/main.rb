@@ -34,43 +34,50 @@ end
 def calc(bs, x)
   pp(bs:, x:, AS:, PS:) if $debug
   cs = Array.new(H) { Array.new(W) } # 結果
-  ds = Array.new(H) { Array.new(W) } # 予約
 
-  ds[0][0] = true
   cs[0][0] = x + bs[0][0]
   return false if cs[0][0] < 0
   return true if 0 == H - 1 && 0 == W - 1 # goal
 
   dp = []
   if 1 < H
-    dp << [1, 0]
-    ds[1][0] = true
+    new_c = cs[0][0] + bs[1][0]
+    if 0 <= new_c
+      cs[1][0] = new_c
+      dp << [1, 0]
+    end
   end
   if 1 < W
-    dp << [0, 1]
-    ds[0][1] = true
+    new_c = cs[0][0] + bs[0][1]
+    if 0 <= new_c
+      cs[0][1] = new_c
+      dp << [0, 1]
+    end
   end
 
   while 0 < dp.length
-    pp(dp:, cs:, ds:) if $debug
+    pp(dp:, cs:) if $debug
     i, j = dp.shift
 
-    rs = []
-    rs << cs[i - 1][j] if 0 < i && cs[i - 1][j]
-    rs << cs[i][j - 1] if 0 < j && cs[i][j - 1]
-    c = rs.max + bs[i][j]
-    next if c < 0
-    cs[i][j] = c
+    next if cs[i][j] < 0
 
     return true if i == H - 1 && j == W - 1 # goal
 
-    if i + 1 < H && !ds[i + 1][j]
-      dp << [i + 1, j]
-      ds[i + 1][j] = true
+    if i + 1 < H
+      new_c = cs[i][j] + bs[i + 1][j]
+      if 0 <= new_c
+        old_c = cs[i + 1][j]
+        cs[i + 1][j] = new_c if !old_c || old_c < new_c
+        dp << [i + 1, j] if !old_c
+      end
     end
-    if j + 1 < W && !ds[i][j + 1]
-      dp << [i, j + 1]
-      ds[i][j + 1] = true
+    if j + 1 < W
+      new_c = cs[i][j] + bs[i][j + 1]
+      if 0 <= new_c
+        old_c = cs[i][j + 1]
+        cs[i][j + 1] = new_c if !old_c || old_c < new_c
+        dp << [i, j + 1] if !old_c
+      end
     end
   end
  
