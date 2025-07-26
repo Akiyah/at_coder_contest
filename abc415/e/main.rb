@@ -67,16 +67,24 @@ def calc(bs, x)
       new_c = cs[i][j] + bs[i + 1][j]
       if 0 <= new_c
         old_c = cs[i + 1][j]
-        cs[i + 1][j] = new_c if !old_c || old_c < new_c
-        dp << [i + 1, j] if !old_c
+        if old_c
+          cs[i + 1][j] = new_c if old_c < new_c
+        else
+          cs[i + 1][j] = new_c
+          dp << [i + 1, j]
+        end
       end
     end
     if j + 1 < W
       new_c = cs[i][j] + bs[i][j + 1]
       if 0 <= new_c
         old_c = cs[i][j + 1]
-        cs[i][j + 1] = new_c if !old_c || old_c < new_c
-        dp << [i, j + 1] if !old_c
+        if old_c
+          cs[i][j + 1] = new_c if old_c < new_c
+        else
+          cs[i][j + 1] = new_c
+          dp << [i, j + 1]
+        end
       end
     end
   end
