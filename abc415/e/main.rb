@@ -28,29 +28,29 @@ def creat_bs
     W.times.map do |j|
       AS[i][j] - PS[i + j]
     end
-  end
+  end.flatten
 end
 
 def calc(bs, x)
   pp(bs:, x:, AS:, PS:) if $debug
-  cs = Array.new(H) { Array.new(W) } # 結果
+  cs = Array.new(H * W) # 結果
 
-  cs[0][0] = x + bs[0][0]
-  return false if cs[0][0] < 0
+  cs[0] = x + bs[0]
+  return false if cs[0] < 0
   return true if 0 == H - 1 && 0 == W - 1 # goal
 
   dp = []
   if 1 < H
-    new_c = cs[0][0] + bs[1][0]
+    new_c = cs[0] + bs[1 * W + 0]
     if 0 <= new_c
-      cs[1][0] = new_c
+      cs[1 * W + 0] = new_c
       dp << [1, 0]
     end
   end
   if 1 < W
-    new_c = cs[0][0] + bs[0][1]
+    new_c = cs[0] + bs[0 * W + 1]
     if 0 <= new_c
-      cs[0][1] = new_c
+      cs[0 * W + 1] = new_c
       dp << [0, 1]
     end
   end
@@ -59,30 +59,30 @@ def calc(bs, x)
     pp(dp:, cs:) if $debug
     i, j = dp.shift
 
-    next if cs[i][j] < 0
+    next if cs[i * W + j] < 0
 
     return true if i == H - 1 && j == W - 1 # goal
 
     if i + 1 < H
-      new_c = cs[i][j] + bs[i + 1][j]
+      new_c = cs[i * W + j] + bs[(i + 1) * W + j]
       if 0 <= new_c
-        old_c = cs[i + 1][j]
+        old_c = cs[(i + 1) * W + j]
         if old_c
-          cs[i + 1][j] = new_c if old_c < new_c
+          cs[(i + 1) * W + j] = new_c if old_c < new_c
         else
-          cs[i + 1][j] = new_c
+          cs[(i + 1) * W + j] = new_c
           dp << [i + 1, j]
         end
       end
     end
     if j + 1 < W
-      new_c = cs[i][j] + bs[i][j + 1]
+      new_c = cs[i * W + j] + bs[i * W + j + 1]
       if 0 <= new_c
-        old_c = cs[i][j + 1]
+        old_c = cs[i * W + j + 1]
         if old_c
-          cs[i][j + 1] = new_c if old_c < new_c
+          cs[i * W + j + 1] = new_c if old_c < new_c
         else
-          cs[i][j + 1] = new_c
+          cs[i * W + j + 1] = new_c
           dp << [i, j + 1]
         end
       end
