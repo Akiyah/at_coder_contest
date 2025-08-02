@@ -29,6 +29,7 @@ end
 
 def calc_xiss(xiss, p, a, b)
   new_xiss = []
+  merged_xis_zero = []
   xiss.each do |h|
     xis = h[:xis]
     d = h[:d]
@@ -86,10 +87,11 @@ def calc_xiss(xiss, p, a, b)
             new_xiss << { xis: xis_down, d: d - b, x: nil}
           end
         end
-        new_xiss << { xis: xis_zero, d: nil, x: 0} if 0 < xis_zero.length
+        merged_xis_zero << xis_zero if 0 < xis_zero.length
       end
     end
   end
+  new_xiss << { xis: merged_xis_zero.flatten(1), d: nil, x: 0 } if 0 < merged_xis_zero.length
   new_xiss
 end
 
