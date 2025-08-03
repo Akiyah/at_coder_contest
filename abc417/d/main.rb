@@ -61,8 +61,11 @@ def calc_xis(xis)
         x2 = x - b
         x2 = 0 if x2 < 0
       end
-      xis_by_x_new[x2] ||= []
-      xis_by_x_new[x2] += is
+      if xis_by_x_new[x2]
+        xis_by_x_new[x2] += is
+      else
+        xis_by_x_new[x2] = is
+      end
     end
 
     xis_by_x = xis_by_x_new
@@ -92,7 +95,5 @@ def calc
     puts x
   end
 end
-
-
 
 calc
