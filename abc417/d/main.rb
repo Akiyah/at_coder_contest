@@ -27,7 +27,7 @@ end
 
 def calc_xis(xis)
   d = 0
-  xis_by_x = {}
+  xis_by_x = []
 
   pp(xis:, d:, xis_by_x:) if $debug
   PABS.each do |p, a, b|
@@ -46,15 +46,11 @@ def calc_xis(xis)
     pp(i:, xis_low:, xis_high:) if $debug
 
     xis_new = xis_high
-    xis_low.each do |x, i|
-      xis_by_x[x + d] ||= []
-      xis_by_x[x + d] << i
-    end
-    pp(xis_by_x:) if $debug
 
-    xis_by_x_new = {}
+    xis_by_x_new = []
 
-    xis_by_x.each do |x, is|
+    xis_by_x.each_with_index do |is, x|
+      next unless is
       if x <= p
         x2 = x + a
       else
@@ -68,15 +64,26 @@ def calc_xis(xis)
       end
     end
 
+    xis_low.each do |x, i|
+      if x + d <= p
+        x2 = x + d + a
+      else
+        x2 = x + d - b
+        x2 = 0 if x2 < 0
+      end
+      xis_by_x_new[x2] ||= []
+      xis_by_x_new[x2] << i
+    end
+
     xis_by_x = xis_by_x_new
     xis = xis_new
     d -= b
     pp(xis:, d:, xis_by_x:) if $debug
   end
 
-
   xis_result = xis.map { |x, i| [x + d, i] }
-  xis_by_x.each do |x, is|
+  xis_by_x.each_with_index do |is, x|
+    next unless is
     xis_result += is.map { |i| [x, i] }
   end
 
