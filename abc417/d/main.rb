@@ -28,27 +28,28 @@ end
 def calc_xis(xis)
   d = 0
   xis_by_x = []
+  xis_index = 0
 
   pp(xis:, d:, xis_by_x:) if $debug
   PABS.each do |p, a, b|
     pp(p:, a:, b:) if $debug
     m = [p, b].max
-    i = (0...(xis.length)).bsearch do |j|
+    i = (xis_index...Q).bsearch do |j|
       x2, i2 = xis[j]
       m < x2 + d
     end # 十分に大きいので、個別に扱わないもの
 
     if i
-      xis_low = xis[...i]
-      xis_high = xis[i..]
+      xis_low = xis[xis_index...i]
+      # xis_high = xis[i..]
     else
-      xis_low = xis
-      xis_high = []
+      xis_low = xis[xis_index...]
+      # xis_high = []
     end
 
     pp(i:, xis_low:, xis_high:) if $debug
 
-    xis_new = xis_high
+    # xis_new = xis_high
 
     xis_by_x_new = []
 
@@ -77,24 +78,31 @@ def calc_xis(xis)
       end
     end
 
-    xis_low.each do |x, i|
-      if x + d <= p
-        x2 = x + d + a
+    (xis_index...(i || Q)).each do |j|
+      x3, i3 = xis[j]
+      if x3 + d <= p
+        x2 = x3 + d + a
       else
-        x2 = x + d - b
+        x2 = x3 + d - b
         x2 = 0 if x2 < 0
       end
       xis_by_x_new[x2] ||= []
-      xis_by_x_new[x2] << i
+      xis_by_x_new[x2] << i3
     end
 
     xis_by_x = xis_by_x_new
-    xis = xis_new
+    # xis = xis_new
+    if i
+      xis_index = i
+    else
+      xis_index = Q
+    end
+
     d -= b
     pp(xis:, d:, xis_by_x:) if $debug
   end
 
-  xis_result = xis.map { |x, i| [x + d, i] }
+  xis_result = xis[xis_index..].map { |x, i| [x + d, i] }
   xis_by_x.each_with_index do |is, x|
     next unless is
     xis_result += is.map { |i| [x, i] }
