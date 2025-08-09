@@ -1,0 +1,48 @@
+#!/usr/bin/env ruby
+
+# acc n ContestID
+# oj t -c " ruby main.rb" -d test
+# acc s 
+
+
+# require "ac-library-rb/priority_queue"
+# require "ac-library-rb/segtree"
+# require "ac-library-rb/dsu"
+
+# pq = AcLibraryRb::PriorityQueue.new
+
+# require 'prime'
+# pd = Prime.prime_division(a)
+
+$debug = !ARGV[0].nil?
+
+N = STDIN.gets.chomp.to_i
+XYS = (1..N).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
+
+
+ds = {}
+XYS.combination(2) do |(x1, y1), (x2, y2)|
+  pp(x1:, y1:, x2:, y2:) if $debug
+  dx = (x1 - x2)
+  dy = (y1 - y2)
+  if dx < 0
+    dx *= -1
+    dy *= -1
+  end
+  g = dx.gcd(dy)
+  dx /= g
+  dy /= g
+  ds[[dx, dy]] ||= 0
+  ds[[dx, dy]] += 1
+end
+pp(ds) if $debug
+
+r = 0
+ds.each do |(dx, dy), c|
+  r += c * (c - 1) / 2
+end
+
+puts r
+
