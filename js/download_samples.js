@@ -20,7 +20,7 @@ javascript:(function(){
       const url = URL.createObjectURL(content);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'download.zip';
+      a.download = 'atcoder_samples.zip';
       a.click();
       URL.revokeObjectURL(url);
     });

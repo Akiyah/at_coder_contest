@@ -8,7 +8,7 @@ javascript:(function(){
 
   const elements = document.querySelectorAll('.lang-ja [id^="pre-sample"]');
   elements.forEach((el, index) => {
-    const content = el.innerText + '\n';
+    const content = el.innerText;
     const n = Math.floor(index / 2) + 1;
     const ext = index % 2 == 0 ? 'in' : 'out';
     if (!samples[contest][rank][n]) { samples[contest][rank][n] = {}; }
