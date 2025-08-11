@@ -1,19 +1,29 @@
 javascript:(function(){
-  const elements = document.querySelectorAll('.lang-ja [id^="pre-sample"]');
-  var prefix = location.pathname.split('/').filter(Boolean).pop() || 'prefix';
-  elements.forEach((el, index) => {
-    const content = el.innerText + '\n';
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const ext = index % 2 == 0 ? 'in' : 'out';
-    const n = Math.floor(index / 2) + 1;
-    const filename = `${prefix}_${n}.${ext}`;
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  });
+  const script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+  script.onload = function() {
+    const samples = JSON.parse(localStorage.getItem('at_coder_samples'));
+    if (!samples) { return; }
+
+    const zip = new JSZip();
+    for (let [contest, ranks] of Object.entries(samples)) {
+      for (let [rank, ns] of Object.entries(ranks)) {
+        for (let [n, exts] of Object.entries(ns)) {
+          for (let [ext, content] of Object.entries(exts)) {
+            zip.file(contest + '/' + rank + '/test/sample-' + n + '.' + ext, content);
+          }
+        }
+      }
+    }
+
+    zip.generateAsync({type:"blob"}).then(function(content){
+      const url = URL.createObjectURL(content);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'download.zip';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  };
+  document.body.appendChild(script);
 })();
