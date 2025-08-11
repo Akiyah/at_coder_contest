@@ -33,7 +33,7 @@ javascript:(function() {
         const url = URL.createObjectURL(content);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'atcoder_samples.zip';
+        a.download = `atcoder_samples_${new Date().toISOString()}.zip`;
         a.click();
         URL.revokeObjectURL(url);
       });
@@ -67,7 +67,7 @@ javascript:(function() {
           callback(rank, ranks);
         }
       }
-    }
+    };
     req.open('GET', `${contest}_${rank}`, true);
     req.send(null);
   }
