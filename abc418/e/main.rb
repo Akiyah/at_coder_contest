@@ -24,25 +24,36 @@ end
 
 ds = {}
 XYS.combination(2) do |(x1, y1), (x2, y2)|
-  pp(x1:, y1:, x2:, y2:) if $debug
+  # pp(x1:, y1:, x2:, y2:) if $debug
   dx = (x1 - x2)
   dy = (y1 - y2)
   if dx < 0
     dx *= -1
     dy *= -1
   end
+  if dx == 0 && dy < 0
+    dy *= -1
+  end
   g = dx.gcd(dy)
   dx /= g
   dy /= g
-  ds[[dx, dy]] ||= 0
-  ds[[dx, dy]] += 1
+  ds[[dx, dy]] ||= {}
+  ds[[dx, dy]][g] ||= 0
+  ds[[dx, dy]][g] += 1
 end
-pp(ds) if $debug
+pp(ds: ds.sort) if $debug
 
 r = 0
-ds.each do |(dx, dy), c|
-  r += c * (c - 1) / 2
+r_minus = 0
+ds.each do |(dx, dy), gs|
+  c_sum = 0
+  gs.each do |g, c|
+    c_sum += c
+    r_minus += c * (c - 1) / 2
+  end
+  r += c_sum * (c_sum - 1) / 2
 end
 
-puts r
+pp(r:, r_minus:) if $debug
+puts r - r_minus / 2
 
