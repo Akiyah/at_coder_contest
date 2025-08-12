@@ -37,21 +37,24 @@ XYS.combination(2) do |(x1, y1), (x2, y2)|
   g = dx.gcd(dy)
   dx /= g
   dy /= g
-  ds[[dx, dy]] ||= {}
-  ds[[dx, dy]][g] ||= 0
-  ds[[dx, dy]][g] += 1
+  ds[dx] ||= {}
+  ds[dx][dy] ||= {}
+  ds[dx][dy][g] ||= 0
+  ds[dx][dy][g] += 1
 end
 pp(ds: ds.sort) if $debug
 
 r = 0
 r_minus = 0
-ds.each do |(dx, dy), gs|
-  c_sum = 0
-  gs.each do |g, c|
-    c_sum += c
-    r_minus += c * (c - 1) / 2
+ds.each do |dx, dys|
+  dys.each do |dy, gs|
+    c_sum = 0
+    gs.each do |g, c|
+      c_sum += c
+      r_minus += c * (c - 1) / 2
+    end
+    r += c_sum * (c_sum - 1) / 2
   end
-  r += c_sum * (c_sum - 1) / 2
 end
 
 pp(r:, r_minus:) if $debug
