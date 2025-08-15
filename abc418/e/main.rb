@@ -44,22 +44,15 @@ XYS.sort.combination(2) do |(x1, y1), (x2, y2)|
   end
   g = dx.gcd(dy)
 
-  dst = ds[t] || {}
-  dstg = dst[g] || 0
-  dstg += 1
-  dst[g] = dstg
-  ds[t] = dst
+  ds[t] ||= {}
+  ds[t][g] ||= 0
+  ds[t][g] += 1
 
-  ds_sumt = ds_sum[t] || 0
-  ds_sumt += 1
-  ds_sum[t] = ds_sumt
+  ds_sum[t] ||= 0
+  ds_sum[t] += 1
 
-  if 1 < dstg
-    r_minus += dstg - 1
-  end
-  if 1 < ds_sumt
-    r += ds_sumt - 1
-  end
+  r_minus += ds[t][g] - 1
+  r += ds_sum[t] - 1
 end
 pp(ds: ds.sort) if $debug
 
