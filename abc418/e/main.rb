@@ -22,8 +22,17 @@ XYS = (1..N).map do
 end
 
 
-ds = {}
-XYS.combination(2) do |(x1, y1), (x2, y2)|
+# ds = {}
+# ds = Hash.new { Hash.new { Hash.new { 0 } } }
+
+ds = Hash.new do |hash1, key1|
+  hash1[key1] = Hash.new do |hash2, key2|
+    hash2[key2] = Hash.new do |hash3, key3|
+      hash3[key3] = 0
+    end
+  end
+end
+XYS.sort.combination(2) do |(x1, y1), (x2, y2)|
   # pp(x1:, y1:, x2:, y2:) if $debug
   dx = (x1 - x2)
   dy = (y1 - y2)
@@ -37,9 +46,9 @@ XYS.combination(2) do |(x1, y1), (x2, y2)|
   g = dx.gcd(dy)
   dx /= g
   dy /= g
-  ds[dx] ||= {}
-  ds[dx][dy] ||= {}
-  ds[dx][dy][g] ||= 0
+  # ds[dx] ||= {}
+  # ds[dx][dy] ||= {}
+  # ds[dx][dy][g] ||= 0
   ds[dx][dy][g] += 1
 end
 pp(ds: ds.sort) if $debug
