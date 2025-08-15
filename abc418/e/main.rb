@@ -36,13 +36,13 @@ XYS.sort.combination(2) do |(x1, y1), (x2, y2)|
   # pp(x1:, y1:, x2:, y2:) if $debug
   dx = (x1 - x2)
   dy = (y1 - y2)
-  if dx < 0
-    dx *= -1
-    dy *= -1
-  end
-  if dx == 0 && dy < 0
-    dy *= -1
-  end
+  # if dx < 0
+  #   dx *= -1
+  #   dy *= -1
+  # end
+  # if dx == 0 && dy < 0
+  #   dy *= -1
+  # end
   g = dx.gcd(dy)
   dx /= g
   dy /= g
