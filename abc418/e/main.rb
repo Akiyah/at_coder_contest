@@ -31,12 +31,10 @@ XYS.sort.combination(2) do |(x1, y1), (x2, y2)|
   g = dx.gcd(dy)
   dx /= g
   dy /= g
-  ds[dx] ||= {}
-  ds[dx][dy] ||= 0
+  ds[dx] ||= Hash.new(0)
   ds[dx][dy] += 1
 
-  ds_minus[x2 + x1] ||= {}
-  ds_minus[x2 + x1][y2 + y1] ||= 0
+  ds_minus[x2 + x1] ||= Hash.new(0)
   ds_minus[x2 + x1][y2 + y1] += 1
 end
 pp(ds: ds.sort) if $debug
