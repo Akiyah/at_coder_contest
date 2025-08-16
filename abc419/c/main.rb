@@ -16,11 +16,19 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+RCS = (1..N).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
 
+r_max = RCS.map { |r, c| r }.max
+r_min = RCS.map { |r, c| r }.min
+c_max = RCS.map { |r, c| c }.max
+c_min = RCS.map { |r, c| c }.min
+
+
+dr = (r_max - r_min + 1) / 2
+dc = (c_max - c_min + 1) / 2
+
+puts [dr, dc].max
 

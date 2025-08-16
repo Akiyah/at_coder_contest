@@ -16,11 +16,14 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+S = STDIN.gets.chomp
 
-
+h = {}
+h['red'] = 'SSS'
+h['blue'] = 'FFF'
+h['green'] = 'MMM'
+if h[S]
+  puts h[S]
+else
+  puts 'Unknown'
+end

@@ -40,20 +40,29 @@ ms2 = []
 mcs.each do |m, c|
   ms2 << m unless c % 2 == 0
 end
-pp(ms2:) if $debug
 
 b = true
 rs = []
-j = 0
-pp(rs:) if $debug
-N.times do |i|
-  if ms2[j] && ms2[j] <= i
-    b = !b
-    j += 1
+last_m = 0
+ms2.each do |m|
+  if last_m < m
+    if b
+      rs += ss[last_m...m]
+    else
+      rs += ts[last_m...m]
+    end
   end
 
-  rs[i] = b ? ss[i] : ts[i]
-  pp(rs:, i:, j:, b:) if $debug
+  b = !b
+  last_m = m
+end
+
+if last_m < N
+  if b
+    rs += ss[last_m..]
+  else
+    rs += ts[last_m..]
+  end
 end
 
 pp(rs:) if $debug

@@ -23,39 +23,18 @@ LRS = (1..M).map do
   STDIN.gets.chomp.split.map(&:to_i)
 end
 
-ss = S.chars
-ts = T.chars
-
-ms = []
-LRS.each { |l, r| ms << l - 1 }
+bs = Array.new(N) { true }
+pp(bs:) if $debug
 LRS.each do |l, r|
-  ms << r + 1 - 1 if r + 1 - 1 < N
-end
-
-ms = ms.sort
-pp(ms:) if $debug
-
-mcs = ms.group_by {|i| i}.transform_values(&:count)
-ms2 = []
-mcs.each do |m, c|
-  ms2 << m unless c % 2 == 0
-end
-pp(ms2:) if $debug
-
-b = true
-rs = []
-j = 0
-pp(rs:) if $debug
-N.times do |i|
-  if ms2[j] && ms2[j] <= i
-    b = !b
-    j += 1
+  (l..r).each do |i|
+    bs[i - 1] = !bs[i - 1]
   end
-
-  rs[i] = b ? ss[i] : ts[i]
-  pp(rs:, i:, j:, b:) if $debug
+  pp(bs:) if $debug
 end
 
-pp(rs:) if $debug
-puts rs.join('')
+ss = bs.map.with_index do |b, i|
+  b ? S[i] : T[i]
+end
+
+puts ss.join('')
 

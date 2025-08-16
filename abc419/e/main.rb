@@ -16,11 +16,29 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M, L = STDIN.gets.chomp.split.map(&:to_i)
+AS = STDIN.gets.chomp.split.map(&:to_i)
+
+
+def calc()
+  ls = (N - L + 1).times.map do |i|
+    AS[i...(i + L)].sum % M
+  end
+
+  pp(ls:) if $debug
+
+
+
+
+
+end
+
+
+
+puts calc()
+
+
+
+
 
 
