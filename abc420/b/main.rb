@@ -16,11 +16,31 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M = STDIN.gets.chomp.split.map(&:to_i)
+SS = (1..N).map do
+  STDIN.gets.chomp
+end
+
+ts = Array.new(N, 0)
+M.times do |j|
+  x = N.times.select { |i| SS[i][j] == '0' }.count
+  y = N.times.select { |i| SS[i][j] == '1' }.count
+
+  if x == 0 || y == 0
+    N.times { |i| ts[i] += 1 }
+  elsif x < y
+    N.times { |i| ts[i] += 1 if SS[i][j] == '0' }
+  else
+    N.times { |i| ts[i] += 1 if SS[i][j] == '1' }
+  end
+end
+
+m = ts.max
+rs = []
+N.times { |i| rs << i + 1 if ts[i] == m }
+
+puts rs.join(' ')
+
+
 
 

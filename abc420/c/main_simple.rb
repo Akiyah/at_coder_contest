@@ -27,36 +27,14 @@ end
 
 as = AS.dup
 bs = BS.dup
-m = N.times.map { |i| [as[i], bs[i]].min }.sum
-
 CXVS.each do |c, x, v|
   if c == 'A'
-    if as[x - 1] < bs[x - 1]
-      if v < bs[x - 1]
-        m = m - as[x - 1] + v
-      else
-        m = m - as[x - 1] + bs[x - 1]
-      end
-    else
-      if v < bs[x - 1]
-        m = m - bs[x - 1] + v
-      end
-    end
     as[x - 1] = v
   else
-    if bs[x - 1] < as[x - 1]
-      if v < as[x - 1]
-        m = m - bs[x - 1] + v
-      else
-        m = m - bs[x - 1] + as[x - 1]
-      end
-    else
-      if v < as[x - 1]
-        m = m - as[x - 1] + v
-      end
-    end
     bs[x - 1] = v
   end
 
-  puts m
+  r = N.times.map { |i| [as[i], bs[i]].min }.sum
+  puts r
+
 end
