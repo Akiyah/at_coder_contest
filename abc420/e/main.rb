@@ -20,10 +20,13 @@ N, Q = STDIN.gets.chomp.split.map(&:to_i)
 
 def calc_1(u, v, nodes, paths, dsu, groups, blacks) # u < v
   paths[u] << v
-  unless dsu.same?(u, v)
-    l = dsu.merge(u, v)
-    groups[l] = groups[u] + groups[v]
-    blacks[l] = blacks[u] + blacks[v]
+  lu = dsu.leader(u)
+  lv = dsu.leader(v)
+
+  unless lu == lv
+    l = dsu.merge(lu, lv)
+    groups[l] = groups[lu] + groups[lv]
+    blacks[l] = blacks[lu] + blacks[lv]
   end
 end
 
@@ -55,7 +58,7 @@ def calc
   dsu = AcLibraryRb::DSU.new(N)
   groups = N.times.map { |i| [i] }
   blacks = N.times.map { |i| 0 }
-  pp(nodes:, dsu:, groups:, blacks:) if $debug
+  pp(nodes:, dsu_groups: dsu.groups, groups:, blacks:) if $debug
   Q.times do
     query = STDIN.gets.chomp.split.map(&:to_i)
     pp(query:) if $debug
@@ -66,7 +69,7 @@ def calc
     else
       calc_3(query[1] - 1, nodes, paths, dsu, groups, blacks)
     end
-    pp(nodes:, dsu:, groups:, blacks:) if $debug
+    pp(nodes:, dsu_groups: dsu.groups, groups:, blacks:) if $debug
   end
 end
 
