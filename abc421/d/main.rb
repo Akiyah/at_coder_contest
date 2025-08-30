@@ -30,47 +30,46 @@ end
 def calc_one(ap, bp, s, t, l)
   pp(ap:, bp:, s:, t:, l:) if $debug
   # 同じ方向
-  if ap == bp
-    return s == t ? l : 0
+  if s == t
+    return ap == bp ? l : 0
   end
 
-  return 0 if s == t
+  # 同じスタート地点（で方向が違う）
+  if ap == bp
+    return 0
+  end
 
   # 逆方向
   if (s == 'U') && (t == 'D')
     return 0 unless ap[1] == bp[1]
-    return 0 if ap[0] == bp[0]
-    if ((ap[0] - bp[0]) % 2 == 0) && ((ap[0] - bp[0]) <= 2 * l)
+    if ((ap[0] - bp[0]) % 2 == 0) && (0 < (ap[0] - bp[0])) && ((ap[0] - bp[0]) <= 2 * l)
       return 1
     end
     return 0
   end
   if (s == 'D') && (t == 'U')
     return 0 unless ap[1] == bp[1]
-    return 0 if ap[0] == bp[0]
-    if ((ap[0] - bp[0]) % 2 == 0) && ((bp[0] - ap[0]) <= 2 * l)
+    if ((ap[0] - bp[0]) % 2 == 0) && (0 < (bp[0] - ap[0])) && ((bp[0] - ap[0]) <= 2 * l)
       return 1
     end
     return 0
   end
   if (s == 'L') && (t == 'R')
     return 0 unless ap[0] == bp[0]
-    return 0 if ap[1] == bp[1]
-    if ((ap[1] - bp[1]) % 2 == 0) && ((ap[1] - bp[1]) <= 2 * l)
+    if ((ap[1] - bp[1]) % 2 == 0) && (0 < (ap[1] - bp[1])) && ((ap[1] - bp[1]) <= 2 * l)
       return 1
     end
     return 0
   end
   if (s == 'R') && (t == 'L')
     return 0 unless ap[0] == bp[0]
-    return 0 if ap[1] == bp[1]
-    if ((ap[1] - bp[1]) % 2 == 0) && ((bp[1] - ap[1]) <= 2 * l)
+    if ((ap[1] - bp[1]) % 2 == 0) && (0 < (bp[1] - ap[1])) && ((bp[1] - ap[1]) <= 2 * l)
       return 1
     end
     return 0
   end
 
-  # 直行の場合
+  # 直交の場合
   if (s == 'D') && (t == 'R')
     d = (bp[0] - ap[0])
     if 0 < d && d <= l
