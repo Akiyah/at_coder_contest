@@ -27,124 +27,102 @@ TBS = (1..L).map do
   [t, b.to_i]
 end
 
-def calc_one(ap, bp, s, t, l)
+def calc_one_normal(bp, s, t, l) # s == 'D', t !== 'L'
   pp(ap:, bp:, s:, t:, l:) if $debug
   # 同じ方向
-  if s == t
-    return ap == bp ? l : 0
+  if 'D' == t
+    return [0, 0] == bp ? l : 0
   end
 
   # 同じスタート地点（で方向が違う）
-  if ap == bp
+  if [0, 0] == bp
     return 0
   end
 
   # 逆方向
-  if (s == 'U') && (t == 'D')
-    return 0 unless ap[1] == bp[1]
-    if ((ap[0] - bp[0]) % 2 == 0) && (0 < (ap[0] - bp[0])) && ((ap[0] - bp[0]) <= 2 * l)
-      return 1
-    end
-    return 0
-  end
-  if (s == 'D') && (t == 'U')
-    return 0 unless ap[1] == bp[1]
-    if ((ap[0] - bp[0]) % 2 == 0) && (0 < (bp[0] - ap[0])) && ((bp[0] - ap[0]) <= 2 * l)
-      return 1
-    end
-    return 0
-  end
-  if (s == 'L') && (t == 'R')
-    return 0 unless ap[0] == bp[0]
-    if ((ap[1] - bp[1]) % 2 == 0) && (0 < (ap[1] - bp[1])) && ((ap[1] - bp[1]) <= 2 * l)
-      return 1
-    end
-    return 0
-  end
-  if (s == 'R') && (t == 'L')
-    return 0 unless ap[0] == bp[0]
-    if ((ap[1] - bp[1]) % 2 == 0) && (0 < (bp[1] - ap[1])) && ((bp[1] - ap[1]) <= 2 * l)
+  if t == 'U'
+    return 0 unless 0 == bp[1]
+    if (bp[0] % 2 == 0) && (0 < bp[0]) && (bp[0] <= 2 * l)
       return 1
     end
     return 0
   end
 
   # 直交の場合
-  if (s == 'D') && (t == 'R')
-    d = (bp[0] - ap[0])
+  if t == 'R'
+    d = bp[0]
     if 0 < d && d <= l
-      if (bp[1] + d == ap[1])
+      if (bp[1] + d == 0)
         return 1
       end
     end
     return 0
   end
-  if (s == 'D') && (t == 'L')
-    d = (bp[0] - ap[0])
-    if 0 < d && d <= l
-      if (bp[1] - d == ap[1])
-        return 1
-      end
-    end
-    return 0
+  # if t == 'L'
+  #   d = bp[0]
+  #   if 0 < d && d <= l
+  #     if (bp[1] - d == 0)
+  #       return 1
+  #     end
+  #   end
+  #   return 0
+  # end
+end
+
+def calc_one(ap, bp, s, t, l)
+  pp(ap:, bp:, s:, t:, l:) if $debug
+
+  # ap = [0, 0] にする
+  bp = [bp[0] - ap[0], bp[1] - ap[1]]
+
+  # s が横方向は縦方向にする  
+  if s == 'L'
+    bp = [bp[1], bp[0]]
+    s = 'U'
+    t = if t == 'U'
+          'L'
+        elsif t == 'D'
+          'R'
+        elsif t == 'R'
+          'D'
+        else # t == 'L'
+          'U'
+        end
   end
-  if (s == 'U') && (t == 'R')
-    d = (ap[0] - bp[0])
-    if 0 < d && d <= l
-      if (bp[1] + d == ap[1])
-        return 1
-      end
-    end
-    return 0
-  end
-  if (s == 'U') && (t == 'L')
-    d = (ap[0] - bp[0])
-    if 0 < d && d <= l
-      if (bp[1] - d == ap[1])
-        return 1
-      end
-    end
-    return 0
+  if s == 'R'
+    bp = [bp[1], bp[0]]
+    s = 'D'
+    t = if t == 'U'
+          'L'
+        elsif t == 'D'
+          'R'
+        elsif t == 'R'
+          'D'
+        else # t == 'L'
+          'U'
+        end
   end
 
-  if (s == 'R') && (t == 'D')
-    d = (bp[1] - ap[1])
-    if 0 < d && d <= l
-      if (bp[0] + d == ap[0])
-        return 1
-      end
-    end
-    return 0
-  end
-  if (s == 'R') && (t == 'U')
-    d = (bp[1] - ap[1])
-    if 0 < d && d <= l
-      if (bp[0] - d == ap[0])
-        return 1
-      end
-    end
-    return 0
-  end
-  if (s == 'L') && (t == 'D')
-    d = (ap[1] - bp[1])
-    if 0 < d && d <= l
-      if (bp[0] + d == ap[0])
-        return 1
-      end
-    end
-    return 0
-  end
-  if (s == 'L') && (t == 'U')
-    d = (ap[1] - bp[1])
-    if 0 < d && d <= l
-      if (bp[0] - d == ap[0])
-        return 1
-      end
-    end
-    return 0
+  # s が上方向の場合は下方向にする
+  if s == 'U'
+    bp = [-bp[0], bp[1]]
+    s = 'D'
+    t = if t == 'U'
+          'D'
+        elsif t == 'D'
+          'U'
+        else
+          t
+        end
   end
 
+  # t が左方向の場合は右方向にする
+  if t == 'L'
+    bp = [bp[0], -bp[1]]
+    t = 'R'
+  end
 
+  calc_one_normal(bp, s, t, l) # s == 'D'
 end
 
 def move(ap, s, l)
