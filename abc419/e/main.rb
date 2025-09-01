@@ -20,42 +20,39 @@ N, M, L = STDIN.gets.chomp.split.map(&:to_i)
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
 
-def create_xs(xs_short)
-  xs = xs_short + Array.new(N - L)
+def calc_cost(i, j) # i番目((i + nL)番目)に何個か足してjにするコストを計算
+  (i...N).step(L).map do |i2|
+    (j - AS[i2]) % M
+  end.sum
+end
 
-  xs[L - 1] = (-xs[0...(L - 1)].sum - AS[0...L].sum) % M
+def create_new_dp(i, dp)
+  dp_new = Array.new(M)
 
-  (L...N).each do |i|
-    xs[i] = (xs[i - L] + AS[i -  L] - AS[i]) % M
+  dp.each_with_index do |cost1, j1|
+    (0...M).each do |j2|
+      cost2 = calc_cost(i, j2)
+      cost = cost1 + cost2
+      j = (j1 + j2) % M
+      if dp_new[j]
+        dp_new[j] = [dp_new[j], cost].min
+      else
+        dp_new[j] = cost
+      end
+    end
   end
-
-  xs
+  dp_new
 end
 
 
 def calc()
-  ms = (0...M).to_a
-  xs_shorts = ms.product(*([ms] * (L - 2)))
-  pp(xs_shorts:) if $debug
+  dp = [0]
 
-  cs = xs_shorts.map do |xs_short|
-    xs = create_xs(xs_short)
-
-    c = xs.map { |x| x % M }.sum
-    pp(xs_short: ,xs:, c:) if $debug
-    c
+  (0...L).each do |i|
+    dp = create_new_dp(i, dp)
   end
 
-  # pp(cs:) if $debug
-  cs.min
+  dp[0]
 end
 
-
-
 puts calc()
-
-
-
-
-
-
