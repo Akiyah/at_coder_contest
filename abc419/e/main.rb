@@ -29,9 +29,9 @@ end
 def create_new_dp(i, dp)
   dp_new = Array.new(M)
 
-  dp.each_with_index do |cost1, j1|
-    (0...M).each do |j2|
-      cost2 = calc_cost(i, j2)
+  (0...M).each do |j2|
+    cost2 = calc_cost(i, j2)
+    dp.each_with_index do |cost1, j1|
       cost = cost1 + cost2
       j = (j1 + j2) % M
       if dp_new[j]
