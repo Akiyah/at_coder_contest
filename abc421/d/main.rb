@@ -27,22 +27,22 @@ TBS = (1..L).map do
   [t, b.to_i]
 end
 
-def calc_one_normal(bp, s, t, l) # s == 'D', t !== 'L'
-  pp(ap:, bp:, s:, t:, l:) if $debug
+def calc_one_normal((r, c), s, t, l) # s == 'D', t !== 'L'
+  pp(r:, c:, s:, t:, l:) if $debug
   # 同じ方向
   if 'D' == t
-    return [0, 0] == bp ? l : 0
+    return [0, 0] == [r, c] ? l : 0
   end
 
-  # 同じスタート地点（で方向が違う）
-  if [0, 0] == bp
-    return 0
-  end
+  # # 同じスタート地点（で方向が違う）
+  # if [0, 0] == [r, c]
+  #   return 0
+  # end
 
   # 逆方向
   if t == 'U'
-    return 0 unless 0 == bp[1]
-    if (bp[0] % 2 == 0) && (0 < bp[0]) && (bp[0] <= 2 * l)
+    return 0 unless c == 0
+    if (r % 2 == 0) && (0 < r) && (r <= 2 * l)
       return 1
     end
     return 0
@@ -50,23 +50,13 @@ def calc_one_normal(bp, s, t, l) # s == 'D', t !== 'L'
 
   # 直交の場合
   if t == 'R'
-    d = bp[0]
-    if 0 < d && d <= l
-      if (bp[1] + d == 0)
+    if 0 < r && r <= l
+      if (c + r == 0)
         return 1
       end
     end
     return 0
   end
-  # if t == 'L'
-  #   d = bp[0]
-  #   if 0 < d && d <= l
-  #     if (bp[1] - d == 0)
-  #       return 1
-  #     end
-  #   end
-  #   return 0
-  # end
 end
 
 def calc_one(ap, bp, s, t, l)
