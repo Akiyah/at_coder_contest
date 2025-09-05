@@ -69,41 +69,19 @@ def calc_one(ap, bp, s, t, l)
   if s == 'L'
     bp = [bp[1], bp[0]]
     s = 'U'
-    t = if t == 'U'
-          'L'
-        elsif t == 'D'
-          'R'
-        elsif t == 'R'
-          'D'
-        else # t == 'L'
-          'U'
-        end
+    t = { 'U' => 'L', 'D' => 'R', 'R' => 'D',  'L' => 'U' }[t]
   end
   if s == 'R'
     bp = [bp[1], bp[0]]
     s = 'D'
-    t = if t == 'U'
-          'L'
-        elsif t == 'D'
-          'R'
-        elsif t == 'R'
-          'D'
-        else # t == 'L'
-          'U'
-        end
+    t = { 'U' => 'L', 'D' => 'R', 'R' => 'D',  'L' => 'U' }[t]
   end
 
   # s が上方向の場合は下方向にする
   if s == 'U'
     bp = [-bp[0], bp[1]]
     s = 'D'
-    t = if t == 'U'
-          'D'
-        elsif t == 'D'
-          'U'
-        else
-          t
-        end
+    t = { 'U' => 'D', 'D' => 'U', 'L' => 'L',  'R' => 'R' }[t]
   end
 
   # t が左方向の場合は右方向にする
@@ -140,11 +118,7 @@ def calc()
   t, b = TBS[jb]
   pp(i:, ap:, bp:, ja:, jb:, s:, a:, b:, r:) if $debug
   while i < N
-    if a < b
-      l = a
-    else
-      l = b
-    end
+    l = [a, b].min
     
     # pp calc_one(ap, bp, s, t, l) if $debug
     r += calc_one(ap, bp, s, t, l)

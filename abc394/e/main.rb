@@ -66,6 +66,20 @@ def calc
 
   pp({cs:}) if $debug
 
+
+  cs2 = Array.new(N) { Array.new(N) { [] } }
+  cs.each do |c, csc|
+    csc[:desc].each do |i, i2s|
+      csc[:asc].each do |j, j2s|
+        cs2[i][j] += i2s.product(j2s)
+      end
+    end
+  end
+
+  pp({cs2:}) if $debug
+
+
+
   rs = Array.new(N) { Array.new(N) }
 
   # 0歩

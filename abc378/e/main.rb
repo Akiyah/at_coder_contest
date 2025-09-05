@@ -21,6 +21,8 @@ $debug = !ARGV[0].nil?
 N, M = STDIN.gets.chomp.split.map(&:to_i)
 AS = STDIN.gets.chomp.split.map(&:to_i)
 as = AS.map { |a| a % M }
+pp AS if $debug
+pp as if $debug
 
 def calc(as)
   bs = []
