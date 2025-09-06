@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# acc n ContestID
+# acc N ContestID
 # oj t -c " ruby main.rb" -d test
 # acc s 
 
@@ -16,43 +16,47 @@
 
 $debug = !ARGV[0].nil?
 
-N, M, L = STDIN.gets.chomp.split.map(&:to_i)
-AS = STDIN.gets.chomp.split.map(&:to_i)
 
-INF = N * M
+N, M, L = STDIN.gets.split.map(&:to_i)
+AS = STDIN.gets.split.map(&:to_i)
 
-def calc_cost(i, j) # i番目((i + nL)番目)に何個か足してjにするコストを計算
-  (i...N).step(L).map do |i2|
-    (j - AS[i2]) % M
-  end.sum
+bucket = Array.new(L) { Array.new(M, 0) }
+N.times do |i|
+  l = i % L
+  bucket[l][AS[i]] += 1
 end
 
-def create_new_dp(i, dp)
-  costs2 = (0...M).map do |j2|
-    calc_cost(i, j2)
-  end
+INF = 1e18
+dp = Array.new(M, INF)
+dp[0] = 0
 
-  (0...M).map do |j|
-    xs1 = (0..j).map do |j2|
-      dp[j - j2] + costs2[j2]
+L.times do |l|
+  xs = M.times.map do |k|
+    [k] * bucket[l][k]
+  end.flatten
+
+  now_sum = xs.sum
+  d = xs.size
+  dp_new = Array.new(M, INF)
+  d.times do |i|
+    M.times do |j|
+      idx = (xs[-(i + 1)] + j) % M
+      dp_new[idx] = [
+        dp_new[idx],
+        dp[j] + xs[-(i + 1)] * d - now_sum
+      ].min
     end
-    xs2 = ((j + 1)...M).map do |j2|
-      dp[j + M - j2] + costs2[j2]
-    end
-    (xs1 + xs2).min
-  end
-end
-
-
-def calc()
-  dp = Array.new(M, INF)
-  dp[0] = 0
-
-  (0...L).each do |i|
-    dp = create_new_dp(i, dp)
+    now_sum -= M
   end
 
-  dp[0]
+  (2 * M).times do |j|
+    dp_new[(j + 1) % M] = [
+      dp_new[(j + 1) % M],
+      dp_new[j % M] + d
+    ].min
+  end
+
+  dp = dp_new
 end
 
-puts calc()
+puts dp[0]
