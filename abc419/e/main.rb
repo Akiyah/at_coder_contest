@@ -33,10 +33,13 @@ def create_new_dp(i, dp)
   end
 
   (0...M).map do |j|
-    (0...M).map do |j2|
-      j1 = (j - j2) % M
-      dp[j1] + costs2[j2]
-    end.min
+    xs1 = (0..j).map do |j2|
+      dp[j - j2] + costs2[j2]
+    end
+    xs2 = ((j + 1)...M).map do |j2|
+      dp[j + M - j2] + costs2[j2]
+    end
+    (xs1 + xs2).min
   end
 end
 
