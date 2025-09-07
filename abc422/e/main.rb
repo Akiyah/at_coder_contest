@@ -21,6 +21,7 @@ XYS = (1..N).map do
   STDIN.gets.chomp.split.map(&:to_i)
 end
 
+$nn = (N / 2 + 1) * (N / 2 + 1 - 1) / 2
 
 def calc
   rs = {}
@@ -35,7 +36,7 @@ def calc
     rs[r] ||= {}
     rs[r][c] ||= 0
     rs[r][c] += 1
-    if N / 2 <= rs[r][c]
+    if $nn <= rs[r][c]
       return [[x1, y1], [x2, y2]]
     end
   end
@@ -51,15 +52,8 @@ if xys
   a = y2 - y1
   b = x2 - x1
   c = (b * y1) - (a * x1) 
+  puts 'Yes'
   puts [a, -b, c].join(' ')
 else
   puts 'No'
 end
-
-
-
-
-
-
-
-
