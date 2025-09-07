@@ -16,11 +16,20 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+S = STDIN.gets.chomp
 
+i = S[0].to_i
+j = S[2].to_i
+
+if j < 8
+  j = j + 1
+elsif i < 8 && j == 8
+  i = i + 1
+  j = 1
+else
+  i = 8
+  j = 8
+end
+
+puts "#{i}-#{j}"
 
