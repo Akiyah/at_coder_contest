@@ -27,15 +27,12 @@ def calc
   XYS.combination(2).each do |(x1, y1), (x2, y2)|
     if x2 - x1 != 0
       r = Rational(y2 - y1, x2 - x1)
-      c = y1 - r * x1
     else
       r = Float::INFINITY
-      c = x1
     end
-    rs[r] ||= {}
-    rs[r][c] ||= 0
-    rs[r][c] += 1
-    if N / 2 <= rs[r][c]
+    rs[r] ||= 0
+    rs[r] += 1
+    if N / 2 <= rs[r]
       return [[x1, y1], [x2, y2]]
     end
   end

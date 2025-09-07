@@ -16,17 +16,23 @@
 
 $debug = !ARGV[0].nil?
 
-T = STDIN.gets.chomp.to_i
+N, K = STDIN.gets.chomp.split.map(&:to_i)
 
-def calc(na, nb, nc)
-  n = [na, nb, nc].sum
-  m = [na, nc].min
-  pp(n:, m:) if $debug
-  [m, n / 3].min
+m = 2 ** N
+
+rs = Array.new(m, (K / m))
+
+(K % m).times do |j|
+  cs = j.to_s(2).reverse.chars.map(&:to_i)
+  k = 0
+  cs.each.with_index do |i, j|
+    k += 2 ** (N - 1 - j) if i == 1
+  end
+  rs[k] += 1
 end
 
-T.times do
-  na, nb, nc = STDIN.gets.chomp.split.map(&:to_i)
-  puts calc(na, nb, nc)
-end
+puts (K % m == 0) ? 0 : 1
+puts rs.join(' ')
+
+
 

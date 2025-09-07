@@ -16,11 +16,25 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+H, W = STDIN.gets.chomp.split.map(&:to_i)
+SS = (1..H).map do
+  STDIN.gets.chomp.split('')
+end
 
+def calc()
+  H.times do |i|
+    W.times do |j|
+      if SS[i][j] == '#'
+        c = 0
+        c += 1 if 0 < i && SS[i - 1][j] == '#'
+        c += 1 if i < H - 1 && SS[i + 1][j] == '#'
+        c += 1 if 0 < j && SS[i][j - 1] == '#'
+        c += 1 if j < W - 1 && SS[i][j + 1] == '#'
+        return false unless c == 2 || c == 4
+      end
+    end
+  end
+end
+
+puts calc ? 'Yes' : 'No'
 

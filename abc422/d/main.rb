@@ -16,11 +16,28 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, K = STDIN.gets.chomp.split.map(&:to_i)
+
+m = 2 ** N
+
+def calc(m, p, q)
+  rs = Array.new(2 ** N, p)
+
+  q.times do |j|
+    k = 0
+    N.times do |n|
+      k += 2 ** (N - n - 1) if j[n] == 1
+    end
+    rs[k] += 1
+  end
+  
+  rs
+end
+
+rs = calc(m, K / m, K % m)
+
+puts (K % m == 0) ? 0 : 1
+puts rs.join(' ')
+
 
 
