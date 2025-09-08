@@ -20,30 +20,22 @@ $debug = !ARGV[0].nil?
 N, M, L = STDIN.gets.split.map(&:to_i)
 AS = STDIN.gets.split.map(&:to_i)
 
-bucket = Array.new(L) { Array.new(M, 0) }
-N.times do |i|
-  l = i % L
-  bucket[l][AS[i]] += 1
-end
-
 INF = 1e18
 dp = Array.new(M, INF)
 dp[0] = 0
 
 L.times do |l|
-  xs = M.times.map do |k|
-    [k] * bucket[l][k]
-  end.flatten
+  xs = (l...N).step(L).map { |i| AS[i] }.sort
 
   now_sum = xs.sum
   d = xs.size
   dp_new = Array.new(M, INF)
-  d.times do |i|
+  xs.reverse.each do |x|
     M.times do |j|
-      idx = (xs[-(i + 1)] + j) % M
+      idx = (x + j) % M
       dp_new[idx] = [
         dp_new[idx],
-        dp[j] + xs[-(i + 1)] * d - now_sum
+        dp[j] + x * d - now_sum
       ].min
     end
     now_sum -= M
