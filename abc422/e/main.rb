@@ -50,10 +50,23 @@ if xys
   (x1, y1), (x2, y2) = xys
   pp(x1:, y1:, x2:, y2:) if $debug
   a = y2 - y1
-  b = x2 - x1
-  c = (b * y1) - (a * x1) 
+  b = -(x2 - x1)
+  c = - (b * y1) - (a * x1)
   puts 'Yes'
   puts [a, -b, c].join(' ')
+
+  if $debug
+    def check(a, b, c)
+      r = XYS.count do |x, y|
+        pp(x:, y:, 'a * x + b * y + c' => a * x + b * y + c)
+        a * x + b * y + c == 0
+      end
+      N <= r * 2
+    end
+
+    pp(a:, b:, c:)
+    pp(check: check(a, b, c))
+  end
 else
   puts 'No'
 end
