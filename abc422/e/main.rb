@@ -39,8 +39,13 @@ end
 def calc(xys)
   pp(xys:) if $debug
 
-  n = xys.length * 20 / 100 # 20%
-  pp(n:) if $debug
+  if xys.length < 100
+    n = xys.length
+  else
+    n = xys.length * 20 / 100 # 20%
+  end
+  nn = (n / 2 + 1) * ((n / 2 + 1) - 1) / 2 
+  pp(n:, nn:) if $debug
 
   rcs = {}
   abcs = []
@@ -58,10 +63,11 @@ def calc(xys)
     rcs[s] ||= {}
     rcs[s][t] ||= 0
     rcs[s][t] += 1
-    if n * (n - 1) / 2 <= rcs[s][t]
+    if nn == rcs[s][t]
       abcs << abc
     end
   end
+  # pp(rcs:) if $debug
   pp(abcs:) if $debug
 
   abcs.each do |abc|
