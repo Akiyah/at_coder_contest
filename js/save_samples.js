@@ -72,7 +72,11 @@ javascript:(function() {
     req.send(null);
   }
 
+  let i = 0;
   ['a', 'b', 'c', 'd', 'e', 'f', 'g'].forEach((rank) => {
-    request(rank, downloadZipFile);
+    setTimeout(() => {
+      request(rank, downloadZipFile);
+    }, 1000 * i);
+    i++;
   });
 })();
