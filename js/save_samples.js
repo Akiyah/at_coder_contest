@@ -68,7 +68,8 @@ javascript:(function() {
         }
       }
     };
-    req.open('GET', `${contest}_${rank}`, true);
+    const url = `/contests/${contest}/tasks/${contest}_${rank}`;
+    req.open('GET', url, true);
     req.send(null);
   }
 
