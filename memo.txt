@@ -1,0 +1,5 @@
+
+cp -r ~/Downloads/atcoder_samples_2025-09-12T16_11_54.276Z/abc422/* .
+
+
+
