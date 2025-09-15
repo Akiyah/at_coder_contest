@@ -23,12 +23,14 @@ LRS = (1..Q).map do
 end
 
 def calc(li, ri)
-  (li..ri).map do |l|
-    (l..ri).map do |r|
-      (l..r).map do |j|
-        AS[j - 1]
-      end.sum
-    end.sum
+  n = ri - li + 1
+  n.times.map do |i|
+    if i <= n / 2
+      j = i
+    else
+      j = n - 1 - i
+    end
+    AS[li - 1 + i] * (j + 1) * (n - j)
   end.sum
 end
 
