@@ -7,9 +7,14 @@ def check_one(input_file_name, output_file_name)
   end
   # pp(command_main:)
 
+  time_start = Time.now
   result = `#{command_main}`
+  time_end = Time.now
+  puts (time_end - time_start)
   if !output_file_name || result != ''
     puts result
+  else
+    puts 'OK'
   end
 end
 
