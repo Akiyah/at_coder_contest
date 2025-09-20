@@ -40,6 +40,8 @@ def calc_one(h, w, ss, squares, exist_squares, counts)
   ijs << [i, j + 1] if counts[i * w + j + 1] == m
   ijs << [i + 1, j + 1] if counts[(i + 1) * w + j + 1] == m
 
+  # ijs = [[i, j], [i + 1, j], [i, j + 1], [i + 1, j + 1]]
+
   pp(ijs:) if $debug
 
   rs = []
@@ -47,41 +49,14 @@ def calc_one(h, w, ss, squares, exist_squares, counts)
     exist_squares2 = exist_squares.dup
     counts2 = counts.dup
 
-    if exist_squares2[i1 * w + j1]
-      i2 = i1
-      j2 = j1
-      exist_squares2[i2 * w + j2] = false
-      counts2[i2 * w + j2] -= 1
-      counts2[(i2 + 1) * w + j2] -= 1
-      counts2[i2 * w + j2 + 1] -= 1
-      counts2[(i2 + 1) * w + j2 + 1] -= 1
-    end
-    if 0 < i1 && exist_squares2[(i1 - 1) * w + j1]
-      i2 = i1 - 1
-      j2 = j1
-      exist_squares2[i2 * w + j2] = false
-      counts2[i2 * w + j2] -= 1
-      counts2[(i2 + 1) * w + j2] -= 1
-      counts2[i2 * w + j2 + 1] -= 1
-      counts2[(i2 + 1) * w + j2 + 1] -= 1
-    end
-    if 0 < j1 && exist_squares2[i1 * w + j1 - 1]
-      i2 = i1
-      j2 = j1 - 1
-      exist_squares2[i2 * w + j2] = false
-      counts2[i2 * w + j2] -= 1
-      counts2[(i2 + 1) * w + j2] -= 1
-      counts2[i2 * w + j2 + 1] -= 1
-      counts2[(i2 + 1) * w + j2 + 1] -= 1
-    end
-    if 0 < i1 && 0 < j1 && exist_squares2[(i1 - 1) * w + j1 - 1]
-      i2 = i1 - 1
-      j2 = j1 - 1
-      exist_squares2[i2 * w + j2] = false
-      counts2[i2 * w + j2] -= 1
-      counts2[(i2 + 1) * w + j2] -= 1
-      counts2[i2 * w + j2 + 1] -= 1
-      counts2[(i2 + 1) * w + j2 + 1] -= 1
+    [[i1, j1], [i1 - 1, j1], [i1, j1 - 1], [i1 - 1, j1 - 1]].each do |i2, j2|
+      if 0 <= i2 && 0 <= j2 && exist_squares2[i2 * w + j2]
+        exist_squares2[i2 * w + j2] = false
+        counts2[i2 * w + j2] -= 1
+        counts2[(i2 + 1) * w + j2] -= 1
+        counts2[i2 * w + j2 + 1] -= 1
+        counts2[(i2 + 1) * w + j2 + 1] -= 1
+      end
     end
 
     rs << calc_one(h, w, ss, squares[1..], exist_squares2, counts2)
