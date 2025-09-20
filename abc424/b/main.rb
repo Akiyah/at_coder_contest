@@ -16,11 +16,26 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M, K = STDIN.gets.chomp.split.map(&:to_i)
+ABS = (1..K).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
 
+
+def calc
+  test = {}
+  results = []
+  ABS.each do |a, b|
+    test[a] ||= []
+    test[a] << b
+    if test[a].length == M
+      results << a
+    end
+  end
+  results
+end
+
+
+results = calc
+puts results.join(' ')
 
