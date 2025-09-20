@@ -24,13 +24,8 @@ end
 
 def calc(li, ri)
   n = ri - li + 1
-  n.times.map do |i|
-    if i <= n / 2
-      j = i
-    else
-      j = n - 1 - i
-    end
-    AS[li - 1 + i] * (j + 1) * (n - j)
+  (li..ri).map do |j|
+    AS[j - 1] * (j - li + 1) * (ri - j + 1)
   end.sum
 end
 
