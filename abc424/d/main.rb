@@ -35,10 +35,15 @@ def calc_one(h, w, ss, squares, exist_squares, counts)
   ].max
 
   ijs = []
-  ijs << [i, j] if counts[i * w + j] == m
-  ijs << [i + 1, j] if counts[(i + 1) * w + j] == m
-  ijs << [i, j + 1] if counts[i * w + j + 1] == m
-  ijs << [i + 1, j + 1] if counts[(i + 1) * w + j + 1] == m
+
+  if m == 1
+    ijs << [i, j]
+  else
+    ijs << [i, j] if 1 < counts[i * w + j]
+    ijs << [i + 1, j] if 1 < counts[(i + 1) * w + j]
+    ijs << [i, j + 1] if 1 < counts[i * w + j + 1]
+    ijs << [i + 1, j + 1] if 1 < counts[(i + 1) * w + j + 1]
+  end
 
   # ijs = [[i, j], [i + 1, j], [i, j + 1], [i + 1, j + 1]]
 
