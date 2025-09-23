@@ -29,48 +29,13 @@ def calc_one(h, w, squares, exist_squares, effects)
     return calc_one(h, w, squares[1..], exist_squares, effects)
   end
 
-  # m = DIJS.map do |di, dj|
-  #   counts[(i + di) * w + (j + dj)]
-  # end.max
-
-  # if m == 1
-  #   ijs = [[i, j]]
-  # else
   ijs = []
-  zs = []
-  DIJS.each do |di, dj|
-    z = 0
-    DIJS.each_with_index do |(di2, dj2), k|
-      if 0 <= i + di - di2 && j + dj - dj2
-        if exist_squares[(i + di - di2) * w + (j + dj - dj2)]
-          z += (1 << k)
-        end
-      end
-    end
-    zs << z
-  end
 
   e00 = effects[(i + 0) * w + (j + 0)]
   e10 = effects[(i + 1) * w + (j + 0)]
   e01 = effects[(i + 0) * w + (j + 1)]
   e11 = effects[(i + 1) * w + (j + 1)]
   pp(e00:, e10:, e01:, e11:) if $debug
-
-  # unless e00.proper_subset?(e10) || e00.proper_subset?(e01) || e00.proper_subset?(e11)
-  #   ijs << [i + 0, j + 0]
-  # end
-
-  # unless e10.subset?(e00) || e10.proper_subset?(e01) || e10.proper_subset?(e11)
-  #   ijs << [i + 1, j + 0]
-  # end
-
-  # unless e01.subset?(e00) || e01.subset?(e10) || e01.proper_subset?(e11)
-  #   ijs << [i + 0, j + 1]
-  # end
-
-  # unless e11.subset?(e00) || e11.subset?(e10) || e11.subset?(e01)
-  #   ijs << [i + 1, j + 1]
-  # end
 
   unless ((e10 & e00) == e00 && e10 != e00) || ((e01 & e00) == e00 && e01 != e00) || ((e11 & e00) == e00 && e11 != e00)
     ijs << [i + 0, j + 0]
