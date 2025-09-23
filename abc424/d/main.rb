@@ -20,13 +20,14 @@ T = STDIN.gets.chomp.to_i
 
 DIJS = [[0, 0], [1, 0], [0, 1], [1, 1]]
 
-def calc_one(h, w, squares, exist_squares, effects)
-  pp(squares:, exist_squares:, effects:) if $debug
+def calc_one(h, w, squares, exist_squares, effects, d)
+  # pp(squares:, exist_squares:, effects:) if $debug
   return 0 if squares.length == 0
 
   i, j = squares[0]
   unless exist_squares[i * w + j] # すでに使われている
-    return calc_one(h, w, squares[1..], exist_squares, effects)
+    puts (' ' * d) + "(#{i}, #{j}) -> " if $debug
+    return calc_one(h, w, squares[1..], exist_squares, effects, d + 1)
   end
 
   ijs = []
@@ -35,7 +36,7 @@ def calc_one(h, w, squares, exist_squares, effects)
   e10 = effects[(i + 1) * w + (j + 0)]
   e01 = effects[(i + 0) * w + (j + 1)]
   e11 = effects[(i + 1) * w + (j + 1)]
-  pp(e00:, e10:, e01:, e11:) if $debug
+  pp(e00:e00.to_s(2), e10:e10.to_s(2), e01:e01.to_s(2), e11:e11.to_s(2)) if $debug
 
   unless ((e10 & e00) == e00 && e10 != e00) || ((e01 & e00) == e00 && e01 != e00) || ((e11 & e00) == e00 && e11 != e00)
     ijs << [i + 0, j + 0]
@@ -54,7 +55,9 @@ def calc_one(h, w, squares, exist_squares, effects)
   end
 
 
-  pp(ijs:) if $debug
+  puts (' ' * d) + "(#{i}, #{j}) x #{ijs.length}" + ijs.map { |i, j| "(#{i}, #{j})"}.join(',') if $debug
+
+  # pp(ijs:) if $debug
 
   rs = []
   ijs.each do |i1, j1|
@@ -66,13 +69,15 @@ def calc_one(h, w, squares, exist_squares, effects)
       j2 = j1 - dj
       if 0 <= i2 && 0 <= j2 && exist_squares2[i2 * w + j2]
         exist_squares2[i2 * w + j2] = false
-        # effects2[i2 * w + j2] = effects2[i2 * w + j2].dup
-        # effects2[i2 * w + j2].delete([i1, j1])
-        effects2[i2 * w + j2] = effects2[i2 * w + j2] & (((1 << (h * w)) - 1) - (1 << (i * w + j)))
+        DIJS.each do |di2, dj2|
+          i3 = i2 + di2
+          j3 = j2 + dj2
+          effects2[i3 * w + j3] &= ((1 << (h * w)) - 1) - (1 << (i2 * w + j2))
+        end
       end
     end
 
-    rs << calc_one(h, w, squares[1..], exist_squares2, effects2)
+    rs << calc_one(h, w, squares[1..], exist_squares2, effects2, d + 1)
   end
 
   1 + rs.min
@@ -99,7 +104,7 @@ def calc
     end
   end
 
-  calc_one(h, w, squares, exist_squares, effects)
+  calc_one(h, w, squares, exist_squares, effects, 0)
 end
 
 
