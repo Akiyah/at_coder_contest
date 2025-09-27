@@ -16,11 +16,37 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+AS = STDIN.gets.chomp.split.map(&:to_i)
+
+def calc
+  as2 = AS.select { |a| -1 < a }
+
+  pp(as2:) if $debug
+  return false if as2.length != as2.uniq.length
+  
+  bs = (1..N).to_a
+  bs -= as2
+
+  rs = []
+  AS.each do |a|
+    if a == -1
+      rs << bs.pop
+    else
+      rs << a
+    end
+  end
+
+  rs
+end
+
+
+rs = calc
+if rs
+  puts 'Yes'
+  puts rs.join(' ')
+else
+  puts 'No'
+end
 
 
