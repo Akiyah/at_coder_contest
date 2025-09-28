@@ -19,52 +19,32 @@ $debug = !ARGV[0].nil?
 T, M = STDIN.gets.chomp.split.map(&:to_i)
 
 
-def inv_mod(x, m)
-  z = _inv_gcd(x, m)
-  pp(x:, m:, z:) if $debug
-  raise ArgumentError unless z.first == 1
 
-  z[1]
+$combi = []
+(1..5000).each do |n|
+  $combi[n] = []
+  $combi[n][0] = 1
 end
 
-def _inv_gcd(a, b)
-  a %= b # safe_mod
+$combi[1][1] = 1
 
-  s, t = b, a
-  m0, m1 = 0, 1
+(2..5000).each do |n|
+  # pp(n:) if $debug
+  # $combi[n] = []
+  # # r == 1
+  # $combi[n][1] = $combi[n - 1][1] * (n + 1) / n
 
-  while t > 0
-    u = s / t
-    s -= t * u
-    m0 -= m1 * u
-
-    s, t = t, s
-    m0, m1 = m1, m0
+  # 0 < r
+  (1..(n / 2)).each do |r|
+    r2 = (r <= (n - 1) / 2 ? r : n - 1 - r)
+    # pp(n:, r:, r2:, combi: $combi[n - 1]) if $debug
+    $combi[n][r] = ($combi[n - 1][r - 1] + $combi[n - 1][r2]) % M
   end
-
-  m0 += b / s if m0 < 0
-  [s, m0]
-end
-
-$f = { 0 => 1 }
-$max_f = 0
-def factorial(n)
-  return $f[n] if $f[n]
-
-  pp(name: 'factorial', n:) if $debug
-
-  (($max_f + 1)..n).each do |i|
-    $f[i] = (i * factorial(i - 1)) #  % M
-  end
-  $max_f = n
-
-  $f[n]
 end
 
 def combi(n, r)
-  pp(name: 'combi', n:, r:) if $debug
-  factorial(n) / factorial(n - r) / factorial(r)
-  factorial(n) * inv_mod(factorial(n - r), M) * inv_mod(factorial(r), M)
+  r = n - r unless r <= n / 2
+  $combi[n][r]
 end
 
 
@@ -75,7 +55,7 @@ def calc(n, cs)
   cs.each_with_index do |c, i|
     r *= (combi(s + c, c))
     r %= M
-    s += c    
+    s += c
     pp(name: 'calc', c:, i:, r:, s:) if $debug
   end
   r % M
