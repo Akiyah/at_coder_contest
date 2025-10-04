@@ -16,11 +16,33 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, Q = STDIN.gets.chomp.split.map(&:to_i)
+XYS = (1..Q).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
+
+
+cs = Array.new(N + 1, 1)
+v_min = 1
+
+XYS.each do |x, y|
+  unless v_min <= x
+    puts 0
+    next
+  end
+
+  s = (v_min..x).map do |v|
+    cs[v]
+  end.sum
+  cs[y] += s
+  v_min = x + 1
+  puts s
+end
+
+
+
+
+
+
 
 

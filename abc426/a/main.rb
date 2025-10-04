@@ -16,11 +16,17 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+X, Y = STDIN.gets.chomp.split
 
+if X == Y
+  puts 'Yes'
+else
+  if X == 'Ocelot'
+    puts 'No'
+  elsif X == 'Serval'
+    puts Y == 'Ocelot' ? 'Yes' : 'No'
+  else
+    puts 'Yes'
+  end
+end
 
