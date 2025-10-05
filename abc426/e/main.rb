@@ -24,35 +24,74 @@ T = STDIN.gets.chomp.to_i
 # end
 
 
+def plus(a, b)
+  [a[0] + b[0], a[1] + b[1]]
+end
 
+def multi(a, m)
+  [a[0] * m, a[1] * m]
+end
 
-def d(sx, sy, gx, gy)
-  Math.sqrt((gx - sx) ** 2 + (gy - sy) ** 2)
+def minus(a, b)
+  plus(a, multi(b, -1))
+end
+
+def ip(a, b)
+  a[0] * b[0] + a[1] * b[1]
+end
+
+def l(a)
+  Math.sqrt(ip(a, a))
+end
+
+def d(a, b)
+  l(minus(a, b))
 end
 
 
-def calc_case(tsx, tsy, tgx, tgy, asx, asy, agx, agy)
-  pp(tsx:, tsy:, tgx:, tgy:, asx:, asy:, agx:, agy:) if $debug
-  d_t = d(tsx, tsy, tgx, tgy)
-  d_a = d(asx, asy, agx, agy)
+def calc_line_point(s, p, d)
+  pp(s:, p:, d:) if $debug
+  return l(s) if p == [0, 0]
 
-  px = tgx - tsx
-  py = tgy - tsy
-  qx = agx - asx
-  qy = agy - asy
+  # f2 = ip(s, s) + 2 * t * ip(s, p)  +  (t ** 2) * ip(p, p)
+  # f2_ = 2 * ip(s, p)  +  2 * t * ip(p, p)
+  t = - ip(s, p) / ip(p, p) # (最小の可能性)
+  pp(t:, d: l(plus(s, multi(p, t)))) if $debug
 
-  # 進行方向が同一の場合はスタート地点の距離
-  return d(tsx, tsy, asx, asy) if px == qx && py == qy
+  t = 0 if t < 0
+  t = d if d < t
+  pp(t:, d: l(plus(s, multi(p, t)))) if $debug
 
-  s1 = (px - qx) * (tsx - asx) + (py - qy) * (tsy - asy)
-  s0 = (px - qx) ** 2 + (py - qy) ** 2
-
-  s = - s1.to_f / s0.to_f
-  pp(s1:, s0:, s:) if $debug
+  l(plus(s, multi(p, t)))
+end
 
 
-  d(tsx + s * px, tsy + s * py, asx + s * qy, asy + s * qy)
+def calc_case_n(ts, tg, td, as, ag, ad) # ad <= td
+  pp(ts:, tg:, td:, as:, ag:, ad:) if $debug
+  p = multi(minus(tg, ts), 1.0 / td)
+  q = multi(minus(ag, as), 1.0 / ad)
 
+  tm = plus(ts, multi(p, ad)) # ad秒後のt側の位置
+  pp(tm:) if $debug
+
+  r1 = calc_line_point(minus(ts, as), minus(p, q), ad) # 0 ~ ad までの最短
+  pp(r1:) if $debug
+  r2 = calc_line_point(minus(tm, ag), p, td - ad) # ad ~ td までの最短
+  pp(r2:) if $debug
+
+  [r1, r2].min
+end
+
+def calc_case(ts, tg, as, ag)
+  pp(ts:, tg:, as:, ag:) if $debug
+  td = d(tg, ts)
+  ad = d(ag, as)
+
+  if ad <= td
+    calc_case_n(ts, tg, td, as, ag, ad)
+  else
+    calc_case_n(as, ag, ad, ts, tg, td)
+  end
 end
 
 
@@ -60,7 +99,7 @@ end
 T.times do
   tsx, tsy, tgx, tgy = STDIN.gets.chomp.split.map(&:to_i)
   asx, asy, agx, agy = STDIN.gets.chomp.split.map(&:to_i)
-  puts calc_case(tsx, tsy, tgx, tgy, asx, asy, agx, agy)
+  puts calc_case([tsx, tsy], [tgx, tgy], [asx, asy], [agx, agy])
 end
 
 
