@@ -16,11 +16,9 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+S = STDIN.gets.chomp
 
 
+l = S.length
+
+puts S[0...(l / 2)] + S[(l/2 + 1)..]

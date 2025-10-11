@@ -16,11 +16,29 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M = STDIN.gets.chomp.split.map(&:to_i)
+UVS = (1..M).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
+
+def calc_one(z)
+  r = 0
+  UVS.each do |u, v|
+    r += 1 if z[u - 1] == z[v - 1]
+  end
+  r
+end
+
+
+def calc
+  (2 ** N).times.map do |z|
+    calc_one(z)
+  end.min
+end
+
+
+puts calc
+
+
 
 

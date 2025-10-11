@@ -16,11 +16,56 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+H, W = STDIN.gets.chomp.split.map(&:to_i)
+SS = (1..H).map do
+  STDIN.gets.chomp
+end
+
+def takahashi
+  SS.each.with_index do |s, i|
+    s.split('').each_with_index do |c, j|
+      if c == 'T'
+        return [i, j]
+      end
+    end
+  end
+end
+
+def calc
+  dusts = SS.map do |s|
+    s.split('').map { |c| c == '#' }
+  end
+
+  t = takahashi
+
+  dust_count = 0
+  dusts.each do |line|
+    line.each do |d|
+      dust_count += 1 if d
+    end
+  end
+
+  dp = []
+  dp << [t, [0, H - 1, 0, W - 1], dust_count]
+
+  calced = {}
+  while 0 < dp.length
+
+
+
+  end
+
+
+  -1
+end
+
+
+
+
+
+
+
+puts calc
+
 
 
