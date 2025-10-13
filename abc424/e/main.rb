@@ -106,9 +106,14 @@ def create_ais(ass, k)
   end
 
   ais = []
-  (0..j).each do |i|
-    as = ass[i] || []
-    ais += as.map { |a| [a.to_r / 2 ** (j - i), 2 ** (j - i)] }
+  ass.each_with_index do |as, i|
+  # (0..j).each do |i|
+    next unless as
+    if i < j
+      ais += as.map { |a| [a.to_r / 2 ** (j - i), 2 ** (j - i)] }
+    else
+      ais += as.map { |a| [a.to_r, 1] }
+    end
   end
 
   pp(ais:, k2:, m:) if $debug
