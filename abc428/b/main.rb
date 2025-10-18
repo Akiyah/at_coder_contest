@@ -16,11 +16,30 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, K = STDIN.gets.chomp.split.map(&:to_i)
+S = STDIN.gets.chomp
+
+ss = {}
+(0..(N - K)).each do |i|
+  s = S[i...(i + K)]
+  ss[s] ||= 0
+  ss[s] += 1
+end
+
+pp(ss:) if $debug
+
+m = ss.values.max
+pp(m:) if $debug
+
+rs = []
+ss.each do |s, c|
+  rs << s if c == m
+end
+pp(rs:) if $debug
+
+puts m
+puts rs.sort.join(' ')
+
+
 
 
