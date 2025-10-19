@@ -24,72 +24,47 @@ end
 
 
 
-def calc_one_l(c0, c1, l, l_2, n, b) # xがl桁の場合を計算する。n桁まで計算できていたとする
-  pp(c0:, c1:, l:, l_2:, n:, b:) if $debug
+def calc_one_l(c, c0, c1)
+  pp(c:, c0:, c1:) if $debug
+  x0 = f(c, c0)
+  x1 = f(c, c1)
 
-  r = 0
-  if l_2 == n
-    is = (n == 1) ? (1..9) : (0..9)
-    is.each do |i| # 残っている最高の桁
-      b2 = b + i
-      pp(b2:) if $debug
-      if c0 <= b2 ** 2 && b2 ** 2 <= c1
-        r += 1
-      end
-      pp(b2:, r:) if $debug
-    end
-    pp(n:, r:) if $debug
-    return r
-  end
+  y0 = Math.sqrt(x0)
+  y1 = Math.sqrt(x1)
 
-  is = (n == 1) ? (1..9) : (0..9)
-  is.each do |i| # 残っている最高の桁
-    b2 = b + i * (10 ** (l_2 - n))
-    b2_ = b + (i + 1) * (10 ** (l_2 - n)) - 1
-    pp(b2:, b2_:) if $debug
-    next if b2_ ** 2 < c0
-    next if c1 < b2 ** 2
-    if c0 <= b2 ** 2 && b2_ ** 2 <= c1
-      r += 10 ** (l_2 - n)
-    elsif 
-      r += calc_one_l(c0, c1, l, l_2, n + 1, b2)
-    end
+  if y0.to_i == y0
+    r = y1.to_i - y0.to_i + 1
+    pp(r:) if $debug
+    r
+  else
+    r = y1.to_i - y0.to_i
+    pp(r:) if $debug
+    r
   end
-  pp(n:, r:) if $debug
-  r
 end
 
-def calc_one(c, d)
-  pp(name: 'calc_one', c:, d:) if $debug
+def calc_one(c, c0, c1)
+  pp(c:, c0:, c1:) if $debug
   r = 0
-  lc = c.to_s.length
-  ld = d.to_s.length
-  (1...ld).each do |l|
-    l_2 = (lc + l + 1) / 2
-    c0 = c * (10 ** l) + 1
-    c1 = (c + 1) * (10 ** l)
-    r += calc_one_l(c0, c1, l, l_2, 1, 0)
+  l0 = c0.to_s.length
+  l1 = c1.to_s.length
+  (l0..l1).each do |l|
+    c0_ = (10 ** (l - 1))
+    c1_ = (10 ** l) - 1
+    r += calc_one_l(c, [c0, c0_].max, [c1, c1_].min)
   end
 
-  l_2 = (lc + ld + 1) / 2
-  c0 = c * (10 ** ld) + 1
-  c1 = c * (10 ** ld) + d
-  r += calc_one_l(c0, c1, ld, l_2, 1, 0)
-
-  pp(name: 'calc_one', c:, d:, r:) if $debug
   r
 end
 
 def calc(c, d)
-  r = calc_one(c, c + d) - calc_one(c, c)
-  r
+  calc_one(c, c + 1, c + d)
 end
 
 
 T.times do
   c, d = STDIN.gets.chomp.split.map(&:to_i)
   pp(c:, d:) if $debug
-
 
   puts calc(c, d)
 end
