@@ -16,14 +16,25 @@
 
 $debug = !ARGV[0].nil?
 
-N, M = STDIN.gets.chomp.split.map(&:to_i)
+N, M, C = STDIN.gets.chomp.split.map(&:to_i)
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
-s = AS.sum
-
-r = false
+h = Array.new(M, 0)
 AS.each do |a|
-  r = true if (s - a) == M
+  h[a] += 1
 end
 
-puts r ? 'Yes' : 'No'
+def calc_xi(i, h)
+  s = 0
+  M.times do |j|
+    s += h[(i + j) % M]
+    return s if C <= s
+  end
+end
+
+r = 0
+M.times do |i|
+  r += calc_xi(i, h)
+end
+puts r
+
