@@ -31,37 +31,39 @@ def calc
   ca2 = 0
   cb2 = 0
 
-  ias = []
-  ibs = []
-
   N.times do |r|
     s = ss[r]
     pp(s:) if $debug
     if s == 'a'
       ca += 1
-      ias << r
-      if A < ias.length
-        ias.shift
+      if A - 1 < ca
+        while !(A - 1 == ca - ca2)
+          if ss[la] == 'a'
+            ca2 += 1
+          end
+          la += 1
+          pp(la:, A:, ca:, ca2:) if $debug
+        end
       end
     else # s == 'b'
       cb += 1
-      ibs << r
-      if B < ibs.length
-        ibs.shift
-      end
-    end
-
-    if ias.length == A
-      if ibs.length == B
-        if 0 <= ias[0] - (ibs[0] + 1)
-          sum += ias[0] - (ibs[0] + 1) + 1
+      if B - 1 < cb
+        while !(cb - cb2 == B - 1)
+          if ss[lb] == 'b'
+            cb2 += 1
+          end
+          lb += 1
+          pp(lb:) if $debug
         end
-      else
-        sum += ias[0] + 1
       end
     end
 
-    pp(r:, s:, sum:, ias:, ibs:) if $debug
+    if A - 1 == ca - ca2 && B - 1 == cb - cb2
+      if 0 < la - lb
+        sum += la - lb
+      end
+    end
+    pp(r:, la:, lb:, ca:, cb:, ca2:, cb2:, sum:) if $debug
   end
   sum
 end

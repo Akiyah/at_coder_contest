@@ -16,11 +16,17 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M = STDIN.gets.chomp.split.map(&:to_i)
+SS = (1..N).map do
+  STDIN.gets.chomp
+end
 
+ms = []
+(0..(N - M)).each do |i|
+  (0..(N - M)).each do |j|
+    m = SS[i...(i + M)].map { |s| s[j...(j + M)] }.join('')
+    ms << m
+  end
+end
 
+puts ms.uniq.count
