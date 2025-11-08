@@ -16,11 +16,33 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M, K = STDIN.gets.chomp.split.map(&:to_i)
+HS = STDIN.gets.chomp.split.map(&:to_i)
+BS = STDIN.gets.chomp.split.map(&:to_i)
 
 
+def calc
+  hs = HS.sort
+  bs = BS.sort
+  pp(hs:) if $debug
+  pp(bs:) if $debug
+
+  i = 0
+  K.times do |j|
+    h = hs[j]
+    pp(h:, j:) if $debug
+    return false if M - 1 < i
+    while bs[i] < h
+      i += 1
+      return false if M - 1 < i
+    end
+    pp(h:, b: bs[i], i:) if $debug
+
+    i += 1
+  end
+
+  true
+end
+
+
+puts calc ? 'Yes' : 'No'

@@ -16,11 +16,27 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+X = STDIN.gets.chomp.to_i
+N = STDIN.gets.chomp.to_i
+WS = STDIN.gets.chomp.split.map(&:to_i)
+Q = STDIN.gets.chomp.to_i
+PS = (1..Q).map do
+  STDIN.gets.chomp.to_i
+end
+
+
+parts = {}
+w = X
+PS.each do |p|
+  if parts[p - 1]
+    w -= WS[p - 1]
+    parts[p - 1] = false
+  else
+    w += WS[p - 1]
+    parts[p - 1] = true
+  end
+  puts w
+end
+
 
 
