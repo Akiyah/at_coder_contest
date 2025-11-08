@@ -23,22 +23,17 @@ T = STDIN.gets.chomp.to_i
 #   STDIN.gets.chomp.split.map(&:to_i)
 # end
 
-def calc(as, bs)
-  l = as.length
-  as2 = as.dup
+def calc(a, b)
+  l = a.length
   l.times do |i|
-    pp(i:) if $debug
-    return i if bs == as2
-
-    a = as2.shift
-    as2 << a
+    return i if b == a[i..] + a[...i]
   end
   -1
 end
 
 T.times do
-  as = STDIN.gets.chomp.chars.map(&:to_i)
-  bs = STDIN.gets.chomp.chars.map(&:to_i)
+  a = STDIN.gets.chomp
+  b = STDIN.gets.chomp
 
-  puts calc(as, bs)
+  puts calc(a, b)
 end
