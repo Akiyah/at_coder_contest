@@ -23,55 +23,40 @@ end
 
 
 def calc
-  wb0 = 0
-  cb0 = 0
-  whbs = []
+
+  cb_sum = 0
+  wb_sum = 0
   w_sum = 0
+  whs = []
   WHBS.each do |w, h, b|
-    w_sum += w
     if h <= b
-      wb0 += w
-      cb0 += b
+      wb_sum += w
     else
-      whbs << [w, h, b]
+      whs << [w, h - b]
     end
+    cb_sum += b
+    w_sum += w
   end
-  pp(wb0:, cb0:, whbs:, w_sum:) if $debug
 
-  dp = []
-  w, h, b = whbs[0]
-  dp << [cb0 + h, w, wb0, 0] # h [c, wh, wb, i]
-  dp << [cb0 + b, 0, wb0 + w, 0] # b
-  pp(dp:) if $debug
+  dp = {}
+  dp[0] = 0
+  whs.each do |w, h|
+    pp(w:, h:) if $debug
+    # dp_new = dp.dup # body
+    # pp(dp_new:) if $debug
+    ws = dp.keys
+    ws.each do |w2| # head
+      next unless (w2 + w) * 2 <= w_sum
 
-  l = whbs.length
-  c_max = 0
-  while 0 < dp.length
-    c, wh, wb, i = dp.shift
-    if l == i + 1
-      if wh <= wb
-        c_max = c if c_max < c
-      end
-      next
+      c2 = dp[w2]
+      next if dp[w2 + w] && c2 + h <= dp[w2 + w]
+      dp[w2 + w] = c2 + h
     end
-    wi, hi, bi = whbs[i + 1]
-
-    if w_sum < (wh + wi) * 2
-      # dp << [c + hi, wh + wi, wb, i + 1]  # h [c, wh, wb, i]
-      dp << [c + bi, wh, wb + wi, i + 1] # b
-    else
-      if w_sum < (wb + wi) * 2
-        dp << [c + hi, wh + wi, wb, i + 1]  # h [c, wh, wb, i]
-        # dp << [c + bi, wh, wb + wi, i + 1] # b
-      else
-        dp << [c + hi, wh + wi, wb, i + 1]  # h [c, wh, wb, i]
-        dp << [c + bi, wh, wb + wi, i + 1] # b
-      end
-    end
+    # dp = dp_new
     pp(dp:) if $debug
   end
 
-  c_max
+  cb_sum + dp.values.max
 end
 
 
