@@ -44,15 +44,10 @@ def calc
     pp(w:, h:) if $debug
     # dp_new = dp.dup # body
     # pp(dp_new:) if $debug
-    ws = dp.keys
-    ws.each do |w2| # head
-      next unless (w2 + w) * 2 <= w_sum
-
-      c2 = dp[w2]
-      next if dp[w2 + w] && c2 + h <= dp[w2 + w]
-      dp[w2 + w] = c2 + h
-    end
-    # dp = dp_new
+    dp_new = dp.map do |w2, c2| # head
+      (w2 + w) * 2 <= w_sum ? [w2 + w, c2 + h] : nil
+    end.compact.to_h
+    dp.merge!(dp_new) { |k, v, v_new| [v, v_new].max }
     pp(dp:) if $debug
   end
 
