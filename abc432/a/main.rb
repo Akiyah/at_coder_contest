@@ -16,11 +16,14 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
+A, B, C = STDIN.gets.chomp.split.map(&:to_i)
 # AS = (1..N).map do
 #   STDIN.gets.chomp.to_i
 #   STDIN.gets.chomp.split.map(&:to_i)
 # end
+
+a, b, c = [A, B, C].sort.reverse
+
+puts [a, b, c].join
 
 

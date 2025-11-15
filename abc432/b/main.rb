@@ -16,11 +16,27 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+X = STDIN.gets.chomp
+
+xs = X.chars.map(&:to_i)
+
+
+x_min = xs.select { |x| x != 0 }.min
+
+xs2 = []
+b = false
+xs.each do |x|
+  if b
+    xs2 << x
+  else
+    if x == x_min
+      b = true
+    else
+      xs2 << x
+    end
+  end
+end
+
+puts ([x_min] + xs2.sort).join('')
 
 
