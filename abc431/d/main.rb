@@ -23,7 +23,6 @@ end
 
 
 def calc
-
   cb_sum = 0
   wb_sum = 0
   w_sum = 0
@@ -38,20 +37,23 @@ def calc
     w_sum += w
   end
 
-  dp = {}
+  dp = []
   dp[0] = 0
   whs.each do |w, h|
     pp(w:, h:) if $debug
-    # dp_new = dp.dup # body
-    # pp(dp_new:) if $debug
-    dp_new = dp.map do |w2, c2| # head
-      (w2 + w) * 2 <= w_sum ? [w2 + w, c2 + h] : nil
-    end.compact.to_h
-    dp.merge!(dp_new) { |k, v, v_new| [v, v_new].max }
+    dp_new = []
+    dp.map.with_index do |c2, w2| # head
+      next unless c2
+      if (w2 + w) * 2 <= w_sum
+        dp_new[w2 + w] = c2 + h
+      end
+      dp_new[w2] = c2 if !dp_new[w2] || dp_new[w2] < c2
+    end
     pp(dp:) if $debug
+    dp = dp_new
   end
 
-  cb_sum + dp.values.max
+  cb_sum + dp.compact.max
 end
 
 
