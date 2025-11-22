@@ -55,12 +55,12 @@ def run
   TABS.each do |t, a, b|
     pp(t:, a:, b:) if $debug
     if t == 1
-      i, a2 = a, b
-      fw.add(as[i - 1], -as[i - 1])
+      i, a2 = a - 1, b
+      fw.add(as[i], -as[i])
       fw.add(a2, a2)
-      fw1.add(as[i - 1], -1)
+      fw1.add(as[i], -1)
       fw1.add(a2, 1)
-      as[i - 1] = a2
+      as[i] = a2
     else
       l, r = a, b
       if r <= l
@@ -68,8 +68,8 @@ def run
       else
         x = 0
         x += fw1.sum(0, l) * l
-        x += fw.sum(l, r)
-        x += fw1.sum(r, a_max + 1) * r
+        x += fw.sum(l, [r, a_max + 1].min)
+        x += fw1.sum([r, a_max + 1].min, a_max + 1) * r
       end
       puts x
     end
