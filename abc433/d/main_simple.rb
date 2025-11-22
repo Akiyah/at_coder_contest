@@ -16,15 +16,14 @@
 
 $debug = !ARGV[0].nil?
 
-N = STDIN.gets.chomp.to_i
+N, M = STDIN.gets.chomp.split.map(&:to_i)
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
+r = 0
 N.times do |i|
-  r = -1
-  (0...i).each do |j|
-    if AS[i] < AS[j]
-      r = j + 1
-    end
+  N.times do |j|
+    r += 1 if (AS[i].to_s + AS[j].to_s).to_i % M == 0
   end
-  puts r
 end
+
+puts r
