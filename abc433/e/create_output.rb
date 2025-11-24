@@ -11,8 +11,8 @@ nms.permutation do |as|
     M.times.map { |j| as[i * M + j] }
   end
   # pp(as:, bs:)
-  xs = M.times.map { |j| N.times.map { |i| bs[i][j] }.max }
-  ys = N.times.map { |i| M.times.map { |j| bs[i][j] }.max }
+  xs = N.times.map { |i| M.times.map { |j| bs[i][j] }.max }
+  ys = M.times.map { |j| N.times.map { |i| bs[i][j] }.max }
   # pp(xs:, ys:)
 
   anss[xs] ||= {}
@@ -26,12 +26,19 @@ end
 xss = nms.product(*([nms] * (N - 1)))
 yss = nms.product(*([nms] * (M - 1)))
 
+# pp(xss:)
+# pp(yss:)
 
-puts xss.length * yss.length
+
 xss.each do |xs|
   yss.each do |ys|
-    puts [N, M].join(' ')
-    puts xs.join(' ')
-    puts ys.join(' ')    
+    if anss[xs] && anss[xs][ys]
+      puts 'Yes'
+      anss[xs][ys].first.each do |line|
+        puts line.join(' ')
+      end
+    else
+      puts 'No'
+    end
   end
 end
