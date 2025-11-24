@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 
-N = 2
+N = 3
 M = 3
 nms = (1..(N*M)).to_a
 
