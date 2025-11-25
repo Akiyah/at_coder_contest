@@ -57,6 +57,7 @@ def run(n, m, xs0, ys0)
   free_area_count = 0
 
   (1...(n * m)).to_a.reverse.each do |a|
+    pp(a:, i:, j:, xs:, ys:, ans:, free_areas:, free_area_count:) if $debug
     if i + 1 < n && j + 1 < m && a == xs[i + 1] && a == ys[j + 1]
       ans[i + 1][j + 1] = a
       (0..i).each do |i2|
@@ -69,7 +70,7 @@ def run(n, m, xs0, ys0)
       end
       i += 1
       j += 1
-    elsif i + 1 < m && a == xs[i + 1]
+    elsif i + 1 < n && a == xs[i + 1]
       ans[i + 1][0] = a
       (1..j).each do |j2|
         free_areas << [i + 1, j2]
@@ -109,7 +110,7 @@ def run(n, m, xs0, ys0)
   end
 
   if $debug
-    # pp(ans2:)
+    pp(ans2:)
     check_xs = n.times.all? do |i_n|
       # pp(i_n:, l: xs0[i_n], r: m.times.map { |i_m| ans2[i_n][i_m] }.max)
       xs0[i_n] == m.times.map { |i_m| ans2[i_n][i_m] }.max
