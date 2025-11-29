@@ -16,11 +16,36 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+T = STDIN.gets.chomp.to_i
+
+
+def check(n, h, tlus)
+  l1 = h
+  u1 = h
+  t1 = 0
+  i = 0
+  tlus.each do |t, l, u|
+    dt = t - t1
+    u1_new = [u1 + dt, u].min
+    l1_new = [l1 - dt, l, 1].max
+    return false unless l1_new <= u1_new
+
+    u1 = u1_new
+    l1 = l1_new
+    t1 = t
+  end
+
+  true
+end
+
+T.times do
+  n, h = STDIN.gets.chomp.split.map(&:to_i)
+  tlus = (1..n).map do
+    STDIN.gets.chomp.split.map(&:to_i)
+  end
+  r = check(n, h, tlus)
+  puts r ? 'Yes' : 'No'
+end
+
 
 
