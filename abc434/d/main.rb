@@ -21,74 +21,52 @@ UDLRS = (1..N).map do
   STDIN.gets.chomp.split.map(&:to_i)
 end
 
-# board1 = Array.new(2000, 0)
-# board2 = Array.new(2000, 0)
-board1 = 0
-board2 = 0
-
-z2000 = 2 ** 2000
-
-rows = [1]
-(1...2000).each do |y|
-  rows << rows[-1] + (1 << (2000 * y))
-end
-# rows_sum = []
-# rows_sum[0] = rows[0] # 1
-# (1...2000).each do |y|
-#   rows_sum << rows_sum[y - 1] + rows[y]
-# end
-
-
-areas = []
+dis = Array.new(2000) { [] }
+uis = Array.new(2000) { [] }
 UDLRS.each.with_index do |(u, d, l, r), i|
-  pp(i:) if $debug
-  line = (2 ** r - 1) - (2 ** (l - 1) - 1)
-  # r = rows[(u - 1)..(d - 1)].sum
-  if 0 < (u - 1)
-    r = rows[d - 1] - rows[(u - 1) - 1]
-  else
-    r = rows[d - 1]
+  dis[d - 1] << i
+  uis[u - 1] << i
+end
+
+lis = Array.new(2000) { Set.new }
+ris = Array.new(2000) { Set.new }
+count0 = 0
+count1 = Array.new(N, 0)
+count2 = 0
+2000.times do |x|
+  pp(x:) if $debug
+  dis[x].each do |i|
+    u, d, l, r = UDLRS[i]
+    lis[l - 1] << i
+    ris[r - 1] << i
   end
-  areas << line * r
-end
 
-areas.each do |area|
-  board2 |= (board1 & area)
-  board1 |= area
-end
+  is = Set.new
+  2000.times do |y|
+    is += lis[y]
+    d = is.length
 
-if $debug
-  pp(
-    10.times.map do |y|
-      10.times.map do |x|
-        board1[y * 2000 + x]
-      end.join('')
+    if d == 0
+      count0 += 1
+    elsif d == 1
+      i = is.to_a[0]
+      count1[i] += 1
+    else
+      count2 += 1
     end
-  )
-  pp(
-    10.times.map do |y|
-      10.times.map do |x|
-        board2[y * 2000 + x]
-      end.join('')
-    end
-  )
+
+    is -= ris[y]
+  end
+
+  uis[x].each do |i|
+    u, d, l, r = UDLRS[i]
+    lis[l - 1].delete(i)
+    ris[r - 1].delete(i)
+  end
 end
 
-sum1_all = board1.to_s(2).count('1')
-pp(sum1_all:) if $debug
-
-
-rs = []
-areas.each.with_index do |(area), i|
-  s2 = (board2 & area).to_s(2).count('1')
-  u, d, l, r = UDLRS[i]
-  s1 = (d - u + 1) * (r - l + 1)
-  pp(i:, s1:, s2:) if $debug
-  rs << 2000 * 2000 - (sum1_all - (s1 - s2))
-end
-
-rs.each do |r|
-  puts r
+N.times do |i|
+  puts (count0 + count1[i])
 end
 
 
