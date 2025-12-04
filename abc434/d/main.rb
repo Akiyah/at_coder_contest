@@ -24,25 +24,30 @@ end
 dis = Array.new(2000) { [] }
 uis = Array.new(2000) { [] }
 UDLRS.each.with_index do |(u, d, l, r), i|
-  dis[d - 1] << i
   uis[u - 1] << i
+  dis[d - 1] << i
 end
+pp(uis: uis[...10]) if $debug
+pp(dis: dis[...10]) if $debug
 
 lis = Array.new(2000) { Set.new }
 ris = Array.new(2000) { Set.new }
 count0 = 0
 count1 = Array.new(N, 0)
 count2 = 0
+pp(lis: lis[...10], ris: ris[...10]) if $debug
 2000.times do |x|
-  pp(x:) if $debug
-  dis[x].each do |i|
+  # pp(x:) if $debug && x < 10
+  uis[x].each do |i|
     u, d, l, r = UDLRS[i]
     lis[l - 1] << i
     ris[r - 1] << i
   end
 
   is = Set.new
+  pp(x:, is:) if $debug && x < 10
   2000.times do |y|
+    # pp(y:) if $debug && x < 10 && y < 10
     is += lis[y]
     d = is.length
 
@@ -56,15 +61,19 @@ count2 = 0
     end
 
     is -= ris[y]
+    pp(x:, y:, is:) if $debug && x < 10 && y < 10
   end
 
-  uis[x].each do |i|
+  dis[x].each do |i|
     u, d, l, r = UDLRS[i]
     lis[l - 1].delete(i)
     ris[r - 1].delete(i)
   end
+
+  pp(lis: lis[...10], ris: ris[...10]) if $debug && x < 10
 end
 
+pp(count0:, count1:, count2:) if $debug
 N.times do |i|
   puts (count0 + count1[i])
 end
