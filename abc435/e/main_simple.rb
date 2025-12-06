@@ -16,20 +16,19 @@
 
 $debug = !ARGV[0].nil?
 
-N = STDIN.gets.chomp.to_i
-AS = STDIN.gets.chomp.split.map(&:to_i)
-
-ans = 0
-(1..N).each do |l|
-  (l..N).each do |r|
-    s = AS[(l - 1)..(r - 1)].sum
-    pp(l:, r:, s:) if $debug
-    if (l..r).all? { |i| s % AS[i - 1] != 0 }
-      # pp(l:, r:, s:) if $debug
-      ans += 1
-    end
-  end
+N, Q = STDIN.gets.chomp.split.map(&:to_i)
+LRS = (1..Q).map do
+  STDIN.gets.chomp.split.map(&:to_i)
 end
 
 
-puts ans
+as = Array.new(N)
+
+LRS.each do |l, r|
+  (l..r).each { |i| as[i] = true }
+  puts N - as.count(true)
+end
+
+
+
+
