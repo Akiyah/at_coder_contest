@@ -56,6 +56,7 @@ def update(lines, black_sum, l, r)
       d = 0
       d += r0 - l + 1
       d += ((i0 + 1)..(i1 - 1)).map { |i| lines[i][2] ? 0 : (lines[i][1] - lines[i][0] + 1) }.sum
+      pp(color0:, color1:, d:) if $debug
       return [new_lines, black_sum + d]
     elsif color0 && !color1
       split_lines = []
@@ -63,8 +64,9 @@ def update(lines, black_sum, l, r)
       split_lines << [r + 1, r1, false] if r + 1 <= r1
       new_lines = lines[...i0] + split_lines + lines[(i1 + 1)..]
       d = 0
-      d += l1 - r + 1
+      d += r - l1 + 1
       d += ((i0 + 1)..(i1 - 1)).map { |i| lines[i][2] ? 0 : (lines[i][1] - lines[i][0] + 1) }.sum
+      pp(l0:, r0:, color0:, l1:, r1:, color1:, d:) if $debug
       return [new_lines, black_sum + d]
     else # !color0 && !color1
       split_lines = []
@@ -74,7 +76,7 @@ def update(lines, black_sum, l, r)
       new_lines = lines[...i0] + split_lines + lines[(i1 + 1)..]
       d = 0
       d += r0 - l + 1
-      d += l1 - r + 1
+      d += r - l1 + 1
       d += ((i0 + 1)..(i1 - 1)).map { |i| lines[i][2] ? 0 : (lines[i][1] - lines[i][0] + 1) }.sum
       return [new_lines, black_sum + d]
     end
