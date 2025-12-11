@@ -23,8 +23,6 @@ end
 
 
 def update(lines, black_sum, l, r)
-
-
   i0 = lines.bsearch_index { |line| l <= line[1] } # lをまたぐ最初の部分、必ず見つかる
   i1 = lines.bsearch_index { |line| r <= line[1] } # rをまたぐ最初の部分、必ず見つかる
 
@@ -34,51 +32,48 @@ def update(lines, black_sum, l, r)
       # nothing
       return [lines, black_sum]
     else # white
-      split_lines = []
-      split_lines << [l0, l - 1, false] if i0 <= l - 1
-      split_lines << [l, r, true]
-      split_lines << [r + 1, r0, false] if r + 1 <= r0
-      new_lines = lines[...i0] + split_lines + lines[(i0 + 1)..]
-      return [new_lines, black_sum + (r - l + 1)]
+      lines.delete_at(i0)
+      lines.insert(i0, [r + 1, r0, false]) if r + 1 <= r0
+      lines.insert(i0, [l, r, true])
+      lines.insert(i0, [l0, l - 1, false]) if i0 <= l - 1
+      return [lines, black_sum + (r - l + 1)]
     end
   else
     l0, r0, color0 = lines[i0]
     l1, r1, color1 = lines[i1]
-    if color0 && color1
-      new_lines = lines[...i0] + [[l0, r1, true]] + lines[(i1 + 1)..]
-      d = (i0..i1).map { |i| lines[i][2] ? 0 : (lines[i][1] - lines[i][0] + 1) }.sum
-      return [new_lines, black_sum + d]
-    elsif !color0 && color1
-      split_lines = []
-      split_lines << [l0, l - 1, false] if l0 <= l - 1
-      split_lines << [l, r1, true]
-      new_lines = lines[...i0] + split_lines + lines[(i1 + 1)..]
+    pp(i0:, l0:, r0:, color0:, i1:, l1:, r1:, color1:) if $debug
+    if color0 && color1 # 黒---黒
+      d = 0
+      d += ((i0 + 1)..(i1 - 1)).map { |i| lines[i][2] ? 0 : (lines[i][1] - lines[i][0] + 1) }.sum
+      (i0..i1).each { lines.delete_at(i0) }
+      lines.insert(i0, [l0, r1, true])
+      return [lines, black_sum + d]
+    elsif !color0 && color1 # 白---黒
       d = 0
       d += r0 - l + 1
       d += ((i0 + 1)..(i1 - 1)).map { |i| lines[i][2] ? 0 : (lines[i][1] - lines[i][0] + 1) }.sum
-      pp(color0:, color1:, d:) if $debug
-      return [new_lines, black_sum + d]
-    elsif color0 && !color1
-      split_lines = []
-      split_lines << [l0, r, true]
-      split_lines << [r + 1, r1, false] if r + 1 <= r1
-      new_lines = lines[...i0] + split_lines + lines[(i1 + 1)..]
+      (i0..i1).each { lines.delete_at(i0) }
+      lines.insert(i0, [l, r1, true])
+      lines.insert(i0, [l0, l - 1, false]) if l0 <= l - 1
+      return [lines, black_sum + d]
+    elsif color0 && !color1 # 黒---白
       d = 0
       d += r - l1 + 1
       d += ((i0 + 1)..(i1 - 1)).map { |i| lines[i][2] ? 0 : (lines[i][1] - lines[i][0] + 1) }.sum
-      pp(l0:, r0:, color0:, l1:, r1:, color1:, d:) if $debug
-      return [new_lines, black_sum + d]
-    else # !color0 && !color1
-      split_lines = []
-      split_lines << [l0, l - 1, false] if l0 <= l - 1
-      split_lines << [l, r, true]
-      split_lines << [r + 1, r1, false] if r + 1 <= r1
-      new_lines = lines[...i0] + split_lines + lines[(i1 + 1)..]
+      (i0..i1).each { lines.delete_at(i0) }
+      lines.insert(i0, [r + 1, r1, false]) if r + 1 <= r1
+      lines.insert(i0, [l0, r, true])
+      return [lines, black_sum + d]
+    else # !color0 && !color1 # 白---白
       d = 0
       d += r0 - l + 1
       d += r - l1 + 1
       d += ((i0 + 1)..(i1 - 1)).map { |i| lines[i][2] ? 0 : (lines[i][1] - lines[i][0] + 1) }.sum
-      return [new_lines, black_sum + d]
+      (i0..i1).each { lines.delete_at(i0) }
+      lines.insert(i0, [r + 1, r1, false]) if r + 1 <= r1
+      lines.insert(i0, [l, r, true])
+      lines.insert(i0, [l0, l - 1, false]) if l0 <= l - 1
+      return [lines, black_sum + d]
     end
   end
 end
