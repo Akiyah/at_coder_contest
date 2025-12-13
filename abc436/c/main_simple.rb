@@ -22,17 +22,16 @@ RCS = (1..M).map do
 end
 
 x = 0
-board = {}
+board = Array.new(N) { Array.new(N) }
 
 RCS.each do |r, c|
-  next if board[r] && (board[r][c] || board[r][c - 1] || board[r][c + 1])
-  next if board[r - 1] && (board[r - 1][c] || board[r - 1][c - 1] || board[r - 1][c + 1])
-  next if board[r + 1] && (board[r + 1][c] || board[r + 1][c - 1] || board[r + 1][c + 1])
-
-  pp(r:, c:) if $debug
-  board[r] ||= {}
-  board[r][c] = true
-  x += 1
+  unless board[r][c] || board[r + 1][c] || board[r][c + 1] || board[r + 1][c + 1]
+    board[r][c] = true
+    board[r + 1][c] = true
+    board[r][c + 1] = true
+    board[r + 1][c + 1] = true
+    x += 4
+  end
 end
 
 puts x

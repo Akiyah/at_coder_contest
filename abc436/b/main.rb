@@ -16,11 +16,30 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+
+board = Array.new(N) { Array.new(N) }
+
+k = 1
+r = 0
+c = (N - 1) / 2
+board[r][c] = k
+
+(N ** 2 - 1).times do
+  k1 = k + 1
+  r1 = (r - 1) % N
+  c1 = (c + 1) % N
+  if board[r1][c1]
+    r1 = (r + 1) % N
+    c1 = c
+  end
+
+  board[r1][c1] = k1
+
+  k, r, c = k1, r1, c1
+end
 
 
+board.each do |line|
+  puts line.join(' ')
+end
