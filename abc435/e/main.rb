@@ -8,6 +8,7 @@
 # require "ac-library-rb/priority_queue"
 # require "ac-library-rb/segtree"
 # require "ac-library-rb/dsu"
+require "ac-library-rb/lazy_segtree"
 
 # pq = AcLibraryRb::PriorityQueue.new
 
@@ -22,72 +23,60 @@ LRS = (1..Q).map do
 end
 
 
-def update(lines, black_sum, l, r)
-  i0 = lines.bsearch_index { |line| l <= line[1] } # lをまたぐ最初の部分、必ず見つかる
-  i1 = lines.bsearch_index { |line| r <= line[1] } # rをまたぐ最初の部分、必ず見つかる
+lis = LRS.map.with_index { |(l, r), i| [l, i, true] }
+ris = LRS.map.with_index { |(l, r), i| [r + 1, i, false] }
+lris = (lis + ris).sort_by { |lr, i, t| lr } # 2 * Q 個
 
-  if i0 == i1 # (l..r)が含まれている
-    l0, r0, color0 = lines[i0]
-    if color0 # black
-      # nothing
-      return [lines, black_sum]
-    else # white
-      lines.delete_at(i0)
-      lines.insert(i0, [r + 1, r0, false]) if r + 1 <= r0
-      lines.insert(i0, [l, r, true])
-      lines.insert(i0, [l0, l - 1, false]) if i0 <= l - 1
-      return [lines, black_sum + (r - l + 1)]
-    end
+i2j_l = [] # Q 個
+i2j_r = [] # Q 個
+lris.each.with_index do |(lr, i, t), j| # 0 <= j < 2 * Q
+  if t
+    i2j_l[i] = j
   else
-    l0, r0, color0 = lines[i0]
-    l1, r1, color1 = lines[i1]
-    pp(i0:, l0:, r0:, color0:, i1:, l1:, r1:, color1:) if $debug
-    if color0 && color1 # 黒---黒
-      d = 0
-      d += ((i0 + 1)..(i1 - 1)).map { |i| lines[i][2] ? 0 : (lines[i][1] - lines[i][0] + 1) }.sum
-      (i0..i1).each { lines.delete_at(i0) }
-      lines.insert(i0, [l0, r1, true])
-      return [lines, black_sum + d]
-    elsif !color0 && color1 # 白---黒
-      d = 0
-      d += r0 - l + 1
-      d += ((i0 + 1)..(i1 - 1)).map { |i| lines[i][2] ? 0 : (lines[i][1] - lines[i][0] + 1) }.sum
-      (i0..i1).each { lines.delete_at(i0) }
-      lines.insert(i0, [l, r1, true])
-      lines.insert(i0, [l0, l - 1, false]) if l0 <= l - 1
-      return [lines, black_sum + d]
-    elsif color0 && !color1 # 黒---白
-      d = 0
-      d += r - l1 + 1
-      d += ((i0 + 1)..(i1 - 1)).map { |i| lines[i][2] ? 0 : (lines[i][1] - lines[i][0] + 1) }.sum
-      (i0..i1).each { lines.delete_at(i0) }
-      lines.insert(i0, [r + 1, r1, false]) if r + 1 <= r1
-      lines.insert(i0, [l0, r, true])
-      return [lines, black_sum + d]
-    else # !color0 && !color1 # 白---白
-      d = 0
-      d += r0 - l + 1
-      d += r - l1 + 1
-      d += ((i0 + 1)..(i1 - 1)).map { |i| lines[i][2] ? 0 : (lines[i][1] - lines[i][0] + 1) }.sum
-      (i0..i1).each { lines.delete_at(i0) }
-      lines.insert(i0, [r + 1, r1, false]) if r + 1 <= r1
-      lines.insert(i0, [l, r, true])
-      lines.insert(i0, [l0, l - 1, false]) if l0 <= l - 1
-      return [lines, black_sum + d]
-    end
+    i2j_r[i] = j
   end
 end
 
-# as = Array.new(N)
-lines = [[1, N, false]] # 白が一つとみなす(l, r, color)
-black_sum = 0
-pp(lines:, black_sum:) if $debug
+ds = [] # 1 + (2 * Q - 1) + 1 = 2 * Q + 1 個
+ds << lris[0][0] - 1
+lris.each_cons(2).with_index do |((lr0, i0, t0), (lr1, i1, t1)), j|
+  d = lr1 - lr0
+  ds << d
+end
+ds << (N + 1) - lris[-1][0]
 
-LRS.each do |l, r|
-  pp(l:, r:) if $debug
-  lines, black_sum = update(lines, black_sum, l, r)
-  pp(lines:, black_sum:) if $debug
-  puts N - black_sum
+# create lazy segtree
+e = 0
+id = 0
+op = proc { |x, y| x + y }
+mapping = proc { |f, x| [f + x, 0].max }
+composition = proc { |f, g| f + g }
+
+seg = AcLibraryRb::LazySegtree.new(ds, e, id, op, mapping, composition)
+
+
+# 10.times { |i| pp seg.get(i) }
+# seg.apply(2,4,-10)
+
+# 10.times { |i| pp seg.prod(i, i + 1) }
+
+
+if $debug
+  pp (2 * Q + 1).times.map { |q| seg.get(q) }
+end
+
+Q.times do |i|
+  j_l = i2j_l[i] + 1
+  j_r = i2j_r[i] + 1
+  # l, _ = lris[j_l]
+  # r, _ = lris[j_r]
+
+  seg.apply(j_l, j_r, -N)
+  # puts seg.prod(0, 2 * Q + 1)
+  puts seg.all_prod
+  if $debug
+    pp (2 * Q + 1).times.map { |q| seg.get(q) }
+  end
 end
 
 
