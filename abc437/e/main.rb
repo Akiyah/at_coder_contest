@@ -29,19 +29,17 @@ def calc_ps(node)
   ps = []
 
   stack = []
-  node[1] = node[1].sort_by { |y, val| y }.map { |y, val| val}
-  stack << [node, 0]
-  
-  while 0 < stack.length
-    node, i = stack[-1]
-    # ps += node[0]
+  node[:child_array] = node[:child].to_a.sort_by { |y, val| y }.map { |y, val| val}
+  stack << node
 
-    i1 = i + 1
-    if node[1][i1]
-      next_child_node = node[1][i1]
-      next_child_node[1] = next_child_node[1].sort_by { |y, val| y }.map { |y, val| val}
-      ps += next_child_node[0]
-      stack << [next_child_node, 0]
+  while 0 < stack.length
+    node = stack[-1]
+
+    if 0 < node[:child_array].length
+      next_child_node = node[:child_array].shift
+      next_child_node[:child_array] = next_child_node[:child].to_a.sort_by { |y, val| y }.map { |y, val| val}
+      ps += next_child_node[:is]
+      stack << next_child_node
     else
       stack.pop
     end
@@ -51,20 +49,20 @@ end
 
 def calc
   nodes = []
-  nodes[0] = [[], {}, nil]
-  nodes[0][0] << 0
+  nodes[0] = { is: [], child: {}, parent: nil }
+  nodes[0][:is] << 0
 
   XYS.each.with_index do |(x, y), i|
     parent_node = nodes[x]
-    unless parent_node[1][y]
-      parent_node[1][y] = [[], {}, parent_node]
+    unless parent_node[:child][y]
+      parent_node[:child][y] = { is: [], child: {}, parent: parent_node }
     end
-    parent_node[1][y][0] << i + 1
-    nodes[i + 1] = parent_node[1][y]
+    parent_node[:child][y][:is] << i + 1
+    nodes[i + 1] = parent_node[:child][y]
   end
 
   ps = calc_ps(nodes[0])
-  ps[1..]
+  ps
 
   # assj = ass.map.with_index { |as, i| [as, i] }.sort_by { |as, i| as }
   # pp(assj:) if $debug
