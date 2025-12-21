@@ -24,7 +24,7 @@ end
 
 
 def calc_ps(node)
-  pp(node:) if $debug
+  # pp(node:) if $debug
 
   ps = []
 
@@ -39,7 +39,8 @@ def calc_ps(node)
       next_child_node = node[:child_array][i]
       stack[-1][1] += 1 # i += 1
       next_child_node[:child_array] = next_child_node[:child].to_a.sort_by { |y, val| y }.map { |y, val| val}
-      ps += next_child_node[:is]
+      # ps += next_child_node[:is]
+      next_child_node[:is].each { |i| ps << i }
       stack << [next_child_node, 0]
     else
       stack.pop
