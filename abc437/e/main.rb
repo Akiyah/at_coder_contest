@@ -30,16 +30,17 @@ def calc_ps(node)
 
   stack = []
   node[:child_array] = node[:child].to_a.sort_by { |y, val| y }.map { |y, val| val}
-  stack << node
+  stack << [node, 0]
 
   while 0 < stack.length
-    node = stack[-1]
+    node, i = stack[-1]
 
-    if 0 < node[:child_array].length
-      next_child_node = node[:child_array].shift
+    if i < node[:child_array].length
+      next_child_node = node[:child_array][i]
+      stack[-1][1] += 1 # i += 1
       next_child_node[:child_array] = next_child_node[:child].to_a.sort_by { |y, val| y }.map { |y, val| val}
       ps += next_child_node[:is]
-      stack << next_child_node
+      stack << [next_child_node, 0]
     else
       stack.pop
     end
