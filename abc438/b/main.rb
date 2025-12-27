@@ -16,11 +16,25 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M = STDIN.gets.chomp.split.map(&:to_i)
+S = STDIN.gets.chomp
+T = STDIN.gets.chomp
 
+ss = S.chars.map(&:to_i)
+ts = T.chars.map(&:to_i)
+
+def calc_one(ss, ts)
+  r = M.times.map do |i|
+    (ss[i] - ts[i]) % 10
+  end.sum
+  pp(ss:, ts:, r:) if $debug
+  r
+end
+
+r = (N - M + 1).times.map do |i|
+  calc_one(ss[i..], ts)
+end.min
+
+
+puts r
 

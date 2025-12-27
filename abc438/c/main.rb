@@ -16,11 +16,28 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+AS = STDIN.gets.chomp.split.map(&:to_i)
 
+
+
+def calc(as)
+  return N if N < 4
+
+  js = []
+  as.each do |a|
+    js << a
+    if 4 <= js.length && js[-1] == js[-2] && js[-1] == js[-3] && js[-1] == js[-4]
+      js.pop
+      js.pop
+      js.pop
+      js.pop
+    end
+  end
+  js.length
+end
+
+
+
+puts calc(AS.dup)
 

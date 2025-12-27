@@ -16,11 +16,9 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+D, F = STDIN.gets.chomp.split.map(&:to_i)
+
+r = (F - (D % 7)) % 7
+puts r == 0 ? 7 : r
 
 
