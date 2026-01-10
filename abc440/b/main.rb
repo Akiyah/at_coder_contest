@@ -16,11 +16,11 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+TS = STDIN.gets.chomp.split.map(&:to_i)
 
+
+tis = TS.map.with_index { |t, i| [t, i] }.sort_by { |t, i| t }
+
+puts tis[0..2].map { |t, i| i + 1 }.join(' ')
 

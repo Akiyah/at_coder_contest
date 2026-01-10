@@ -22,49 +22,44 @@ XYS = (1..Q).map do
   STDIN.gets.chomp.split.map(&:to_i)
 end
 
-def calc(as, xis, xys)
-  ais = as.map.with_index { |a, i| [a, i]}
+def calc(as, xis, yis)
 
   jx = 0
+  jy = 0
   as.each.with_index do |a, j|
     while jx < Q && xis[jx][0] < a
       xis[jx][2] = j
       jx += 1
     end
+    while jy < Q && yis[jy][0] < a
+      yis[jy][2] = j
+      jy += 1
+    end
   end
 
-  pp(as:, xis:) if $debug
+  pp(as:, xis:, yis:) if $debug
 
-  rs = []
+  ds = []
   xis.each do |x, i, j|
-    pp(x:, i:, j:) if $debug
-    j ||= N
-    _, y = xys[i]
+    ds[i] = [x, j || N]
+  end
 
-    i3 = ais.bsearch_index do |a, i2|
-      co = i2 - j + 1
-      pp(a:, i2:, co:, r: x + y + co - 1 < a) if $debug
-      x + y + co - 1 < a
-    end
+  es = []
+  yis.each do |y, i, j|
+    x, jx = ds[i]
+    es[i] = [x, y, (j || N) - jx]
+  end
 
-    pp(y:, i3:) if $debug
-
-    if i3
-      co = i3 - j + 1 - 1
-      pp(co:, r: x + y + co - 1) if $debug
-      rs[i] = x + y + co - 1      
-    else
-      co = N - j + 1 - 1
-      pp(co:, r: x + y + co - 1) if $debug
-      rs[i] = x + y + co - 1
-    end
+  rs = es.map do |x, y, j|
+    x + y - 1 + j
   end
   rs
 end
 
 as = AS.sort
 xis = XYS.map.with_index { |(x, y), i| [x, i] }.sort_by { |x, i| x }
-rs = calc(as, xis, XYS)
+yis = XYS.map.with_index { |(x, y), i| [y, i] }.sort_by { |y, i| y }
+rs = calc(as, xis, yis)
 
 rs.each do |r|
   puts r
