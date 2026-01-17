@@ -16,26 +16,20 @@
 
 $debug = !ARGV[0].nil?
 
-N, M = STDIN.gets.chomp.split.map(&:to_i)
+N = STDIN.gets.chomp.to_i
 S = STDIN.gets.chomp
-T = STDIN.gets.chomp
-Q = STDIN.gets.chomp.to_i
-WS = (1..Q).map do
-  STDIN.gets.chomp
-end
+
 
 ss = S.chars
-ts = T.chars
 
-
-WS.each do |w|
-  bs = w.chars.all? { |c| ss.include?(c) }
-  bt = w.chars.all? { |c| ts.include?(c) }
-  if bs && bt
-    puts 'Unknown'
-  elsif bs
-    puts 'Takahashi'
-  else
-    puts 'Aoki'
+r = 0
+(0...N).each do |i|
+  (i...N).each do |j|
+    a_count = ss[i..j].select { |x| x == 'A' }.count
+    b_count = ss[i..j].select { |x| x == 'B' }.count
+    pp(ss[i..j], a_count, b_count) if $debug
+    r += 1 if b_count < a_count
   end
 end
+
+puts r

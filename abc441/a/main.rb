@@ -16,11 +16,11 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+P, Q = STDIN.gets.chomp.split.map(&:to_i)
+X, Y = STDIN.gets.chomp.split.map(&:to_i)
 
-
+if P <= X && (X - P) < 100 && Q <= Y && (Y - Q) < 100
+  puts 'Yes'
+else
+  puts 'No'
+end

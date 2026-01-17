@@ -16,11 +16,28 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+S = STDIN.gets.chomp
 
+ss = S.chars
+ns = ss.map { |x| x == 'A' ? 1 : (x == 'B' ? -1 : 0) }
+pp(ss:) if $debug
+pp(ns:) if $debug
+
+def calc(ns)
+  i = 0
+  j = 0
+  r = 0
+  s = 0
+  (0...N).each do |i|
+    while
+      a_count = ss[i..j].select { |x| x == 'A' }.count
+      b_count = ss[i..j].select { |x| x == 'B' }.count
+      pp(ss[i..j], a_count, b_count) if $debug
+      r += 1 if b_count < a_count
+  end
+end
+
+
+puts calc(ns)
 

@@ -16,11 +16,31 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, K, X = STDIN.gets.chomp.split.map(&:to_i)
+AS = STDIN.gets.chomp.split.map(&:to_i)
 
+
+
+
+def calc
+  as = AS.sort
+  pp(as:) if $debug
+  pp(as[...K]) if $debug
+
+  if as[...K].sum < X
+    return -1
+  end
+
+  a_sum = 0
+  as[...K].reverse.each.with_index do |a, i|
+    pp(a:, i:) if $debug
+    a_sum += a
+    if X <= a_sum
+      return (N - K) + i + 1
+    end
+  end
+
+end
+
+puts calc
 
