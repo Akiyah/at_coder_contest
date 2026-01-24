@@ -20,32 +20,22 @@ N, Q = STDIN.gets.chomp.split.map(&:to_i)
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
 
-def calc_1(x, ss)
-  # as[x - 1], as[x] = as[x], as[x - 1]
-  a0 = ss[x] - ss[x - 1]
-  a1 = ss[x + 1] - ss[x]
-  ss[x] = ss[x - 1] + a1
-  ss[x + 1] = ss[x] + a0
+def calc_1(x, as)
+  as[x - 1], as[x] = as[x], as[x - 1]
 end
 
-def calc_2(l, r, ss)
-  ss[r] - ss[l - 1]
+def calc_2(l, r, as)
+  as[(l - 1)..(r - 1)].sum
 end
 
 def calc
-  pp(AS:) if $debug
-  ss = [0]
-  N.times do |i|
-    ss[i + 1] = ss[i] + AS[i]
-  end
-  pp(ss:) if $debug
-
+  as = AS.dup
   Q.times do
     t, x, y = STDIN.gets.chomp.split.map(&:to_i)
     if t == 1
-      calc_1(x, ss)
+      calc_1(x, as)
     else
-      puts calc_2(x, y, ss)
+      puts calc_2(x, y, as)
     end
   end
 end

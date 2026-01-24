@@ -16,11 +16,23 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+Q = STDIN.gets.chomp.to_i
+AS = (1..Q).map do
+  STDIN.gets.chomp.to_i
+end
 
+vol = 0
+play = false
+AS.each do |a|
+  if a == 1
+    vol += 1
+  elsif a == 2
+    vol -= 1 if 1 <= vol
+  else # a == 3
+    play = !play
+  end
+
+  puts (3 <= vol && play) ? 'Yes' : 'No'
+
+end
 

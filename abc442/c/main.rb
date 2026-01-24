@@ -16,11 +16,34 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M = STDIN.gets.chomp.split.map(&:to_i)
+ABS = (1..M).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
+
+
+paths = {}
+ABS.each do |a, b|
+  paths[a] ||= []
+  paths[b] ||= []
+  paths[a] << b
+  paths[b] << a
+end
+
+def c(n, m)
+  return 0 if n < 3
+  return 1 if n == 3
+  n * (n - 1) * (n - 2) / 6
+end
+
+rs = N.times.map do |i|
+  a = i + 1
+  m = paths[a] ? paths[a].length : 0
+  m2 = N - 1 - m
+  c(m2, 3)
+end
+
+puts rs.join(' ')
+
 
 
