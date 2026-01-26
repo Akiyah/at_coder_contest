@@ -24,144 +24,60 @@ ABS = (1..Q).map do
   STDIN.gets.chomp.split.map(&:to_i)
 end
 
-def count_monsters(x, y, xyris_x_0_y_plus_length, xyris_x_0_y_minus_length, r_count_sum_x_plus_count, r_count_sum_x_plus, r_count_sum_x_minus)
-  count = 0
-
-  count += xyris_x_0_y_plus_length
-  return count if x == 0 && 0 < y
-
-  if 0 < x
-    r = Rational(y, x)
-    count += r_count_sum_x_plus[r]
-    return count
-  end
-
-  count += r_count_sum_x_plus_count
-
-  count += xyris_x_0_y_minus_length
-  return count if x == 0 && y < 0
-
-  # if x < 0
-  r = Rational(y, x)
-  count += r_count_sum_x_minus[r]
-  count
-
-end
-
-def count_monsters_line(x, y, xyris_x_0_y_plus_length, xyris_x_0_y_minus_length, r_counts_x_plus, r_counts_x_minus)
-
-  return xyris_x_0_y_plus_length if x == 0 && 0 < y
-  return xyris_x_0_y_minus_length if x == 0 && y < 0
-
-  if 0 < x
-    r = Rational(y, x)
-    return r_counts_x_plus[r]
-  end
-
-  # x < 0
-  r = Rational(y, x)
-  r_counts_x_minus[r]
-end
 
 def calc
-  pp(Time.now) if $debug
-
-  xyris = XYS.map.with_index do |(x, y), i|
-    if x == 0
-      [x, y, nil, i]
-    else
-      [x, y, Rational(y, x), i]
-    end
+  xysrs = XYS.map do |x, y|
+    s = ((0 < x || (x == 0 && 0 < y)) ? 1 : -1)
+    r = (x == 0 ? -Float::INFINITY : -Rational(y, x))
+    [x, y, s, r]
   end
 
-  # pp(xyris:) if $debug
+  xysrs.sort_by! { |(x, y, s, r)| [s, r] }
 
-  xyris_x_0_y_plus = xyris.select { |x, y, r, i| x == 0 && 0 < y }
-  xyris_x_0_y_minus = xyris.select { |x, y, r, i| x == 0 && y < 0 }
+  srs = []
+  sr_counts = Hash.new{ |hash, key| hash[key] = 0 }
+  last_sr = nil
 
-  xyris_x_plus = xyris.select { |x, y, r, i| 0 < x }
-  xyris_x_minus = xyris.select { |x, y, r, i| x < 0 }
-
-  xyris_x_plus.sort! do |(x0, y0, r0, i0), (x1, y1, r1, i1)|
-    r1 <=> r0
+  xysrs.each do |x, y, s, r|
+    sr = [s, r]
+    srs << sr unless last_sr == sr
+    sr_counts[sr] += 1
+    last_sr = sr
   end
 
-  xyris_x_minus.sort! do |(x0, y0, r0, i0), (x1, y1, r1, i1)|
-    r1 <=> r0
-  end
-
-  rs_x_plus = []
-  r_counts_x_plus = {}
-  last_r = nil
-  xyris_x_plus.each do |x, y, r, i|
-    rs_x_plus << r if last_r != r
-    r_counts_x_plus[r] ||= 0
-    r_counts_x_plus[r] += 1
-    last_r = r
-  end
-
-  r_count_sum_x_plus = {}
+  sr_counts_sum = Hash.new{ |hash, key| hash[key] = 0 }
   last_count = 0
-  rs_x_plus.each do |r|
-    last_count += r_counts_x_plus[r]
-    r_count_sum_x_plus[r] = last_count
+  srs.each do |sr|
+    last_count += sr_counts[sr]
+    sr_counts_sum[sr] = last_count
   end
-
-  rs_x_minus = []
-  r_counts_x_minus = {}
-  last_r = nil
-  xyris_x_minus.each do |x, y, r, i|
-    rs_x_minus << r if last_r != r
-    r_counts_x_minus[r] ||= 0
-    r_counts_x_minus[r] += 1
-    last_r = r
-  end
-
-  r_count_sum_x_minus = {}
-  last_count = 0
-  rs_x_minus.each do |r|
-    last_count += r_counts_x_minus[r]
-    r_count_sum_x_minus[r] = last_count
-  end
-
-
-
-
-  pp(Time.now) if $debug
-
-  xyris_x_0_y_plus_length = xyris_x_0_y_plus.length
-  xyris_x_0_y_minus_length = xyris_x_0_y_minus.length
-
-
-  r_count_sum_x_plus_count = rs_x_plus[-1] ? r_count_sum_x_plus[rs_x_plus[-1]] : 0
-
 
   ABS.each do |a, b|
     x0, y0 = XYS[a - 1]
     x1, y1 = XYS[b - 1]
 
+    s0 = ((0 < x0 || (x0 == 0 && 0 < y0)) ? 1 : -1)
+    r0 = (x0 == 0 ? -Float::INFINITY : -Rational(y0, x0))
+    s1 = ((0 < x1 || (x1 == 0 && 0 < y1)) ? 1 : -1)
+    r1 = (x1 == 0 ? -Float::INFINITY : -Rational(y1, x1))
 
+    sr0 = [s0, r0]
+    count0 = sr_counts_sum[sr0]
+    count_line0 = sr_counts[sr0]
 
-    count0 = count_monsters(x0, y0, xyris_x_0_y_plus_length, xyris_x_0_y_minus_length, r_count_sum_x_plus_count, r_count_sum_x_plus, r_count_sum_x_minus)
-    count_line0 = count_monsters_line(x0, y0, xyris_x_0_y_plus_length, xyris_x_0_y_minus_length, r_counts_x_plus, r_counts_x_minus)
-    count1 = count_monsters(x1, y1, xyris_x_0_y_plus_length, xyris_x_0_y_minus_length, r_count_sum_x_plus_count, r_count_sum_x_plus, r_count_sum_x_minus)
-    count_line1 = count_monsters_line(x1, y1, xyris_x_0_y_plus_length, xyris_x_0_y_minus_length, r_counts_x_plus, r_counts_x_minus)
-    # pp(count0:, count_line0:, count1:, count_line1:) if $debug
-
+    sr1 = [s1, r1]
+    count1 = sr_counts_sum[sr1]
+    count_line1 = sr_counts[sr1]
 
     if count0 == count1
-      r = count_line0
+      ans = count_line0
     elsif count0 < count1
-      r = count1 - count0 + count_line0
+      ans = count1 - count0 + count_line0
     else
-      r = N - (count0 - count1 + count_line1) + count_line0 + count_line1
+      ans = N - (count0 - count1 + count_line1) + count_line0 + count_line1
     end
-    puts r
+    puts ans
   end
-
-  pp(Time.now) if $debug
 end
-
-
 
 calc
