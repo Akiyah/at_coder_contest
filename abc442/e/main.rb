@@ -34,40 +34,44 @@ def calc
 
   xysris.sort_by! { |(x, y, s, r, i)| [s, r] }
 
-  sr2is = Hash.new{ |hash, key| hash[key] = [] }
+  sr2is = {}
+  sr2is[1] = Hash.new{ |hash, key| hash[key] = [] }
+  sr2is[-1] = Hash.new{ |hash, key| hash[key] = [] }
   sr_counts_sum = {}
-  last_sr = nil
+  sr_counts_sum[1] = {}
+  sr_counts_sum[-1] = {}
 
   xysris.each.with_index do |(x, y, s, r, i), j|
     sr = [s, r]
-    sr2is[sr] << i
-    sr_counts_sum[sr] = j + 1
-    last_sr = sr
+    sr2is[s][r] << i
+    sr_counts_sum[s][r] = j + 1
   end
 
   sr_counts_by_i = []
   sr_counts_sum_by_i = []
 
-  sr2is.each do |sr, is|
-    sr_count_sum = sr_counts_sum[sr]
-    is.each do |i|
-      sr_counts_by_i[i] = is.length
-      sr_counts_sum_by_i[i] = sr_count_sum
+  sr2is.each do |s, r2is|
+    r2is.each do |r, is|
+      sr_count_sum = sr_counts_sum[s][r]
+      is.each do |i|
+        sr_counts_by_i[i] = is.length
+        sr_counts_sum_by_i[i] = sr_count_sum
+      end
     end
   end
 
-  ABS.each do |a, b|
+  rs = ABS.map do |a, b|
     count0 = sr_counts_sum_by_i[a - 1]
     count_line0 = sr_counts_by_i[a - 1]
     count1 = sr_counts_sum_by_i[b - 1]
 
     if count0 <= count1
-      ans = count1 - count0 + count_line0
+      count1 - count0 + count_line0
     else
-      ans = N - count0 + count1 + count_line0
+      N - count0 + count1 + count_line0
     end
-    puts ans
   end
+  puts rs
 end
 
 calc
