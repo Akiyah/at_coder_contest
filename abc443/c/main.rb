@@ -16,11 +16,26 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, T = STDIN.gets.chomp.split.map(&:to_i)
+AS = STDIN.gets.chomp.split.map(&:to_i)
 
+
+def calc
+  t = 0
+  s = 0
+  AS.each do |a|
+    next if a < t
+    s += a - t
+    t = a + 100
+  end
+
+  if t < T
+    s += T - t
+  end
+
+  s
+end
+
+
+puts calc
 
