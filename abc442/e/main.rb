@@ -41,7 +41,16 @@ def calc
   s = 0
   monster_counts = []
   monster_counts_sum = []
-  xyis2.chunk_while { |(x0, y0, i0), (x1, y1, i1)| y1 * x0 == y0 * x1 }.each do |line_xyis|
+  xyis_plus.chunk_while { |(x0, y0, i0), (x1, y1, i1)| y1 * x0 == y0 * x1 }.each do |line_xyis|
+    pp(line_xyis:) if $debug
+    l = line_xyis.length
+    s += l
+    line_xyis.each do |x, y, i|
+      monster_counts[i] = l
+      monster_counts_sum[i] = s
+    end
+  end
+  xyis_minus.chunk_while { |(x0, y0, i0), (x1, y1, i1)| y1 * x0 == y0 * x1 }.each do |line_xyis|
     pp(line_xyis:) if $debug
     l = line_xyis.length
     s += l

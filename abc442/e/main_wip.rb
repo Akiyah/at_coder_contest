@@ -44,40 +44,23 @@ def calc
   xysris_plus.sort_by! { |(x, y, s, r, i)| r }
   xysris_minus.sort_by! { |(x, y, s, r, i)| r }
 
-  xysris = xysris_plus + xysris_minus
+  # xysris = xysris_plus + xysris_minus
 
   pp(xysris:) if $debug
-
-  # sr2is = {}
-  # sr2is[1] = Hash.new{ |hash, key| hash[key] = [] }
-  # sr2is[-1] = Hash.new{ |hash, key| hash[key] = [] }
-  # sr_counts_sum = {}
-  # sr_counts_sum[1] = {}
-  # sr_counts_sum[-1] = {}
-
-  # xysris.each.with_index do |(x, y, s, r, i), j|
-  #   sr = [s, r]
-  #   sr2is[s][r] << i
-  #   sr_counts_sum[s][r] = j + 1
-  # end
-
-  # monster_counts = []
-  # monster_counts_sum = []
-
-  # sr2is.each do |s, r2is|
-  #   r2is.each do |r, is|
-  #     sr_count_sum = sr_counts_sum[s][r]
-  #     is.each do |i|
-  #       monster_counts[i] = is.length
-  #       monster_counts_sum[i] = sr_count_sum
-  #     end
-  #   end
-  # end
 
   sum = 0
   monster_counts = []
   monster_counts_sum = []
-  xysris.chunk_while { |(x0, y0, s0, r0, i0), (x1, y1, s1, r1, i1)| s0 == s1 && r0 == r1 }.each do |line_xysris|
+  xysris_plus.chunk_while { |(x0, y0, s0, r0, i0), (x1, y1, s1, r1, i1)| ((0 < x0 || (x0 == 0 && 0 < y0)) == (0 < x1 || (x1 == 0 && 0 < y1))) && y1 * x0 == y0 * x1 }.each do |line_xysris|
+    pp(line_xysris:) if $debug
+    l = line_xysris.length
+    sum += l
+    line_xysris.each do |x, y, s, r, i|
+      monster_counts[i] = l
+      monster_counts_sum[i] = sum
+    end
+  end
+  xysris_minus.chunk_while { |(x0, y0, s0, r0, i0), (x1, y1, s1, r1, i1)| ((0 < x0 || (x0 == 0 && 0 < y0)) == (0 < x1 || (x1 == 0 && 0 < y1))) && y1 * x0 == y0 * x1 }.each do |line_xysris|
     pp(line_xysris:) if $debug
     l = line_xysris.length
     sum += l
