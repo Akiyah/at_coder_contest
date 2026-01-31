@@ -26,11 +26,23 @@ end
 
 
 def calc
-  xysris = XYS.map.with_index do |(x, y), i|
-    s = ((0 < x || (x == 0 && 0 < y)) ? 1 : -1)
+
+  xyis = XYS.map.with_index { |(x, y), i| [x, y, i] }
+  xyis_plus = xyis.select { |x, y, i| 0 < x || (x == 0 && 0 < y) }
+  # xyis_minus = xyis.select { |x, y, i| !(0 < x || (x == 0 && 0 < y)) }
+  xyis_minus = xyis.select { |x, y, i| x < 0 || (x == 0 && y < 0) }
+
+  xysris_plus = xyis_plus.map do |x, y, i|
     r = (x == 0 ? -Float::INFINITY : -Rational(y, x))
-    [x, y, s, r, i]
+    [x, y, 1, r, i]
   end
+
+  xysris_minus = xyis_minus.map do |x, y, i|
+    r = (x == 0 ? -Float::INFINITY : -Rational(y, x))
+    [x, y, -1, r, i]
+  end
+
+  xysris = xysris_plus + xysris_minus
 
   xysris.sort_by! { |(x, y, s, r, i)| [s, r] }
 
@@ -47,28 +59,28 @@ def calc
     sr_counts_sum[s][r] = j + 1
   end
 
-  sr_counts_by_i = []
-  sr_counts_sum_by_i = []
+  monster_counts = []
+  monster_counts_sum = []
 
   sr2is.each do |s, r2is|
     r2is.each do |r, is|
       sr_count_sum = sr_counts_sum[s][r]
       is.each do |i|
-        sr_counts_by_i[i] = is.length
-        sr_counts_sum_by_i[i] = sr_count_sum
+        monster_counts[i] = is.length
+        monster_counts_sum[i] = sr_count_sum
       end
     end
   end
 
   rs = ABS.map do |a, b|
-    count0 = sr_counts_sum_by_i[a - 1]
-    count_line0 = sr_counts_by_i[a - 1]
-    count1 = sr_counts_sum_by_i[b - 1]
+    count_sum0 = monster_counts_sum[a - 1]
+    count0 = monster_counts[a - 1]
+    count_sum1 = monster_counts_sum[b - 1]
 
-    if count0 <= count1
-      count1 - count0 + count_line0
+    if count_sum0 <= count_sum1
+      count_sum1 - count_sum0 + count0
     else
-      N - count0 + count1 + count_line0
+      N - count_sum0 + count_sum1 + count0
     end
   end
   puts rs
