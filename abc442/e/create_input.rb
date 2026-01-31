@@ -1,28 +1,35 @@
 #!/usr/bin/env ruby
 
 
-N = 2 * 10 ** 5
-Q = 2 * 10 ** 5
+# N = rand(2..(2 * 10 ** 5))
+N = rand(2..500)
+# N = 2
+# Q = rand(1..(2 * 10 ** 5))
 XYS = (1..N).map do
   begin
-    x = rand(2 * 10 ** 9) - 10 ** 9
-    y = rand(2 * 10 ** 9) - 10 ** 9
+    # x = rand((-10 ** 9)..(10 ** 9))
+    # y = rand((-10 ** 9)..(10 ** 9))
+    # x = rand((-10 ** 2)..(10 ** 2))
+    # y = rand((-10 ** 2)..(10 ** 2))
+    x = rand((-10 ** 1)..(10 ** 1))
+    y = rand((-10 ** 1)..(10 ** 1))
+    # x = rand(0..(10 ** 1))
+    # y = rand((-10 ** 1)..0)
   end while x == 0 && y == 0
   [x, y]
 end
-ABS = (1..Q).map do
-  begin
-    a = rand(N) + 1
-    b = rand(N) + 1
-  end while a == b
-  [a, b]
+abs = []
+(1..N).each do |a|
+  (1..N).each do |b|
+    abs << [a, b] unless  a == b
+  end
 end
 
-puts [N, Q].join(' ')
+puts [N, abs.length].join(' ')
 XYS.each do |x, y|
   puts [x, y].join(' ')
 end
-ABS.each do |a, b|
+abs.each do |a, b|
   puts [a, b].join(' ')
 end
 

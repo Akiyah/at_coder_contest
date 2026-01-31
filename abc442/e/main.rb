@@ -26,49 +26,42 @@ end
 
 
 def calc
-  xysris = XYS.map.with_index do |(x, y), i|
-    s = ((0 < x || (x == 0 && 0 < y)) ? 1 : -1)
-    r = (x == 0 ? -Float::INFINITY : -Rational(y, x))
-    [x, y, s, r, i]
-  end
+  xyis = XYS.map.with_index { |(x, y), i| [x, y, i] }
+  xyis_plus = xyis.select { |x, y, i| 0 < x || (x == 0 && 0 < y) }
+  # xyis_minus = xyis.select { |x, y, i| !(0 < x || (x == 0 && 0 < y)) }
+  xyis_minus = xyis.select { |x, y, i| x < 0 || (x == 0 && y < 0) }
 
-  xysris.sort_by! { |(x, y, s, r, i)| [s, r] }
+  xyis_plus.sort! { |(x0, y0, i0), (x1, y1, i1)| y1 * x0 <=> y0 * x1 }
+  xyis_minus.sort! { |(x0, y0, i0), (x1, y1, i1)| y1 * x0 <=> y0 * x1 }
 
-  sr2is = {}
-  sr2is[1] = Hash.new{ |hash, key| hash[key] = [] }
-  sr2is[-1] = Hash.new{ |hash, key| hash[key] = [] }
-  sr_counts_sum = {}
-  sr_counts_sum[1] = {}
-  sr_counts_sum[-1] = {}
+  xyis2 = xyis_plus + xyis_minus
 
-  xysris.each.with_index do |(x, y, s, r, i), j|
-    sr = [s, r]
-    sr2is[s][r] << i
-    sr_counts_sum[s][r] = j + 1
-  end
+  pp(xyis2:) if $debug
 
-  sr_counts_by_i = []
-  sr_counts_sum_by_i = []
-
-  sr2is.each do |s, r2is|
-    r2is.each do |r, is|
-      sr_count_sum = sr_counts_sum[s][r]
-      is.each do |i|
-        sr_counts_by_i[i] = is.length
-        sr_counts_sum_by_i[i] = sr_count_sum
-      end
+  s = 0
+  monster_counts = []
+  monster_counts_sum = []
+  xyis2.chunk_while { |(x0, y0, i0), (x1, y1, i1)| y1 * x0 == y0 * x1 }.each do |line_xyis|
+    pp(line_xyis:) if $debug
+    l = line_xyis.length
+    s += l
+    line_xyis.each do |x, y, i|
+      monster_counts[i] = l
+      monster_counts_sum[i] = s
     end
   end
 
-  rs = ABS.map do |a, b|
-    count0 = sr_counts_sum_by_i[a - 1]
-    count_line0 = sr_counts_by_i[a - 1]
-    count1 = sr_counts_sum_by_i[b - 1]
+  pp(monster_counts:, monster_counts_sum:) if $debug
 
-    if count0 <= count1
-      count1 - count0 + count_line0
+  rs = ABS.map do |a, b|
+    count_sum0 = monster_counts_sum[a - 1]
+    count0 = monster_counts[a - 1]
+    count_sum1 = monster_counts_sum[b - 1]
+
+    if count_sum0 <= count_sum1
+      count_sum1 - count_sum0 + count0
     else
-      N - count0 + count1 + count_line0
+      N - count_sum0 + count_sum1 + count0
     end
   end
   puts rs
