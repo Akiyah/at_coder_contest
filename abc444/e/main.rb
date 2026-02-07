@@ -28,17 +28,25 @@ def calc
   r = 0
   ais.each do |a, i|
 
-    j0 = bs.bsearch_index { |b| b[0] <= a - D }
-    j1 = bs.bsearch_index { |b| b[0] < a + D }
+    j0 = bs.bsearch_index { |b| a - D < b[0] }
+    if !j0
+      bs = bs + [[a, i]]
+      next
+    end
 
-    if !j0 || !j1
+    j1 = bs.bsearch_index { |b| a + D <= b[0] }
 
+    
+    j = if j1
+      bs[j0...j1].map { |b| b[1] }.max
     else
-    bs0 = bs[0..(j0 - 1)]
-    bs1 = bs[j1..]
-    bs = bs0 + 
+      bs[j0...].map { |b| b[1] }.max
+    end
+    r = j + 1
 
-    bs << ais[]
+    bs0 = 0 < j0 ? bs[0..(j0 - 1)] : []
+    bs1 = j1 ? bs[j1..] : []
+    bs = bs0 + [[a, i]] + bs1
 
 
     while true
