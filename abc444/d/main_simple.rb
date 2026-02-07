@@ -19,39 +19,11 @@ $debug = !ARGV[0].nil?
 N = STDIN.gets.chomp.to_i
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
-kvs = AS.tally
-ks = kvs.keys.sort
 
-rs = []
-l = 1
-n = N
-ks.each do |k|
-  v = kvs[k]
-
-  (l..k).each do
-    rs << n
-  end
-  n -= v
-  v = kvs[k]
-  l = k + 1
-end
-
-pp(rs) if $debug
+r = AS.map do |a|
+  b = (0..(a - 1)).map { |j| 10 ** j }.sum
+  b
+end.sum
 
 
-ss = []
-t = 0
-rs.each do |r|
-  t2 = t + r
-  s = t2 % 10
-  t = t2 / 10
-  ss << s
-end
-
-ans = ss.reverse.join('')
-ans = t.to_s + ans if 0 < t
-
-puts ans
-
-
-# puts rs
+puts r

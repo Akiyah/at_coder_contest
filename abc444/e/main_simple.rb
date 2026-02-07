@@ -16,42 +16,27 @@
 
 $debug = !ARGV[0].nil?
 
-N = STDIN.gets.chomp.to_i
+N, D = STDIN.gets.chomp.split.map(&:to_i)
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
-kvs = AS.tally
-ks = kvs.keys.sort
 
-rs = []
-l = 1
-n = N
-ks.each do |k|
-  v = kvs[k]
+def calc
 
-  (l..k).each do
-    rs << n
+  ans = 0
+  (0...N).each do |l|
+    (l...N).each do |r|
+      b = AS[l..r].combination(2).all? do |a1, a2|
+        pp(a1:, a2:, b: D <= (a1 - a2).abs) if $debug
+        D <= (a1 - a2).abs
+      end
+      pp(l:, r:, b:) if $debug
+      ans += 1 if b
+    end
   end
-  n -= v
-  v = kvs[k]
-  l = k + 1
+  ans
 end
 
-pp(rs) if $debug
 
 
-ss = []
-t = 0
-rs.each do |r|
-  t2 = t + r
-  s = t2 % 10
-  t = t2 / 10
-  ss << s
-end
+puts calc
 
-ans = ss.reverse.join('')
-ans = t.to_s + ans if 0 < t
-
-puts ans
-
-
-# puts rs
