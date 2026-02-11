@@ -31,14 +31,16 @@ def calc
     j = bs.bsearch_index { |b| a - D < b[0] }
     pp(j:) if $debug
     if j
-      bs0 = bs[...j]
+      # bs0 = bs[...j]
       r_new = r
       while bs[j] && bs[j][0] < a + D
         pp(j:, 'bs[j]' => bs[j]) if $debug
         r_new = bs[j][1] if r_new < bs[j][1]
-        j += 1
+        # j += 1
+        bs.delete_at(j)
       end
-      bs = bs0 + [[a, i]] + bs[j...]
+      # bs = bs0 + [[a, i]] + bs[j...]
+      bs.insert(j, [a, i])
       r = r_new
     else
       bs << [a, i]
