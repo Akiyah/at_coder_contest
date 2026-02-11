@@ -24,46 +24,29 @@ def calc
   ais = AS.map.with_index { |a, i| [a, i]}
 
   bs = []
-  l = 0
-  r = 0
+  r = -1
+  ans = 0
   ais.each do |a, i|
-
-    j0 = bs.bsearch_index { |b| a - D < b[0] }
-    if !j0
-      bs = bs + [[a, i]]
-      next
-    end
-
-    j1 = bs.bsearch_index { |b| a + D <= b[0] }
-
-    
-    j = if j1
-      bs[j0...j1].map { |b| b[1] }.max
-    else
-      bs[j0...].map { |b| b[1] }.max
-    end
-    r = j + 1
-
-    bs0 = 0 < j0 ? bs[0..(j0 - 1)] : []
-    bs1 = j1 ? bs[j1..] : []
-    bs = bs0 + [[a, i]] + bs1
-
-
-    while true
-
-    bs
-
-
-    (0...N).each do |l|
-    (l...N).each do |r|
-      b = AS[l..r].combination(2).all? do |a1, a2|
-        pp(a1:, a2:, b: D <= (a1 - a2).abs) if $debug
-        D <= (a1 - a2).abs
+    pp(a:, i:) if $debug
+    j = bs.bsearch_index { |b| a - D < b[0] }
+    pp(j:) if $debug
+    if j
+      bs0 = bs[...j]
+      r_new = r
+      while bs[j] && bs[j][0] < a + D
+        pp(j:, 'bs[j]' => bs[j]) if $debug
+        r_new = bs[j][1] if r_new < bs[j][1]
+        j += 1
       end
-      pp(l:, r:, b:) if $debug
-      ans += 1 if b
+      bs = bs0 + [[a, i]] + bs[j...]
+      r = r_new
+    else
+      bs << [a, i]
     end
+    ans += i - r
+    pp(r:, bs:, ans:) if $debug
   end
+
   ans
 end
 
