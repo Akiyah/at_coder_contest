@@ -16,11 +16,17 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+SS = (1..N).map do
+  STDIN.gets.chomp
+end
+
+
+m = SS.map { |s| s.length }.max
+
+SS.each do |s|
+  l = s.length
+  puts '.' * ((m - l) / 2) + s + '.' * ((m - l) / 2)
+end
 
 
