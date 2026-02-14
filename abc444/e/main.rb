@@ -28,7 +28,10 @@ def calc
   ans = 0
   ais.each do |a, i|
     pp(a:, i:) if $debug
-    j = bs.bsearch_index { |b| a - D < b[0] }
+    a1 = a - D
+    j = bs.bsearch_index do |a0, i0|
+      a1 < a0
+    end
     pp(j:) if $debug
     if j
       # bs0 = bs[...j]
