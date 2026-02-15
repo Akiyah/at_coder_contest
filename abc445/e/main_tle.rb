@@ -50,31 +50,27 @@ def calc()
     end
   end
 
-  lcm_all = Integer.from_prime_division(ls)
-
   pp(ls:) if $debug
   pp(ls_2:) if $debug
 
   rs = []
   pds.each do |pd|
-    ls2 = {}
+    ls2 = ls.dup
     pd.each do |p, i|
       if ls_2[p][0] == i
         if ls_2[p][1]
-          ls2[p] = ls_2[p][0] - ls_2[p][1]
+          ls2[p] = ls_2[p][1]
         else
-          ls2[p] = ls_2[p][0]
+          ls2[p] = 0
         end
       else
-        ls2[p] = 0
+        ls2[p] = ls_2[p][0]
       end
     end
 
     pp(ls2:) if $debug
 
-    # rs << Integer.from_prime_division(ls2) % M
-    x = Integer.from_prime_division(ls2)
-    rs << (lcm_all / x) % M
+    rs << Integer.from_prime_division(ls2) % M
     pp(rs:) if $debug
   end
 
