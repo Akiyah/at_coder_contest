@@ -21,64 +21,73 @@ M = 998244353
 T = STDIN.gets.chomp.to_i
 
 
+def create_spf
+  spf = (0..(10 ** 7)).to_a
+
+  n = 10 ** 7
+  n2 = Math.sqrt(n).to_i
+
+  (2..n2).each do |i|
+    if spf[i] == i
+      (i..n).step(i) do |j|
+        spf[j] = i
+      end
+    end
+  end
+  spf
+end
+
+spf = create_spf
+pp(spf:) if $debug
+
+
+
+# def from_prime_division(ls)
+#   r = 1
+#   ls.map do |p, i|
+#     r *= p.pow(i, M)
+#     r %= M
+#   end
+#   r
+# end
+
+def div_mod(x)
+  x.pow(M - 2, M)
+end
+
 def calc()
   n = STDIN.gets.chomp.to_i
   as = STDIN.gets.chomp.split.map(&:to_i)
   pp(n:, as:) if $debug
 
-  ps = {}
-  pds = as.map do |a|
-    Prime.prime_division(a)
+  
+  ls = []
+  l = 1
+  as.each do |a|
+    ls << l
+    x = l.gcd(a)
+    l = (l * a * div_mod(x)) % M
   end
-
-  ls_2 = {}
-  ls = {}
-  pds.each do |pd|
-    pd.each do |p, i|
-      if ls_2[p]
-        if ls_2[p][0] < i
-          ls_2[p].unshift(i)
-          ls[p] = i
-        elsif !ls_2[p][1] || ls_2[p][1] < i
-          ls_2[p][1] = i
-        else
-        end
-      else
-        ls_2[p] = [i]
-        ls[p] = i
-      end
-    end
-  end
-
-  lcm_all = Integer.from_prime_division(ls)
-
-  pp(ls:) if $debug
-  pp(ls_2:) if $debug
 
   rs = []
-  pds.each do |pd|
-    ls2 = {}
-    pd.each do |p, i|
-      if ls_2[p][0] == i
-        if ls_2[p][1]
-          ls2[p] = ls_2[p][0] - ls_2[p][1]
-        else
-          ls2[p] = ls_2[p][0]
-        end
-      else
-        ls2[p] = 0
-      end
-    end
-
-    pp(ls2:) if $debug
-
-    # rs << Integer.from_prime_division(ls2) % M
-    x = Integer.from_prime_division(ls2)
-    rs << (lcm_all / x) % M
-    pp(rs:) if $debug
+  r = 1
+  as.reverse.each do |a|
+    rs << r
+    x = r.gcd(a)
+    r = (r * a * div_mod(x)) % M
   end
+  rs = rs.reverse
 
-  rs
+  pp(ls:) if $debug
+  pp(rs:) if $debug
+
+  n.times.map do |i|
+    ls[i].lcm(rs[i]) % M
+    l = ls[i]
+    r = rs[i]
+    x = l.gcd(r)
+    (l * r * div_mod(x)) % M
+  end
 end
 
 
