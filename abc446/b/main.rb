@@ -16,11 +16,34 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M = STDIN.gets.chomp.split.map(&:to_i)
+
+LS = []
+XS = []
+N.times do
+  LS << STDIN.gets.chomp.to_i
+  XS << STDIN.gets.chomp.split.map(&:to_i)
+end
+
+
+rs = Array.new(N)
+used = []
+N.times do |i|
+  LS[i].times do |j|
+    m = XS[i][j]
+    if used[m]
+      next
+    else
+      rs[i] = m
+      used[m] = true
+      break
+    end
+  end
+end
+
+
+rs.each do |r|
+  puts r || 0
+end
 
 
