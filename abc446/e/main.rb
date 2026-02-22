@@ -18,36 +18,44 @@ $debug = !ARGV[0].nil?
 
 M, A, B = STDIN.gets.chomp.split.map(&:to_i)
 
-def check(x, y, as, bs)
-  pp(x:, y:) if $debug
-  (1..(2 * M)).each do |i|
-    return false if (as[i] * x + bs[i] * y) % M == 0
-  end
-  # ss = [x, y]
-  # (2..(M + M)).each do |j|
-  #   ss[j] = (A * ss[j - 1] + B * ss[j - 2]) % M
-  #   # if ss[j] % M == 0
-  #   #   pp(x:, y:, j:, ss:) if $debug
-  #   # end
 
-  #   return false if ss[j] == 0
-  # end
-  true
-end
+zero_point_count = 0
+zero_points = Array.new(M) { Array.new(M) }
+paths = Array.new(M) { Array.new(M) { [] } }
 
-as = [1, 0]
-bs = [0, 1]
-(2..(M + M)).each do |j|
-  as[j] = (A * as[j - 1] + B * as[j - 2]) % M
-  bs[j] = (A * bs[j - 1] + B * bs[j - 2]) % M
-end
-
-ans = 0
-(1...M).each do |x|
-  (1...M).each do |y|
-    ans += 1 if check(x, y, as, bs)
+dp = []
+(1...M).map do |i|
+  (1...M).map do |j|
+    k = (A * j + B * i) % M
+    paths[k][j] << [j, i]
+    if k == 0
+      zero_point_count += 1
+      zero_points[j][i] = true
+      dp << [j, i]
+    end
   end
 end
 
+pp(zero_point_count:) if $debug
+pp(zero_points:) if $debug
+pp(dp:) if $debug
+pp(paths:) if $debug
 
-puts ans
+while 0 < dp.length
+  k0, j0 = dp.shift
+  pp(k0:, j0:, paths: paths[k0][j0]) if $debug
+  paths[k0][j0].each do |j, i|
+    unless zero_points[j][i]
+      zero_point_count += 1
+      zero_points[j][i] = true
+      dp << [j, i]
+    end    
+  end
+end
+
+pp(zero_point_count:) if $debug
+pp(zero_points:) if $debug
+pp(dp:) if $debug
+pp(paths:) if $debug
+
+puts (M - 1) ** 2 - zero_point_count
