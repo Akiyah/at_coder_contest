@@ -21,6 +21,7 @@ M = 998244353
 T = STDIN.gets.chomp.to_i
 
 
+
 def create_spf
   spf = (0..(10 ** 7)).to_a
 
@@ -37,22 +38,26 @@ def create_spf
   spf
 end
 
-spf = create_spf
-pp(spf:) if $debug
+$spf = create_spf
+pp($spf) if $debug
 
 
+def prime_division(a)
+  # a.prime_division
 
-# def from_prime_division(ls)
-#   r = 1
-#   ls.map do |p, i|
-#     r *= p.pow(i, M)
-#     r %= M
-#   end
-#   r
-# end
+  ls =  {}
+  while a != 1
+    s = $spf[a]
+    ls[s] ||= 0
+    ls[s] += 1
+    a /= s
+  end
 
-def div_mod(x)
-  x.pow(M - 2, M)
+  ls
+end
+
+def from_prime_division(ls)
+  ls.map { |p, i| p.pow(i, M) }.inject { |r, a| (r * a) % M }
 end
 
 def calc()
@@ -60,34 +65,56 @@ def calc()
   as = STDIN.gets.chomp.split.map(&:to_i)
   pp(n:, as:) if $debug
 
-  
-  ls = []
-  l = 1
-  as.each do |a|
-    ls << l
-    x = l.gcd(a)
-    l = (l * a * div_mod(x)) % M
+  ps = {}
+  pds = as.map do |a|
+    prime_division(a)
   end
 
-  rs = []
-  r = 1
-  as.reverse.each do |a|
-    rs << r
-    x = r.gcd(a)
-    r = (r * a * div_mod(x)) % M
+  ls_2 = {}
+  ls = {}
+  pds.each do |pd|
+    pd.each do |p, i|
+      if ls_2[p]
+        if ls_2[p][0] < i
+          ls_2[p].unshift(i)
+          ls[p] = i
+        elsif !ls_2[p][1] || ls_2[p][1] < i
+          ls_2[p][1] = i
+        else
+        end
+      else
+        ls_2[p] = [i]
+        ls[p] = i
+      end
+    end
   end
-  rs = rs.reverse
 
   pp(ls:) if $debug
-  pp(rs:) if $debug
+  pp(ls_2:) if $debug
 
-  n.times.map do |i|
-    ls[i].lcm(rs[i]) % M
-    l = ls[i]
-    r = rs[i]
-    x = l.gcd(r)
-    (l * r * div_mod(x)) % M
+  rs = []
+  pds.each do |pd|
+    ls2 = ls.dup
+    pd.each do |p, i|
+      if ls_2[p][0] == i
+        if ls_2[p][1]
+          ls2[p] = ls_2[p][1]
+        else
+          ls2[p] = 0
+        end
+      else
+        ls2[p] = ls_2[p][0]
+      end
+    end
+
+    pp(ls2:) if $debug
+
+    # rs << Integer.from_prime_division(ls2) % M
+    rs << from_prime_division(ls2)
+    pp(rs:) if $debug
   end
+
+  rs
 end
 
 
