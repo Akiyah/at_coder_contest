@@ -20,107 +20,70 @@ M = 998244353
 
 T = STDIN.gets.chomp.to_i
 
+# 線形篩
+$lpf = (0..(10 ** 7)).to_a
+primes = []
+(2..(10 ** 7)).each do |x|
+  primes << x if $lpf[x] == x
+  primes.each do |p|
+    break if 10 ** 7 < p * x || $lpf[x] < p
+    $lpf[p * x] = p
+  end
+end
 
-
-def create_spf
-  spf = (0..(10 ** 7)).to_a
-
-  n = 10 ** 7
-  n2 = Math.sqrt(n).to_i
-
-  (2..n2).each do |i|
-    if spf[i] == i
-      (i..n).step(i) do |j|
-        spf[j] = i
+def calc(n, as)
+  e1 = {}
+  e2 = {}
+  as.each do |a|
+    x = a
+    while 1 < x
+      p = $lpf[x]
+      e = 0
+      while x % p == 0
+        x /= p
+        e += 1
       end
-    end
-  end
-  spf
-end
-
-$spf = create_spf
-pp($spf) if $debug
-
-
-def prime_division(a)
-  # a.prime_division
-
-  ls =  {}
-  while a != 1
-    s = $spf[a]
-    ls[s] ||= 0
-    ls[s] += 1
-    a /= s
-  end
-
-  ls
-end
-
-def from_prime_division(ls)
-  ls.map { |p, i| p.pow(i, M) }.inject { |r, a| (r * a) % M }
-end
-
-def calc()
-  n = STDIN.gets.chomp.to_i
-  as = STDIN.gets.chomp.split.map(&:to_i)
-  pp(n:, as:) if $debug
-
-  ps = {}
-  pds = as.map do |a|
-    prime_division(a)
-  end
-
-  ls_2 = {}
-  ls = {}
-  pds.each do |pd|
-    pd.each do |p, i|
-      if ls_2[p]
-        if ls_2[p][0] < i
-          ls_2[p].unshift(i)
-          ls[p] = i
-        elsif !ls_2[p][1] || ls_2[p][1] < i
-          ls_2[p][1] = i
-        else
-        end
-      else
-        ls_2[p] = [i]
-        ls[p] = i
+      if !e1[p] || e1[p] < e
+        e2[p] = e1[p]
+        e1[p] = e
+      elsif !e2[p] || e2[p] < e
+        e2[p] = e
       end
     end
   end
 
-  pp(ls:) if $debug
-  pp(ls_2:) if $debug
-
-  rs = []
-  pds.each do |pd|
-    ls2 = ls.dup
-    pd.each do |p, i|
-      if ls_2[p][0] == i
-        if ls_2[p][1]
-          ls2[p] = ls_2[p][1]
-        else
-          ls2[p] = 0
-        end
-      else
-        ls2[p] = ls_2[p][0]
-      end
-    end
-
-    pp(ls2:) if $debug
-
-    # rs << Integer.from_prime_division(ls2) % M
-    rs << from_prime_division(ls2)
-    pp(rs:) if $debug
+  lcm = 1
+  e1.each do |p, e|
+    lcm *= p.pow(e, M)
+    lcm %= M
   end
 
-  rs
+
+  as.map do |a|
+    x = a
+    ans = lcm
+    while 1 < x
+      p = $lpf[x]
+      e = 0
+      while x % p == 0
+        x /= p
+        e += 1
+      end
+
+      if e == e1[p]
+        d = p.pow(e1[p] - (e2[p] || 0), M)
+        ans *= d.pow(M - 2, M)
+        ans %= M
+      end
+    end
+    ans % M
+  end
 end
-
-
 
 T.times do
-  ans = calc()
+  n = STDIN.gets.chomp.to_i
+  as = STDIN.gets.chomp.split.map(&:to_i)
+  ans = calc(n, as)
   puts ans.join(' ')
 end
 
