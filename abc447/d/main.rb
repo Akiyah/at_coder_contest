@@ -16,11 +16,73 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+S = STDIN.gets.chomp
+
+
+# BBBAAABCBCBAACBBCAAC
+# BBBAABCBAACBBCAAC
+# BBBABAACBBCAAC
+# BBBAABBCAAC
+# BBBABAAC
+# BBBAA
+
+
+# BBBAAABCBCBAACBBCAAC
+# BBBAAABCBCBACBAAC
+# BBBAAABCBCBCAA
+# BBBAABCBCAA
+# BBBABCAA
+# BBBAA
+
+
+
+ss = S.chars
+n = ss.length
+
+
+b_counts_by_a = []
+c_counts_by_b = []
+ais = []
+bis = []
+b_count = 0
+c_count = 0
+ss.reverse.each.with_index do |t, i|
+  if t == 'A'
+    b_counts_by_a[n - i - 1] = b_count
+    ais << n - i - 1
+  elsif t == 'B'
+    b_count += 1
+    c_counts_by_b[n - i - 1] = c_count
+    bis << n - i - 1
+  else # t == 'C'
+    c_count += 1
+  end
+end
+
+pp(b_counts_by_a:) if $debug
+pp(c_counts_by_b:) if $debug
+pp(ais:, bis:) if $debug
+
+
+r = 0
+bj = 0
+ais.each do |ai| # 右から
+  pp(ai:, bj:, r:) if $debug
+
+  next unless r < b_counts_by_a[ai]
+
+  while bj < bis.length && ai < bis[bj]
+    bi = bis[bj]
+    if r < c_counts_by_b[bi]
+      r += 1
+      bj += 1
+      break
+    end
+    bj += 1
+  end
+end
+
+puts r
+
 
 
