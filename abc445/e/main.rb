@@ -20,16 +20,33 @@ M = 998244353
 
 T = STDIN.gets.chomp.to_i
 
-# 線形篩
-$lpf = (0..(10 ** 7)).to_a
-primes = []
-(2..(10 ** 7)).each do |x|
-  primes << x if $lpf[x] == x
-  primes.each do |p|
-    break if 10 ** 7 < p * x || $lpf[x] < p
-    $lpf[p * x] = p
+# # 線形篩
+# $lpf = (0..(10 ** 7)).to_a
+# primes = []
+# (2..(10 ** 7)).each do |x|
+#   primes << x if $lpf[x] == x
+#   primes.each do |p|
+#     break if 10 ** 7 < p * x || $lpf[x] < p
+#     $lpf[p * x] = p
+#   end
+# end
+
+$spf = (0..(10 ** 7)).to_a
+(2..Math.sqrt(10 ** 7)).each do |i|
+  # pp(i:, spf: $spf[..20]) if $debug && i <= 20
+  if $spf[i] == i
+    ((i * i)..(10 ** 7)).step(i) do |j|
+      $spf[j] = i if $spf[j] == j
+    end
   end
 end
+
+# unless $lpf == $spf
+#   pp($lpf[..20])
+#   pp($spf[..20])
+# end
+
+
 
 def calc(n, as)
   e1 = {}
@@ -37,7 +54,7 @@ def calc(n, as)
   as.each do |a|
     x = a
     while 1 < x
-      p = $lpf[x]
+      p = $spf[x]
       e = 0
       while x % p == 0
         x /= p
@@ -63,7 +80,7 @@ def calc(n, as)
     x = a
     ans = lcm
     while 1 < x
-      p = $lpf[x]
+      p = $spf[x]
       e = 0
       while x % p == 0
         x /= p
