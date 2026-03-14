@@ -16,25 +16,14 @@
 
 $debug = !ARGV[0].nil?
 
-H, W, Q = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+L, R, D, U = STDIN.gets.chomp.split.map(&:to_i)
 
-r = H
-c = W
-
-
-Q.times do
-  t, n = STDIN.gets.chomp.split.map(&:to_i)
-  if t == 1
-    r -= n
-    puts c * n
-  else
-    c -= n
-    puts r * n
+ans = 0
+(L..R).each do |x|
+  (D..U).each do |y|
+    m = [x.abs, y.abs].max
+    ans += 1 if m % 2 == 0
   end
 end
 
-
+puts ans
