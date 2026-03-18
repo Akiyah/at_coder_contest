@@ -51,20 +51,20 @@ def calc(xis, cs, c_max, ds)
     k += 1
   end
 
+  # seg = AcLibraryRb::Segtree.new(M, 0) { |x, y| x + y }
+
   as = []
   used = N
   (0..c_max).each do |j|
     if ds[j]
-      ds[j].each do |d|
-        v = as.bsearch_index { |a| d < a }
-        if v
-          as.insert(v, d)
-        else
-          as << d
-        end
-      end
-      # as += ds[j]
-      # as.sort!
+      as += ds[j]
+      as.sort!
+
+      # ds[j].each do |d|
+      #   seg.set(d, 1)
+      #   v = seg.prod(0, d)
+      #   as.insert(v, d)
+      # end
     end
     l = as.length
 
