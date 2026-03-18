@@ -57,8 +57,19 @@ def calc(xis, cs, c_max, ds)
   used = N
   (0..c_max).each do |j|
     if ds[j]
-      as += ds[j]
-      as.sort!
+      if ds[j].length <= 2
+        ds[j].each do |d|
+          v = as.bsearch_index { |a| d < a }
+          if v
+            as.insert(v, d)
+          else
+            as << d
+          end
+        end
+      else
+        as += ds[j]
+        as.sort!
+      end
 
       # ds[j].each do |d|
       #   seg.set(d, 1)
