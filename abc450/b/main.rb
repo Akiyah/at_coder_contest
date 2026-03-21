@@ -16,11 +16,17 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+CS = (1...N).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
+
+pp(CS:) if $debug
+
+r = (0...N).to_a.combination(3).any? do |a, b, c|
+  pp(a:, b:, c:) if $debug
+  CS[a][b - a - 1] + CS[b][c - b - 1] < CS[a][c - a - 1]
+end
 
 
+puts r ? 'Yes' : 'No'

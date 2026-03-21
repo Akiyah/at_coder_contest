@@ -16,11 +16,21 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, K = STDIN.gets.chomp.split.map(&:to_i)
+AS = STDIN.gets.chomp.split.map(&:to_i)
+
+def calc
+  as = AS.map { |a| a % K }.sort
+
+  m0 = as[-1] - as[0]
+
+  ms = (0...(N - 1)).map do |i|
+    (as[i] + K) - as[i + 1]
+  end
+
+  ([m0] + ms).min
+end
+
+puts calc
 
 
