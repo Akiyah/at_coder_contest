@@ -29,27 +29,38 @@ pp(X:, Y:, Q:, LRCS:) if $debug
 
 r_max = LRCS.map { |l, r, c| r }.max
 
-xs = X.chars.tally
-xs.default = 0
-ys = Y.chars.tally
-ys.default = 0
+# xs = X.chars.tally
+# xs.default = 0
+# ys = Y.chars.tally
+# ys.default = 0
+
+xs = {}
+('a'..'z').each do |c|
+  n = 0
+  xs[c] = X.chars.map do |cx|
+    n += 1 if cx == c
+    n
+  end
+end
+ys = {}
+('a'..'z').each do |c|
+  n = 0
+  ys[c] = Y.chars.map do |cy|
+    n += 1 if cy == c
+    n
+  end
+end
 
 lx = X.length
 ly = Y.length
 
-# lxys = []
 cxys = []
 ls = []
-# lxys << [lx, 0]
 ls << lx
-# lxys << [0, ly]
 ls << ly
 cxys << [1, 0]
 cxys << [0, 1]
 while true do
-  # lx1, ly1 = lxys[-1]
-  # lx2, ly2 = lxys[-2]
-  # lxys << [lx1 + lx2, ly1 + ly2]
   cx1, cy1 = cxys[-1]
   cx2, cy2 = cxys[-2]
   cx, cy = cx1 + cx2, cy1 + cy2
@@ -64,20 +75,17 @@ pp(ls:) if $debug
 def calc(r, c, ls, cxys, xs, ys)
   pp(r:, c:) if $debug
   return 0 if r <= 0
-  # if r <= ls[1] # ly
-  #   return Y.chars[0...r].tally[c]
-  # end
 
   i = ls.length - 1
   ans = 0
   while true do
     if i == 0
-      ans += X.chars[0...r].tally[c] || 0
+      ans += xs[c][r - 1] # X.chars[0...r].tally[c] || 0
       pp(i:, r:, ans:, type: 'a') if $debug
       return ans
     end
     if i == 1
-      ans += Y.chars[0...r].tally[c] || 0
+      ans += ys[c][r - 1] # Y.chars[0...r].tally[c] || 0
       pp(i:, r:, ans:, type: 'b') if $debug
       return ans
     end
@@ -87,9 +95,8 @@ def calc(r, c, ls, cxys, xs, ys)
       next
     end
 
-    # ls[i - 1] < r
     cx, cy = cxys[i - 1]
-    ans += cx * xs[c] + cy * ys[c]
+    ans += cx * xs[c][-1] + cy * ys[c][-1]
     pp(i:, r:, ans:, type: 'd') if $debug
     r -= ls[i - 1]
     i -= 2
