@@ -37,24 +37,31 @@ ys.default = 0
 lx = X.length
 ly = Y.length
 
-lxys = []
+# lxys = []
+cxys = []
 ls = []
-lxys << [lx, 0]
+# lxys << [lx, 0]
 ls << lx
-lxys << [0, ly]
+# lxys << [0, ly]
 ls << ly
+cxys << [1, 0]
+cxys << [0, 1]
 while true do
-  lx1, ly1 = lxys[-1]
-  lx2, ly2 = lxys[-2]
-  lxys << [lx1 + lx2, ly1 + ly2]
-  ls << lxys[-1][0] + lxys[-1][1]
+  # lx1, ly1 = lxys[-1]
+  # lx2, ly2 = lxys[-2]
+  # lxys << [lx1 + lx2, ly1 + ly2]
+  cx1, cy1 = cxys[-1]
+  cx2, cy2 = cxys[-2]
+  cx, cy = cx1 + cx2, cy1 + cy2
+  cxys << [cx, cy]
+  ls << cx * X.length + cy * Y.length
   break if r_max < ls[-1]
 end
 
-# pp(lxys:) if $debug
-# pp(ls:) if $debug
+pp(cxys:) if $debug
+pp(ls:) if $debug
 
-def calc(r, c, ls, lxys, xs, ys)
+def calc(r, c, ls, cxys, xs, ys)
   pp(r:, c:) if $debug
   return 0 if r <= 0
   # if r <= ls[1] # ly
@@ -81,8 +88,8 @@ def calc(r, c, ls, lxys, xs, ys)
     end
 
     # ls[i - 1] < r
-    lx, ly = lxys[i - 1]
-    ans += lx * xs[c] + ly * ys[c]
+    cx, cy = cxys[i - 1]
+    ans += cx * xs[c] + cy * ys[c]
     pp(i:, r:, ans:, type: 'd') if $debug
     r -= ls[i - 1]
     i -= 2
@@ -94,8 +101,8 @@ end
 
 LRCS.each do |l, r, c|
   pp(l:, r:, c:) if $debug
-  ans1 = calc(r, c, ls, lxys, xs, ys)
-  ans2 = calc(l - 1, c, ls, lxys, xs, ys)
+  ans1 = calc(r, c, ls, cxys, xs, ys)
+  ans2 = calc(l - 1, c, ls, cxys, xs, ys)
   pp(ans1:, ans2:) if $debug
   puts ans1 - ans2
 end
