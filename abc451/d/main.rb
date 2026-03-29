@@ -45,6 +45,8 @@ gls = {}
 
   # pp([i, s, r]) if $debug
 
+  pp([i, s, r]) if r && $debug
+
   if !r
     gs[s] = true
     l = s.length
@@ -62,42 +64,70 @@ pp(gls:) if $debug
 
 
 
-def calc_l(l, gs, gls)
+def calc_keta(l, gls) # ちょうどその桁数の良い整数の数
   return 1 if l == 0
 
-  (1..l).each do |l2|
-    gs[l].length * calc_l(l - l2, gs)
+  r = 0
+  gls.each do |l2, gs|
+    if l2 <= l
+      r += gs.length * calc_keta(l - l2, gls)
+    end
   end
+  r
 end
 
-def calc_m(n, gs, gls) # その数以下の良い整数の数を求める
-  pp(n:) if $debug
+def calc_kazu(s, gls) # その数以下で同じ桁数の良い整数の数
+  l = s.length
+  return 1 if l == 0
+
+  r = 0
+  gls.each do |l2, gs|
+    if l2 <= l
+      gs.each do |g|
+        if g == s[...l2]
+          r += calc_kazu(s[l2..], gls)
+        elsif g < s[...l2]
+          r += calc_keta(l - l2, gls)
+        end
+      end
+    end
+  end
+  r
+end
+
+def calc_m(n, gls) # その数以下の良い整数の数を求める
+  # pp(n:) if $debug
   s = n.to_s
   l = s.length
 
   r = 0
-  gls.each do |l2, ts|
-    pp(l2:, ts:)
-    next if l < l2
-    ts.each do |t|
-      pp(s[0...l2])
-      pp(t)
-      if s[0...l2].to_i == t.to_i
-        r += calc_m(s[(l2 + 1)..], gs, gls)
-      elsif s[0...l2].to_i > t.to_i
-        r += calc_l(l - l2, gs, gls)
-      else
-      end
-    end
+  r1 = calc_kazu(s, gls)
+  # pp(r1:) if $debug
+  r += r1
+  (1...l).each do |l2|
+    r2 = calc_keta(l2, gls)
+    # pp(l2:, r2:) if $debug
+    r += r2
   end
 
-  pp(n:, r:) if $debug
+  # pp(n:, r:) if $debug
   r
 end
 
 
-r = (1..(10 ** 9)).bsearch { |n| N <= calc_m(n, gs, gls) }
+r = (1..(10 ** 9)).bsearch { |n| N <= calc_m(n, gls) }
 
 
 puts r
+
+
+
+if $debug
+  r0 = 0
+  (1..400).each do |n|
+    r = calc_m(n, gls)
+    pp(n:, r:) if r0 != r
+    r0 = r
+  end
+end
 
