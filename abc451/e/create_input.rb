@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-N = 3000
+N = 500
 puts N
 
 ds = N.times.map do |i|
