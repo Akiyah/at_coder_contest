@@ -5,7 +5,7 @@
 # acc s 
 
 
-require "ac-library-rb/priority_queue"
+# require "ac-library-rb/priority_queue"
 # require "ac-library-rb/segtree"
 require "ac-library-rb/dsu"
 
@@ -22,14 +22,17 @@ end
 pp(AS:) if $debug
 
 
-pq = AcLibraryRb::PriorityQueue.new {|(i1, j1, d1), (i2, j2, d2)| d1 < d2 }
+# pq = AcLibraryRb::PriorityQueue.new {|(i1, j1, d1), (i2, j2, d2)| d1 < d2 }
+ijs_by_d = []
 ds = Array.new(N) { Array.new(N) }
 (0...N).each do |i|
   ((i + 1)...N).each do |j|
     d = AS[i][j - i - 1]
     ds[i][j] = d
     ds[j][i] = d
-    pq << [i, j, d]
+    # pq << [i, j, d]
+    ijs_by_d[d] ||= []
+    ijs_by_d[d] << [i, j]
   end
 end
 (0...N).each do |i|
@@ -37,42 +40,44 @@ end
 end
 
 puts(ds.map { |line| line.join(', ') }.join("\n")) if $debug
-pp(pq:) if $debug
+# pp(pq:) if $debug
+pp(ijs_by_d:) if $debug
 
-def calc(ds, pq)
+def calc(ds, ijs_by_d)
   dsu = AcLibraryRb::DSU.new(N)
   groups = N.times.map { |i| [i] }
 
-  while ijd = pq.pop
-    i, j, d = ijd
-    pp(i:, j:, d:) if $debug
 
-    if dsu.same?(i, j)
-    else
-      li = dsu.leader(i)
-      lj = dsu.leader(j)
-      gi = groups[li]
-      gj = groups[lj]
+  ijs_by_d.each.with_index do |ijs, d|
+    next unless ijs
+    ijs.each do |i, j|
+      if dsu.same?(i, j)
+      else
+        li = dsu.leader(i)
+        lj = dsu.leader(j)
+        gi = groups[li]
+        gj = groups[lj]
 
-      dij = ds[i][j]
-      dis = ds[i]
-      djs = ds[j]
-      gi.each do |i1|
-        disi1 = dis[i1]
-        di1s = ds[i1]
-        gj.each do |j1|
-          pp(i1:, j1:) if $debug
-          return false unless di1s[j1] == disi1 + dij + djs[j1]
+        dij = ds[i][j]
+        dis = ds[i]
+        djs = ds[j]
+        gi.each do |i1|
+          disi1 = dis[i1]
+          di1s = ds[i1]
+          gj.each do |j1|
+            pp(i1:, j1:) if $debug
+            return false unless di1s[j1] == disi1 + dij + djs[j1]
+          end
         end
-      end
 
-      dsu.merge(li, lj)
-      l = dsu.leader(li)
-      groups[l] = groups[li] + groups[lj]
+        dsu.merge(li, lj)
+        l = dsu.leader(li)
+        groups[l] = groups[li] + groups[lj]
+      end
     end
   end
 
   true
 end
 
-puts calc(ds, pq) ? 'Yes' : 'No'
+puts calc(ds, ijs_by_d) ? 'Yes' : 'No'
