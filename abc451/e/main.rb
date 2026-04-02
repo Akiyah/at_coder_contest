@@ -54,9 +54,15 @@ def calc(ds, pq)
       gi = groups[li]
       gj = groups[lj]
 
+      dij = ds[i][j]
+      dis = ds[i]
+      djs = ds[j]
       gi.each do |i1|
+        disi1 = dis[i1]
+        di1s = ds[i1]
         gj.each do |j1|
-          return false unless ds[i1][j1] == ds[i1][i] + ds[i][j] + ds[j][j1]
+          pp(i1:, j1:) if $debug
+          return false unless di1s[j1] == disi1 + dij + djs[j1]
         end
       end
 
