@@ -16,11 +16,11 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+M, D = STDIN.gets.chomp.split.map(&:to_i)
 
+if [M, D] == [1, 7] || [M, D] == [3, 3] || [M, D] == [5, 5] || [M, D] == [7, 7] || [M, D] == [9, 9]
+  puts 'Yes'
+else
+  puts 'No'
+end
 
