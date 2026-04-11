@@ -16,11 +16,19 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+S = STDIN.gets.chomp
 
 
+ss = S.chars
+
+while 0 < ss.length && 'o' == ss[0]
+  ss.shift
+end
+pp(ss:) if $debug
+
+if 0 < ss.length
+  puts ss.join('')
+else
+  puts ''
+end
