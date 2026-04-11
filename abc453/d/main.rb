@@ -22,7 +22,6 @@ SS = (1..H).map do
 end
 
 def calc
-
   used_D = Array.new(H) { Array.new(W) }
   used_U = Array.new(H) { Array.new(W) }
   used_R = Array.new(H) { Array.new(W) }
@@ -36,27 +35,17 @@ def calc
     line.chars
   end
 
-  # pp(used:, s:, board:) if $debug
-
   si, sj = s
 
   dp = []
-  if s[0] < H - 1
-    dp << [s, 'D', nil]
-    used_D[si][sj] = true
-  end
-  if 0 < s[0]
-    dp << [s, 'U', nil]
-    used_U[si][sj] = true
-  end
-  if s[1] < W - 1
-    dp << [s, 'R', nil]
-    used_R[si][sj] = true
-  end
-  if 0 < s[1]
-    dp << [s, 'L', nil]
-    used_L[si][sj] = true
-  end
+  dp << [s, 'D', nil]
+  used_D[si][sj] = true
+  dp << [s, 'U', nil]
+  used_U[si][sj] = true
+  dp << [s, 'R', nil]
+  used_R[si][sj] = true
+  dp << [s, 'L', nil]
+  used_L[si][sj] = true
 
   pp(dp:) if $debug
 
@@ -67,55 +56,88 @@ def calc
     pi, pj = p
 
     if d0 == 'U'
-      qi = pi - 1
-      qj = pj
+      qi, qj = pi - 1, pj
     elsif d0 == 'D'
-      qi = pi + 1
-      qj = pj
+      qi, qj = pi + 1, pj
     elsif d0 == 'R'
-      qi = pi
-      qj = pj + 1
+      qi, qj = pi, pj + 1
     elsif d0 == 'L'
-      qi = pi
-      qj = pj - 1
+      qi, qj = pi, pj - 1
     end
+
+    next if qi < 0 || H <= qi
+    next if qj < 0 || W <= qj
 
     x = board[qi][qj]
     if x == 'G'
       return [true, p_d0_parent]
     elsif x == '#'
       next
-    else
+    elsif x == '.'
       if !used_D[qi][qj]
-        if qi < H - 1
-          if ((x == '.') || (x == 'o' && d0 == 'D') || (x == 'x' && d0 != 'D'))
-            dp << [[qi, qj], 'D', p_d0_parent]
-            used_D[qi][qj] = true
-          end
-        end
+        dp << [[qi, qj], 'D', p_d0_parent]
+        used_D[qi][qj] = true
       end
       if !used_U[qi][qj]
-        if 0 < qi
-          if ((x == '.') || (x == 'o' && d0 == 'U') || (x == 'x' && d0 != 'U'))
-            dp << [[qi, qj], 'U', p_d0_parent]
-            used_U[qi][qj] = true
-          end
-        end
+        dp << [[qi, qj], 'U', p_d0_parent]
+        used_U[qi][qj] = true
       end
       if !used_R[qi][qj]
-        if qj < W - 1
-          if ((x == '.') || (x == 'o' && d0 == 'R') || (x == 'x' && d0 != 'R'))
-            dp << [[qi, qj], 'R', p_d0_parent]
-            used_R[qi][qj] = true
-          end
-        end
+        dp << [[qi, qj], 'R', p_d0_parent]
+        used_R[qi][qj] = true
       end
       if !used_L[qi][qj]
-        if 0 < qj
-          if ((x == '.') || (x == 'o' && d0 == 'L') || (x == 'x' && d0 != 'L'))
-            dp << [[qi, qj], 'L', p_d0_parent]
-            used_L[qi][qj] = true
-          end
+        dp << [[qi, qj], 'L', p_d0_parent]
+        used_L[qi][qj] = true
+      end
+    elsif x == 'o'
+      if d0 == 'D'
+        if !used_D[qi][qj]
+          dp << [[qi, qj], 'D', p_d0_parent]
+          used_D[qi][qj] = true
+        end
+      end
+      if d0 == 'U'
+        if !used_U[qi][qj]
+          dp << [[qi, qj], 'U', p_d0_parent]
+          used_U[qi][qj] = true
+        end
+      end
+      if d0 == 'R'
+        if !used_R[qi][qj]
+          dp << [[qi, qj], 'R', p_d0_parent]
+          used_R[qi][qj] = true
+        end
+      end
+      if d0 == 'L'
+        if !used_L[qi][qj]
+          dp << [[qi, qj], 'L', p_d0_parent]
+          used_L[qi][qj] = true
+        end
+      end
+    else # x == 'x'
+      if d0 != 'D'
+      if !used_D[qi][qj]
+          dp << [[qi, qj], 'D', p_d0_parent]
+          used_D[qi][qj] = true
+        end
+      end
+      if d0 != 'U'
+        if !used_U[qi][qj]
+          dp << [[qi, qj], 'U', p_d0_parent]
+          used_U[qi][qj] = true
+        end
+      end
+      if d0 != 'R'
+        if !used_R[qi][qj]
+          dp << [[qi, qj], 'R', p_d0_parent]
+          used_R[qi][qj] = true
+        end
+      end
+      if d0 != 'L'
+        if !used_L[qi][qj]
+          dp << [[qi, qj], 'L', p_d0_parent]
+          used_L[qi][qj] = true
         end
       end
     end
