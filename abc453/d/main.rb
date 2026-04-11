@@ -21,11 +21,14 @@ SS = (1..H).map do
   STDIN.gets.chomp
 end
 
+
+# 0:U
+# 1:D
+# 2:R
+# 3:L
+
 def calc
-  used_D = Array.new(H) { Array.new(W) }
-  used_U = Array.new(H) { Array.new(W) }
-  used_R = Array.new(H) { Array.new(W) }
-  used_L = Array.new(H) { Array.new(W) }
+  used = Array.new(H) { Array.new(W) { Array.new(4) } }
   s = []
 
   board = SS.map.with_index do |line, i|
@@ -38,30 +41,30 @@ def calc
   si, sj = s
 
   dp = []
-  dp << [s, 'D', nil]
-  used_D[si][sj] = true
-  dp << [s, 'U', nil]
-  used_U[si][sj] = true
-  dp << [s, 'R', nil]
-  used_R[si][sj] = true
-  dp << [s, 'L', nil]
-  used_L[si][sj] = true
+  dp << [s, 0, nil]
+  used[si][sj][0] = true
+  dp << [s, 1, nil]
+  used[si][sj][1] = true
+  dp << [s, 2, nil]
+  used[si][sj][2] = true
+  dp << [s, 3, nil]
+  used[si][sj][3] = true
 
   pp(dp:) if $debug
 
-  while 0 < dp.length
+  while !dp.empty?
     p_d0_parent = dp.shift
     p, d0, parent = p_d0_parent
     pp(p:, d0:) if $debug
     pi, pj = p
 
-    if d0 == 'U'
+    if d0 == 0
       qi, qj = pi - 1, pj
-    elsif d0 == 'D'
+    elsif d0 == 1
       qi, qj = pi + 1, pj
-    elsif d0 == 'R'
+    elsif d0 == 2
       qi, qj = pi, pj + 1
-    elsif d0 == 'L'
+    elsif d0 == 3
       qi, qj = pi, pj - 1
     end
 
@@ -74,70 +77,31 @@ def calc
     elsif x == '#'
       next
     elsif x == '.'
-      if !used_D[qi][qj]
-        dp << [[qi, qj], 'D', p_d0_parent]
-        used_D[qi][qj] = true
-      end
-      if !used_U[qi][qj]
-        dp << [[qi, qj], 'U', p_d0_parent]
-        used_U[qi][qj] = true
-      end
-      if !used_R[qi][qj]
-        dp << [[qi, qj], 'R', p_d0_parent]
-        used_R[qi][qj] = true
-      end
-      if !used_L[qi][qj]
-        dp << [[qi, qj], 'L', p_d0_parent]
-        used_L[qi][qj] = true
+      used_q = used[qi][qj]
+      used_q.each.with_index do |b, d|
+        if !b
+          dp << [[qi, qj], d, p_d0_parent]
+          used_q[d] = true
+        end
       end
     elsif x == 'o'
-      if d0 == 'D'
-        if !used_D[qi][qj]
-          dp << [[qi, qj], 'D', p_d0_parent]
-          used_D[qi][qj] = true
-        end
-      end
-      if d0 == 'U'
-        if !used_U[qi][qj]
-          dp << [[qi, qj], 'U', p_d0_parent]
-          used_U[qi][qj] = true
-        end
-      end
-      if d0 == 'R'
-        if !used_R[qi][qj]
-          dp << [[qi, qj], 'R', p_d0_parent]
-          used_R[qi][qj] = true
-        end
-      end
-      if d0 == 'L'
-        if !used_L[qi][qj]
-          dp << [[qi, qj], 'L', p_d0_parent]
-          used_L[qi][qj] = true
+      used_q = used[qi][qj]
+      used_q.each.with_index do |b, d|
+        if d0 == d
+          if !b
+            dp << [[qi, qj], d, p_d0_parent]
+            used_q[d] = true
+          end
         end
       end
     else # x == 'x'
-      if d0 != 'D'
-      if !used_D[qi][qj]
-          dp << [[qi, qj], 'D', p_d0_parent]
-          used_D[qi][qj] = true
-        end
-      end
-      if d0 != 'U'
-        if !used_U[qi][qj]
-          dp << [[qi, qj], 'U', p_d0_parent]
-          used_U[qi][qj] = true
-        end
-      end
-      if d0 != 'R'
-        if !used_R[qi][qj]
-          dp << [[qi, qj], 'R', p_d0_parent]
-          used_R[qi][qj] = true
-        end
-      end
-      if d0 != 'L'
-        if !used_L[qi][qj]
-          dp << [[qi, qj], 'L', p_d0_parent]
-          used_L[qi][qj] = true
+      used_q = used[qi][qj]
+      used_q.each.with_index do |b, d|
+        if d0 != d
+          if !b
+            dp << [[qi, qj], d, p_d0_parent]
+            used_q[d] = true
+          end
         end
       end
     end
@@ -159,7 +123,7 @@ if r
     ds << d0
     p_d0_parent = parent
   end
-  puts ds.reverse.join('')
+  puts ds.reverse.map { |d| 'UDRL'[d]  }.join('')
 else
   puts 'No'
 end
