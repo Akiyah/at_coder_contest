@@ -52,21 +52,25 @@ def calc
 
   pp(dp:) if $debug
 
+  dpis = [-1, 1, 0, 0]
+  dpjs = [0, 0, 1, -1]
   while !dp.empty?
     p_d0_parent = dp.shift
     p, d0, parent = p_d0_parent
     pp(p:, d0:) if $debug
     pi, pj = p
 
-    if d0 == 0
-      qi, qj = pi - 1, pj
-    elsif d0 == 1
-      qi, qj = pi + 1, pj
-    elsif d0 == 2
-      qi, qj = pi, pj + 1
-    elsif d0 == 3
-      qi, qj = pi, pj - 1
-    end
+    qi, qj = pi + dpis[d0], pj + dpjs[d0]
+
+    # if d0 == 0
+    #   qi, qj = pi - 1, pj
+    # elsif d0 == 1
+    #   qi, qj = pi + 1, pj
+    # elsif d0 == 2
+    #   qi, qj = pi, pj + 1
+    # elsif d0 == 3
+    #   qi, qj = pi, pj - 1
+    # end
 
     next if qi < 0 || H <= qi
     next if qj < 0 || W <= qj
