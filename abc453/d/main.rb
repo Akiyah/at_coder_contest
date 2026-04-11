@@ -46,7 +46,10 @@ end
 
 def calc
 
-  used = Array.new(H) { Array.new(W) { {} } }
+  used_D = Array.new(H * W)
+  used_U = Array.new(H * W)
+  used_R = Array.new(H * W)
+  used_L = Array.new(H * W)
   s = []
 
   board = SS.map.with_index do |line, i|
@@ -56,35 +59,35 @@ def calc
     line.chars
   end
 
-  pp(used:, s:, board:) if $debug
+  # pp(used:, s:, board:) if $debug
 
-
+  si, sj = s
 
   dp = []
   if s[0] < H - 1
-    dp << [s, 'D']
-    used[s[0]][s[1]]['D'] = true
+    dp << [s, 'D', nil]
+    used_D[si * W + sj] = true
   end
   if 0 < s[0]
-    dp << [s, 'U']
-    used[s[0]][s[1]]['U'] = true
+    dp << [s, 'U', nil]
+    used_U[si * W + sj] = true
   end
   if s[1] < W - 1
-    dp << [s, 'R']
-    used[s[0]][s[1]]['R'] = true
+    dp << [s, 'R', nil]
+    used_R[si * W + sj] = true
   end
   if 0 < s[1]
-    dp << [s, 'L']
-    used[s[0]][s[1]]['L'] = true
+    dp << [s, 'L', nil]
+    used_L[si * W + sj] = true
   end
 
   pp(dp:) if $debug
 
   while 0 < dp.length
-    p, ds = dp.shift
-    pp(p:, ds:) if $debug
+    p_d0_parent = dp.shift
+    p, d0, parent = p_d0_parent
+    pp(p:, d0:) if $debug
     pi, pj = p
-    d0 = ds[-1]
 
     if d0 == 'U'
       qi = pi - 1
@@ -100,97 +103,62 @@ def calc
       qj = pj - 1
     end
 
-    if board[qi][qj] == 'G'
-      return [true, ds]
-    elsif board[qi][qj] == '.'
+    x = board[qi][qj]
+    if x == 'G'
+      return [true, p_d0_parent]
+    elsif x == '#'
+      next
+    else
       if qi < H - 1
-        if !used[qi][qj]['D']
-          dp << [[qi, qj], ds + 'D']
+        if !used_D[qi * W + qj]
+          if ((x == '.') || (x == 'o' && d0 == 'D') || (x == 'x' && d0 != 'D'))
+            dp << [[qi, qj], 'D', p_d0_parent]
+            used_D[qi * W + qj] = true
+          end
         end
       end
       if 0 < qi
-        if !used[qi][qj]['U']
-          dp << [[qi, qj], ds + 'U']
+        if !used_U[qi * W + qj]
+          if ((x == '.') || (x == 'o' && d0 == 'U') || (x == 'x' && d0 != 'U'))
+            dp << [[qi, qj], 'U', p_d0_parent]
+            used_U[qi * W + qj] = true
+          end
         end
       end
       if qj < W - 1
-        if !used[qi][qj]['R']
-          dp << [[qi, qj], ds + 'R']
+        if !used_R[qi * W + qj]
+          if ((x == '.') || (x == 'o' && d0 == 'R') || (x == 'x' && d0 != 'R'))
+            dp << [[qi, qj], 'R', p_d0_parent]
+            used_R[qi * W + qj] = true
+          end
         end
       end
       if 0 < qj
-        if !used[qi][qj]['L']
-          dp << [[qi, qj], ds + 'L']
+        if !used_L[qi * W + qj]
+          if ((x == '.') || (x == 'o' && d0 == 'L') || (x == 'x' && d0 != 'L'))
+            dp << [[qi, qj], 'L', p_d0_parent]
+            used_L[qi * W + qj] = true
+          end
         end
       end
-      used[qi][qj]['D'] = true
-      used[qi][qj]['U'] = true
-      used[qi][qj]['R'] = true
-      used[qi][qj]['L'] = true
-    elsif board[qi][qj] == 'x'
-      if qi < H - 1 && d0 != 'D'
-        if !used[qi][qj]['D']
-          dp << [[qi, qj], ds + 'D']
-        end
-      end
-      if 0 < qi && d0 != 'U'
-        if !used[qi][qj]['U']
-          dp << [[qi, qj], ds + 'U']
-        end
-      end
-      if qj < W - 1 && d0 != 'R'
-        if !used[qi][qj]['R']
-          dp << [[qi, qj], ds + 'R']
-        end
-      end
-      if 0 < qj && d0 != 'L'
-        if !used[qi][qj]['L']
-          dp << [[qi, qj], ds + 'L']
-        end
-      end
-
-      used[qi][qj]['D'] = true if d0 != 'D'
-      used[qi][qj]['U'] = true if d0 != 'U'
-      used[qi][qj]['R'] = true if d0 != 'R'
-      used[qi][qj]['L'] = true if d0 != 'L'
-    elsif board[qi][qj] == 'o'
-      if qi < H - 1 && d0 == 'D'
-        if !used[qi][qj]['D']
-          dp << [[qi, qj], ds + 'D']
-        end
-      end
-      if 0 < qi && d0 == 'U'
-        if !used[qi][qj]['U']
-          dp << [[qi, qj], ds + 'U']
-        end
-      end
-      if qj < W - 1 && d0 == 'R'
-        if !used[qi][qj]['R']
-          dp << [[qi, qj], ds + 'R']
-        end
-      end
-      if 0 < qj && d0 == 'L'
-        if !used[qi][qj]['L']
-          dp << [[qi, qj], ds + 'L']
-        end
-      end
-      used[qi][qj]['D'] = true if d0 == 'D'
-      used[qi][qj]['U'] = true if d0 == 'U'
-      used[qi][qj]['R'] = true if d0 == 'R'
-      used[qi][qj]['L'] = true if d0 == 'L'
-    else #  board[pi][pj] == '#'
     end
-
   end
 
   false
 end
 
 
-r, ds = calc
+r, p_d0_parent = calc
+# pp(r:, p_d0_parent:) if $debug
 if r
   puts 'Yes'
-  puts ds
+  ds = []
+  while p_d0_parent
+    p, d0, parent = p_d0_parent
+    ds << d0
+    p_d0_parent = parent
+  end
+  puts ds.reverse.join('')
 else
   puts 'No'
 end
