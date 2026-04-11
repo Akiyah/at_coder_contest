@@ -109,32 +109,32 @@ def calc
     elsif x == '#'
       next
     else
-      if qi < H - 1
-        if !used_D[qi * W + qj]
+      if !used_D[qi * W + qj]
+        if qi < H - 1
           if ((x == '.') || (x == 'o' && d0 == 'D') || (x == 'x' && d0 != 'D'))
             dp << [[qi, qj], 'D', p_d0_parent]
             used_D[qi * W + qj] = true
           end
         end
       end
-      if 0 < qi
-        if !used_U[qi * W + qj]
+      if !used_U[qi * W + qj]
+        if 0 < qi
           if ((x == '.') || (x == 'o' && d0 == 'U') || (x == 'x' && d0 != 'U'))
             dp << [[qi, qj], 'U', p_d0_parent]
             used_U[qi * W + qj] = true
           end
         end
       end
-      if qj < W - 1
-        if !used_R[qi * W + qj]
+      if !used_R[qi * W + qj]
+        if qj < W - 1
           if ((x == '.') || (x == 'o' && d0 == 'R') || (x == 'x' && d0 != 'R'))
             dp << [[qi, qj], 'R', p_d0_parent]
             used_R[qi * W + qj] = true
           end
         end
       end
-      if 0 < qj
-        if !used_L[qi * W + qj]
+      if !used_L[qi * W + qj]
+        if 0 < qj
           if ((x == '.') || (x == 'o' && d0 == 'L') || (x == 'x' && d0 != 'L'))
             dp << [[qi, qj], 'L', p_d0_parent]
             used_L[qi * W + qj] = true
