@@ -142,6 +142,8 @@ def calc
         end
       end
     end
+
+    pp(dp:, used_D:, used_U:, used_R:, used_L:) if $debug
   end
 
   false
