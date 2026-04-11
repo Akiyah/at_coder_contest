@@ -21,35 +21,12 @@ SS = (1..H).map do
   STDIN.gets.chomp
 end
 
-
-# def to_d(i, j)
-#   if i == 0
-#     j == 1 ? 1 : 3
-#   else
-#     i == 1 ? 2 : 0
-#   end
-# end
-
-# def to_ij(d)
-#   return [-1, 0] if d == 0
-#   return [0, 1] if d == 1
-#   return [1, 0] if d == 2
-#   [0, -1]
-# end
-
-# def to_k(d)
-#   return 'U' if d == 0
-#   return 'R' if d == 1
-#   return 'D' if d == 2
-#   'L'
-# end
-
 def calc
 
-  used_D = Array.new(H * W)
-  used_U = Array.new(H * W)
-  used_R = Array.new(H * W)
-  used_L = Array.new(H * W)
+  used_D = Array.new(H) { Array.new(W) }
+  used_U = Array.new(H) { Array.new(W) }
+  used_R = Array.new(H) { Array.new(W) }
+  used_L = Array.new(H) { Array.new(W) }
   s = []
 
   board = SS.map.with_index do |line, i|
@@ -66,19 +43,19 @@ def calc
   dp = []
   if s[0] < H - 1
     dp << [s, 'D', nil]
-    used_D[si * W + sj] = true
+    used_D[si][sj] = true
   end
   if 0 < s[0]
     dp << [s, 'U', nil]
-    used_U[si * W + sj] = true
+    used_U[si][sj] = true
   end
   if s[1] < W - 1
     dp << [s, 'R', nil]
-    used_R[si * W + sj] = true
+    used_R[si][sj] = true
   end
   if 0 < s[1]
     dp << [s, 'L', nil]
-    used_L[si * W + sj] = true
+    used_L[si][sj] = true
   end
 
   pp(dp:) if $debug
@@ -109,41 +86,41 @@ def calc
     elsif x == '#'
       next
     else
-      if !used_D[qi * W + qj]
+      if !used_D[qi][qj]
         if qi < H - 1
           if ((x == '.') || (x == 'o' && d0 == 'D') || (x == 'x' && d0 != 'D'))
             dp << [[qi, qj], 'D', p_d0_parent]
-            used_D[qi * W + qj] = true
+            used_D[qi][qj] = true
           end
         end
       end
-      if !used_U[qi * W + qj]
+      if !used_U[qi][qj]
         if 0 < qi
           if ((x == '.') || (x == 'o' && d0 == 'U') || (x == 'x' && d0 != 'U'))
             dp << [[qi, qj], 'U', p_d0_parent]
-            used_U[qi * W + qj] = true
+            used_U[qi][qj] = true
           end
         end
       end
-      if !used_R[qi * W + qj]
+      if !used_R[qi][qj]
         if qj < W - 1
           if ((x == '.') || (x == 'o' && d0 == 'R') || (x == 'x' && d0 != 'R'))
             dp << [[qi, qj], 'R', p_d0_parent]
-            used_R[qi * W + qj] = true
+            used_R[qi][qj] = true
           end
         end
       end
-      if !used_L[qi * W + qj]
+      if !used_L[qi][qj]
         if 0 < qj
           if ((x == '.') || (x == 'o' && d0 == 'L') || (x == 'x' && d0 != 'L'))
             dp << [[qi, qj], 'L', p_d0_parent]
-            used_L[qi * W + qj] = true
+            used_L[qi][qj] = true
           end
         end
       end
     end
 
-    pp(dp:, used_D:, used_U:, used_R:, used_L:) if $debug
+    # pp(dp:, used_D:, used_U:, used_R:, used_L:) if $debug
   end
 
   false
