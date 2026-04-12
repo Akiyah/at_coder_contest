@@ -27,19 +27,28 @@ end
 # 2:R
 # 3:L
 
-def check(used_q, qi, qj, di, dj, board)
+$d2p = [
+  [-1,  0], # U
+  [ 1,  0], # D
+  [ 0,  1], # R
+  [ 0, -1], # L
+]
+
+def check(used_q, qi, qj, d, board)
+  pd = $d2p[d]
+  di, dj = pd
   pi, pj = qi + di, qj + dj
   return false unless 0 <= pi && pi < H
   return false unless 0 <= pj && pj < W
   return false if board[pi][pj] == :'#'
 
-  b = used_q[di][dj]
-  used_q[di][dj] = true if !b
+  b = used_q[d]
+  used_q[d] = true if !b
   !b
 end
 
 def calc
-  used = Array.new(H) { Array.new(W) { { 1 => { 0 => false }, 0 => { -1 => false,  1 => false }, -1 => { 0 => false } } } }
+  used = Array.new(H) { Array.new(W) { [false, false, false, false] } }
   s = []
 
   board = SS.map.with_index do |line, i|
@@ -52,49 +61,30 @@ def calc
   si, sj = s
 
   dijs = {}
-  dijs[:'.'] = {
-    1 => {
-      0 => [[-1, 0], [1, 0], [0, 1], [0, -1]],
-    },
-    0 => {
-      1 => [[-1, 0], [1, 0], [0, 1], [0, -1]],
-      -1 => [[-1, 0], [1, 0], [0, 1], [0, -1]],
-    },
-    -1 => {
-      0 => [[-1, 0], [1, 0], [0, 1], [0, -1]],
-    },
-  }
-  dijs[:o] = {
-    1 => {
-      0 => [[1, 0]],
-    },
-    0 => {
-      1 => [[0, 1]],
-      -1 => [[0, -1]],
-    },
-    -1 => {
-      0 => [[-1, 0]],
-    },
-  }
-  dijs[:x] = {
-    1 => {
-      0 => [[-1, 0], [0, 1], [0, -1]],
-    },
-    0 => {
-      1 => [[-1, 0], [1, 0], [0, -1]],
-      -1 => [[-1, 0], [1, 0], [0, 1]],
-    },
-    -1 => {
-      0 => [[1, 0], [0, 1], [0, -1]],
-    },
-  }
-
+  dijs[:'.'] = [
+    [0, 1, 2, 3],
+    [0, 1, 2, 3],
+    [0, 1, 2, 3],
+    [0, 1, 2, 3],
+  ]
+  dijs[:o] = [
+    [0],
+    [1],
+    [2],
+    [3],
+  ]
+  dijs[:x] = [
+    [1, 2, 3],
+    [0, 2, 3],
+    [0, 1, 3],
+    [0, 1, 2],
+  ]
 
   dp = []
-  dijs[:'.'][1][0].each do |di, dj|
+  dijs[:'.'][0].each do |d|
     used_q = used[si][sj] 
-    if check(used_q, si, sj, di, dj, board)
-      dp << [si, sj, di, dj, nil]
+    if check(used_q, si, sj, d, board)
+      dp << [si, sj, d, nil]
     end
   end
 
@@ -102,9 +92,10 @@ def calc
 
   while !dp.empty?
     p_d0_parent = dp.shift
-    pi, pj, d0i, d0j, parent = p_d0_parent
-    pp(pi:, pj:, d0i:, d0j:) if $debug
+    pi, pj, d0, parent = p_d0_parent
+    pp(pi:, pj:, d0:) if $debug
 
+    d0i, d0j = $d2p[d0]
     qi, qj = pi + d0i, pj + d0j
 
     x = board[qi][qj]
@@ -114,9 +105,9 @@ def calc
       next
     else
       used_q = used[qi][qj]
-      dijs[x][d0i][d0j].each do |di, dj|
-        if check(used_q, qi, qj, di, dj, board)
-          dp << [qi, qj, di, dj, p_d0_parent]
+      dijs[x][d0].each do |d|
+        if check(used_q, qi, qj, d, board)
+          dp << [qi, qj, d, p_d0_parent]
         end
       end
     end
@@ -134,12 +125,12 @@ if r
   puts 'Yes'
   ds = []
   while p_d0_parent
-    pi, pj, d0i, d0j, parent = p_d0_parent
-    ds << [d0i, d0j]
+    pi, pj, d0, parent = p_d0_parent
+    ds << d0
     p_d0_parent = parent
   end
-  s = ds.reverse.map do |di, dj|
-    di == 0 ? (dj == 1 ? 'R' : 'L') : (di == 1 ? 'D' : 'U')
+  s = ds.reverse.map do |d|
+    'UDRL'[d]
   end.join('')
   puts s
 else
