@@ -56,8 +56,10 @@ def calc
 
   dp = []
   dijs.each do |di, dj|
-    dp << [si, sj, di, dj, nil]
-    used[si][sj][di][dj] = true
+    used_q = used[si][sj] 
+    if check(used_q, si, sj, di, dj, board)
+      dp << [si, sj, di, dj, nil]
+    end
   end
 
   pp(dp:) if $debug
@@ -80,7 +82,7 @@ def calc
     else
       used_q = used[qi][qj]
       dijs.each do |di, dj|
-        if (x == :'.') || ((x == :o) == (d0i == di && d0j == dj)) 
+        if (x == :'.') || ((x == :o) == (d0i == di && d0j == dj))
           # b = used_q[di][dj]
           if check(used_q, qi, qj, di, dj, board)
             dp << [qi, qj, di, dj, p_d0_parent]
