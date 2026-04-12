@@ -47,32 +47,9 @@ def calc
 
   si, sj = s
 
-  dijs = {}
-  dijs[:'.'] = [
-    [0, 1, 2, 3],
-    [0, 1, 2, 3],
-    [0, 1, 2, 3],
-    [0, 1, 2, 3],
-  ]
-  dijs[:o] = [
-    [0],
-    [1],
-    [2],
-    [3],
-  ]
-  dijs[:x] = [
-    [1, 2, 3],
-    [0, 2, 3],
-    [0, 1, 3],
-    [0, 1, 2],
-  ]
-
   dp = []
   used_q = used[si][sj]
-  dijs[:'.'][0].each do |d|
-    b = used_q[d]
-    next if b
-
+  (0..3).each do |d|
     used_q[d] = true
 
     pd = $d2p[d]
@@ -102,7 +79,9 @@ def calc
       next
     else
       used_q = used[qi][qj]
-      dijs[x][d0].each do |d|
+      (0..3).each do |d|
+        next unless (x == :'.') || (x == :'o' && d == d0) || (x == :'x' && d != d0)
+
         b = used_q[d]
         next if b
 
@@ -111,8 +90,7 @@ def calc
         pd = $d2p[d]
         di, dj = pd
         ri, rj = qi + di, qj + dj
-        next unless 0 <= ri && ri < H
-        next unless 0 <= rj && rj < W
+        next unless (0 <= ri && ri < H) && (0 <= rj && rj < W)
         next if board[ri][rj] == :'#'
 
         dp << [qi, qj, d, p_d0_parent]
