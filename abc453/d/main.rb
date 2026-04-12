@@ -51,11 +51,47 @@ def calc
 
   si, sj = s
 
-  dijs = [[-1, 0], [1, 0], [0, 1], [0, -1]]
+  dijs = {}
+  dijs[:'.'] = {
+    1 => {
+      0 => [[-1, 0], [1, 0], [0, 1], [0, -1]],
+    },
+    0 => {
+      1 => [[-1, 0], [1, 0], [0, 1], [0, -1]],
+      -1 => [[-1, 0], [1, 0], [0, 1], [0, -1]],
+    },
+    -1 => {
+      0 => [[-1, 0], [1, 0], [0, 1], [0, -1]],
+    },
+  }
+  dijs[:o] = {
+    1 => {
+      0 => [[1, 0]],
+    },
+    0 => {
+      1 => [[0, 1]],
+      -1 => [[0, -1]],
+    },
+    -1 => {
+      0 => [[-1, 0]],
+    },
+  }
+  dijs[:x] = {
+    1 => {
+      0 => [[-1, 0], [0, 1], [0, -1]],
+    },
+    0 => {
+      1 => [[-1, 0], [1, 0], [0, -1]],
+      -1 => [[-1, 0], [1, 0], [0, 1]],
+    },
+    -1 => {
+      0 => [[1, 0], [0, 1], [0, -1]],
+    },
+  }
 
 
   dp = []
-  dijs.each do |di, dj|
+  dijs[:'.'][1][0].each do |di, dj|
     used_q = used[si][sj] 
     if check(used_q, si, sj, di, dj, board)
       dp << [si, sj, di, dj, nil]
@@ -67,12 +103,9 @@ def calc
   while !dp.empty?
     p_d0_parent = dp.shift
     pi, pj, d0i, d0j, parent = p_d0_parent
-    pp(pi:, pj:, di0:, d0j:) if $debug
+    pp(pi:, pj:, d0i:, d0j:) if $debug
 
     qi, qj = pi + d0i, pj + d0j
-
-    # next if qi < 0 || H <= qi
-    # next if qj < 0 || W <= qj
 
     x = board[qi][qj]
     if x == :G
@@ -81,13 +114,9 @@ def calc
       next
     else
       used_q = used[qi][qj]
-      dijs.each do |di, dj|
-        if (x == :'.') || ((x == :o) == (d0i == di && d0j == dj))
-          # b = used_q[di][dj]
-          if check(used_q, qi, qj, di, dj, board)
-            dp << [qi, qj, di, dj, p_d0_parent]
-            # used_q[di][dj] = true
-          end
+      dijs[x][d0i][d0j].each do |di, dj|
+        if check(used_q, qi, qj, di, dj, board)
+          dp << [qi, qj, di, dj, p_d0_parent]
         end
       end
     end
