@@ -34,19 +34,6 @@ $d2p = [
   [ 0, -1], # L
 ]
 
-def check(used_q, qi, qj, d, board)
-  pd = $d2p[d]
-  di, dj = pd
-  pi, pj = qi + di, qj + dj
-  return false unless 0 <= pi && pi < H
-  return false unless 0 <= pj && pj < W
-  return false if board[pi][pj] == :'#'
-
-  b = used_q[d]
-  used_q[d] = true if !b
-  !b
-end
-
 def calc
   used = Array.new(H) { Array.new(W) { [false, false, false, false] } }
   s = []
@@ -81,11 +68,21 @@ def calc
   ]
 
   dp = []
+  used_q = used[si][sj]
   dijs[:'.'][0].each do |d|
-    used_q = used[si][sj] 
-    if check(used_q, si, sj, d, board)
-      dp << [si, sj, d, nil]
-    end
+    b = used_q[d]
+    next if b
+
+    used_q[d] = true
+
+    pd = $d2p[d]
+    di, dj = pd
+    ri, rj = si + di, sj + dj
+    next unless 0 <= ri && ri < H
+    next unless 0 <= rj && rj < W
+    next if board[ri][rj] == :'#'
+
+    dp << [si, sj, d, nil]
   end
 
   pp(dp:) if $debug
@@ -106,9 +103,19 @@ def calc
     else
       used_q = used[qi][qj]
       dijs[x][d0].each do |d|
-        if check(used_q, qi, qj, d, board)
-          dp << [qi, qj, d, p_d0_parent]
-        end
+        b = used_q[d]
+        next if b
+
+        used_q[d] = true
+
+        pd = $d2p[d]
+        di, dj = pd
+        ri, rj = qi + di, qj + dj
+        next unless 0 <= ri && ri < H
+        next unless 0 <= rj && rj < W
+        next if board[ri][rj] == :'#'
+
+        dp << [qi, qj, d, p_d0_parent]
       end
     end
 
