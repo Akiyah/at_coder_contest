@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
 
-H = 1000
-W = 1000
+H = 500
+W = 500
 
 puts [H, W].join(' ')
 
-puts 'S' + '.' * 999
-998.times do
-  puts '.' * 1000
+puts 'S' + '.' * (W - 1)
+(H - 2).times do
+  puts '.' * W
 end
-puts '.' * 999 + 'G'
+puts '.' * (W - 1) + 'G'
