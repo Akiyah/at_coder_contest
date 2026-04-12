@@ -27,6 +27,17 @@ end
 # 2:R
 # 3:L
 
+def check(used_q, qi, qj, di, dj, board)
+  pi, pj = qi + di, qj + dj
+  return false unless 0 <= pi && pi < H
+  return false unless 0 <= pj && pj < W
+  return false if board[pi][pj] == :'#'
+
+  b = used_q[di][dj]
+  used_q[di][dj] = true if !b
+  !b
+end
+
 def calc
   used = Array.new(H) { Array.new(W) { { 1 => { 0 => false }, 0 => { -1 => false,  1 => false }, -1 => { 0 => false } } } }
   s = []
@@ -35,20 +46,19 @@ def calc
     js = line.index('S')
     s = [i, js] if js
     line.tr!('S', '.')
-    line.chars
+    line.chars.map(&:to_sym)
   end
 
   si, sj = s
 
+  dijs = [[-1, 0], [1, 0], [0, 1], [0, -1]]
+
+
   dp = []
-  dp << [si, sj, -1, 0, nil]
-  used[si][sj][-1][0] = true
-  dp << [si, sj, 1, 0, nil]
-  used[si][sj][1][0] = true
-  dp << [si, sj, 0, 1, nil]
-  used[si][sj][0][1] = true
-  dp << [si, sj, 0, -1, nil]
-  used[si][sj][0][-1] = true
+  dijs.each do |di, dj|
+    dp << [si, sj, di, dj, nil]
+    used[si][sj][di][dj] = true
+  end
 
   pp(dp:) if $debug
 
@@ -59,22 +69,22 @@ def calc
 
     qi, qj = pi + d0i, pj + d0j
 
-    next if qi < 0 || H <= qi
-    next if qj < 0 || W <= qj
+    # next if qi < 0 || H <= qi
+    # next if qj < 0 || W <= qj
 
     x = board[qi][qj]
-    if x == 'G'
+    if x == :G
       return [true, p_d0_parent]
-    elsif x == '#'
+    elsif x == :'#'
       next
     else
       used_q = used[qi][qj]
-      [[-1, 0], [1, 0], [0, 1], [0, -1]].each do |di, dj|
-        if (x == '.') || ((x == 'o') == (d0i == di && d0j == dj)) 
-          b = used_q[di][dj]
-          if !b
+      dijs.each do |di, dj|
+        if (x == :'.') || ((x == :o) == (d0i == di && d0j == dj)) 
+          # b = used_q[di][dj]
+          if check(used_q, qi, qj, di, dj, board)
             dp << [qi, qj, di, dj, p_d0_parent]
-            used_q[di][dj] = true
+            # used_q[di][dj] = true
           end
         end
       end
