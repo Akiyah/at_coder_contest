@@ -35,7 +35,7 @@ $d2p = [
 ]
 
 def calc
-  used = Array.new(H) { Array.new(W) { [false, false, false, false] } }
+  used = Array.new(H) { Array.new(W) { [false, false, false, false, 0] } }
   s = []
 
   board = SS.map.with_index do |line, i|
@@ -51,6 +51,7 @@ def calc
   used_q = used[si][sj]
   (0..3).each do |d|
     used_q[d] = true
+    used_q[4] += 1
 
     pd = $d2p[d]
     di, dj = pd
@@ -65,7 +66,7 @@ def calc
   pp(dp:) if $debug
 
   while !dp.empty?
-    p_d0_parent = dp.shift
+    p_d0_parent = dp.pop
     pi, pj, d0, parent = p_d0_parent
     pp(pi:, pj:, d0:) if $debug
 
@@ -79,6 +80,7 @@ def calc
       next
     else
       used_q = used[qi][qj]
+      # next if used_q[4] == 4
       (0..3).each do |d|
         next unless (x == :'.') || (x == :'o' && d == d0) || (x == :'x' && d != d0)
 
@@ -86,12 +88,14 @@ def calc
         next if b
 
         used_q[d] = true
+        used_q[4] += 1
 
         pd = $d2p[d]
         di, dj = pd
         ri, rj = qi + di, qj + dj
         next unless (0 <= ri && ri < H) && (0 <= rj && rj < W)
         next if board[ri][rj] == :'#'
+        next if used[ri][rj][4] == 4
 
         dp << [qi, qj, d, p_d0_parent]
       end
