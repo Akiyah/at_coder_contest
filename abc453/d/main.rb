@@ -36,7 +36,7 @@ $d2p = [
 
 def calc
   # used = Array.new(H) { Array.new(W) { [false, false, false, false] } }
-  used = Array.new(H * W * 4)
+  used = Array.new(H * W) { 0 }
   s = []
 
   board = SS.map.with_index do |line, i|
@@ -46,22 +46,22 @@ def calc
     syss = line.chars.map(&:to_sym)
     syss.each.with_index do |x, j|
       if x == :'#'
-        used[((i + 1) * W + j) * 4 + 0] = true if i + 1 < H # U
-        used[((i - 1) * W + j) * 4 + 1] = true if 0 < i - 1 # D
-        used[(i * W + (j - 1)) * 4 + 2] = true if j + 1 < W # R
-        used[(i * W + (j + 1)) * 4 + 3] = true if 0 < j - 1 # L
+        used[((i + 1) * W + j)] |= 0b0001 if i + 1 < H # U
+        used[((i - 1) * W + j)] |= 0b0010 if 0 < i - 1 # D
+        used[(i * W + (j - 1))] |= 0b0100 if j + 1 < W # R
+        used[(i * W + (j + 1))] |= 0b1000 if 0 < j - 1 # L
       end
     end
     syss.map { |x| [x, x == :'.', x == :'o', x == :'#'] }
   end.flatten(1)
 
   H.times do |i|
-    used[(i * W + 0) * 4 + 3] = true # L
-    used[(i * W + (W - 1)) * 4 + 2] = true # R
+    used[(i * W + 0)] |= 0b1000 # L
+    used[(i * W + (W - 1))] |= 0b0100 # R
   end
   W.times do |j|
-    used[(0 * W + j) * 4 + 0] = true # U
-    used[((H - 1) * W + j) * 4 + 1] = true # D
+    used[(0 * W + j)] |= 0b0001 # U
+    used[((H - 1) * W + j)] |= 0b0010 # D
   end
   # H.times do |i|
   #   W.times do |j|
@@ -84,9 +84,9 @@ def calc
   dp = []
   k = si * W + sj
   (0..3).each do |d|
-    next if used[k * 4 + d]
+    next if used[k] & (1 << d) != 0
 
-    used[k * 4 + d] = true
+    used[k] |= (1 << d)
 
     dp << [si, sj, d, nil]
   end
@@ -102,7 +102,6 @@ def calc
     qi, qj = pi + d0i, pj + d0j
 
     k = qi * W + qj
-    k4 = k * 4
     x, y, z = board[k]
     pp(x:, y:, z:) if $debug
     if x == :G
@@ -110,19 +109,24 @@ def calc
     # elsif x == :'#'
     #   next
     else
+      u = used[k]
       (0..3).each do |d|
         next unless y || (z == (d == d0))
         # next unless (x == :'.') || ((x == :'o') == (d == d0))
 
-        k2 = k4 + d
+        # k2 = k4 + d
 
-        b = used[k2]
-        next if b
+        next if u[d] != 0
+        u |= (1 << d)
 
-        used[k2] = true
+        # b = used[k2]
+        # next if b
+
+        # used[k2] = true
 
         dp << [qi, qj, d, p_d0_parent]
       end
+      used[k] = u
     end
 
     pp(dp: dp[0...3]) if $debug
