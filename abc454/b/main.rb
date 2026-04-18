@@ -16,11 +16,19 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M = STDIN.gets.chomp.split.map(&:to_i)
+FS = STDIN.gets.chomp.split.map(&:to_i)
 
+
+if FS.uniq.length < N
+  puts 'No'
+else
+  puts 'Yes'
+end
+
+if FS.uniq.length < M
+  puts 'No'
+else
+  puts 'Yes'
+end
 
