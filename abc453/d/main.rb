@@ -39,6 +39,9 @@ def calc
   used = Array.new(H * W) { 0 }
   s = []
 
+  pp(used:) if $debug
+  pp(used: used.map { |u| u.to_s(2) }) if $debug
+
   board = SS.map.with_index do |line, i|
     js = line.index('S')
     s = [i, js] if js
@@ -48,12 +51,15 @@ def calc
       if x == :'#'
         used[((i + 1) * W + j)] |= 0b0001 if i + 1 < H # U
         used[((i - 1) * W + j)] |= 0b0010 if 0 < i - 1 # D
-        used[(i * W + (j - 1))] |= 0b0100 if j + 1 < W # R
-        used[(i * W + (j + 1))] |= 0b1000 if 0 < j - 1 # L
+        used[(i * W + (j - 1))] |= 0b0100 if 0 < j - 1 # R
+        used[(i * W + (j + 1))] |= 0b1000 if j + 1 < W # L
       end
     end
     syss.map { |x| [x, x == :'.', x == :'o', x == :'#'] }
   end.flatten(1)
+
+  pp(used:) if $debug
+  pp(used: used.map { |u| u.to_s(2) }) if $debug
 
   H.times do |i|
     used[(i * W + 0)] |= 0b1000 # L
@@ -77,6 +83,7 @@ def calc
   # end
 
   pp(used:) if $debug
+  pp(used: used.map { |u| u.to_s(2) }) if $debug
 
 
   si, sj = s
