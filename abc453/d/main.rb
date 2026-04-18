@@ -44,7 +44,30 @@ def calc
     s = [i, js] if js
     line.tr!('S', '.')
     line.chars.map(&:to_sym)
+  end.flatten
+
+
+  H.times do |i|
+    used[(i * W + 0) * 4 + 3] = true # L
+    used[(i * W + (W - 1)) * 4 + 2] = true # R
   end
+  W.times do |j|
+    used[(0 * W + j) * 4 + 0] = true # U
+    used[((H - 1) * W + j) * 4 + 1] = true # D
+  end
+  H.times do |i|
+    W.times do |j|
+      if board[i * W + j] == :'#'
+        used[((i + 1) * W + j) * 4 + 0] = true if i + 1 < H # U
+        used[((i - 1) * W + j) * 4 + 1] = true if 0 < i - 1 # D
+        used[(i * W + (j - 1)) * 4 + 2] = true if j + 1 < W # R
+        used[(i * W + (j + 1)) * 4 + 3] = true if 0 < j - 1 # L
+      end
+    end
+  end
+
+  pp(used:) if $debug
+
 
   si, sj = s
 
@@ -52,14 +75,16 @@ def calc
   # used_q = used[si][sj]
   (0..3).each do |d|
     # used_q[d] = true
+    next if used[(si * W + sj) * 4 + d]
+
     used[(si * W + sj) * 4 + d] = true
 
-    pd = $d2p[d]
-    di, dj = pd
-    ri, rj = si + di, sj + dj
-    next unless 0 <= ri && ri < H
-    next unless 0 <= rj && rj < W
-    next if board[ri][rj] == :'#'
+    # pd = $d2p[d]
+    # di, dj = pd
+    # ri, rj = si + di, sj + dj
+    # next unless 0 <= ri && ri < H
+    # next unless 0 <= rj && rj < W
+    # next if board[ri * W + rj] == :'#'
 
     dp << [si, sj, d, nil]
   end
@@ -74,7 +99,7 @@ def calc
     d0i, d0j = $d2p[d0]
     qi, qj = pi + d0i, pj + d0j
 
-    x = board[qi][qj]
+    x = board[qi * W + qj]
     if x == :G
       return [true, p_d0_parent]
     elsif x == :'#'
@@ -91,15 +116,17 @@ def calc
         # used_q[d] = true
         used[(qi * W + qj) * 4 + d] = true
 
-        pd = $d2p[d]
-        di, dj = pd
-        ri, rj = qi + di, qj + dj
-        next unless (0 <= ri && ri < H) && (0 <= rj && rj < W)
-        next if board[ri][rj] == :'#'
+        # pd = $d2p[d]
+        # di, dj = pd
+        # ri, rj = qi + di, qj + dj
+        # next unless (0 <= ri && ri < H) && (0 <= rj && rj < W)
+        # next if board[ri * W + rj] == :'#'
 
         dp << [qi, qj, d, p_d0_parent]
       end
     end
+
+    pp(dp: dp[0...3]) if $debug
 
     # pp(dp:, used_D:, used_U:, used_R:, used_L:) if $debug
   end
