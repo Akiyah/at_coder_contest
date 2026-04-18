@@ -43,9 +43,17 @@ def calc
     js = line.index('S')
     s = [i, js] if js
     line.tr!('S', '.')
-    line.chars.map(&:to_sym)
-  end.flatten
-
+    syss = line.chars.map(&:to_sym)
+    syss.each.with_index do |x, j|
+      if x == :'#'
+        used[((i + 1) * W + j) * 4 + 0] = true if i + 1 < H # U
+        used[((i - 1) * W + j) * 4 + 1] = true if 0 < i - 1 # D
+        used[(i * W + (j - 1)) * 4 + 2] = true if j + 1 < W # R
+        used[(i * W + (j + 1)) * 4 + 3] = true if 0 < j - 1 # L
+      end
+    end
+    syss.map { |x| [x, x == :'.', x == :'o', x == :'#'] }
+  end.flatten(1)
 
   H.times do |i|
     used[(i * W + 0) * 4 + 3] = true # L
@@ -55,16 +63,18 @@ def calc
     used[(0 * W + j) * 4 + 0] = true # U
     used[((H - 1) * W + j) * 4 + 1] = true # D
   end
-  H.times do |i|
-    W.times do |j|
-      if board[i * W + j] == :'#'
-        used[((i + 1) * W + j) * 4 + 0] = true if i + 1 < H # U
-        used[((i - 1) * W + j) * 4 + 1] = true if 0 < i - 1 # D
-        used[(i * W + (j - 1)) * 4 + 2] = true if j + 1 < W # R
-        used[(i * W + (j + 1)) * 4 + 3] = true if 0 < j - 1 # L
-      end
-    end
-  end
+  # H.times do |i|
+  #   W.times do |j|
+  #     x, y, z, w = board[i * W + j]
+  #     pp(x:, y:, z:) if $debug
+  #     if w
+  #       used[((i + 1) * W + j) * 4 + 0] = true if i + 1 < H # U
+  #       used[((i - 1) * W + j) * 4 + 1] = true if 0 < i - 1 # D
+  #       used[(i * W + (j - 1)) * 4 + 2] = true if j + 1 < W # R
+  #       used[(i * W + (j + 1)) * 4 + 3] = true if 0 < j - 1 # L
+  #     end
+  #   end
+  # end
 
   pp(used:) if $debug
 
@@ -72,19 +82,11 @@ def calc
   si, sj = s
 
   dp = []
-  # used_q = used[si][sj]
+  k = si * W + sj
   (0..3).each do |d|
-    # used_q[d] = true
-    next if used[(si * W + sj) * 4 + d]
+    next if used[k * 4 + d]
 
-    used[(si * W + sj) * 4 + d] = true
-
-    # pd = $d2p[d]
-    # di, dj = pd
-    # ri, rj = si + di, sj + dj
-    # next unless 0 <= ri && ri < H
-    # next unless 0 <= rj && rj < W
-    # next if board[ri * W + rj] == :'#'
+    used[k * 4 + d] = true
 
     dp << [si, sj, d, nil]
   end
@@ -99,28 +101,25 @@ def calc
     d0i, d0j = $d2p[d0]
     qi, qj = pi + d0i, pj + d0j
 
-    x = board[qi * W + qj]
+    k = qi * W + qj
+    k4 = k * 4
+    x, y, z = board[k]
+    pp(x:, y:, z:) if $debug
     if x == :G
       return [true, p_d0_parent]
-    elsif x == :'#'
-      next
+    # elsif x == :'#'
+    #   next
     else
-      # used_q = used[qi][qj]
       (0..3).each do |d|
-        next unless (x == :'.') || ((x == :'o') == (d == d0))
+        next unless y || (z == (d == d0))
+        # next unless (x == :'.') || ((x == :'o') == (d == d0))
 
-        # b = used_q[d]
-        b = used[(qi * W + qj) * 4 + d]
+        k2 = k4 + d
+
+        b = used[k2]
         next if b
 
-        # used_q[d] = true
-        used[(qi * W + qj) * 4 + d] = true
-
-        # pd = $d2p[d]
-        # di, dj = pd
-        # ri, rj = qi + di, qj + dj
-        # next unless (0 <= ri && ri < H) && (0 <= rj && rj < W)
-        # next if board[ri * W + rj] == :'#'
+        used[k2] = true
 
         dp << [qi, qj, d, p_d0_parent]
       end
