@@ -35,7 +35,8 @@ $d2p = [
 ]
 
 def calc
-  used = Array.new(H) { Array.new(W) { [false, false, false, false] } }
+  # used = Array.new(H) { Array.new(W) { [false, false, false, false] } }
+  used = Array.new(H * W * 4)
   s = []
 
   board = SS.map.with_index do |line, i|
@@ -48,9 +49,10 @@ def calc
   si, sj = s
 
   dp = []
-  used_q = used[si][sj]
+  # used_q = used[si][sj]
   (0..3).each do |d|
-    used_q[d] = true
+    # used_q[d] = true
+    used[(si * W + sj) * 4 + d] = true
 
     pd = $d2p[d]
     di, dj = pd
@@ -78,14 +80,16 @@ def calc
     elsif x == :'#'
       next
     else
-      used_q = used[qi][qj]
+      # used_q = used[qi][qj]
       (0..3).each do |d|
         next unless (x == :'.') || ((x == :'o') == (d == d0))
 
-        b = used_q[d]
+        # b = used_q[d]
+        b = used[(qi * W + qj) * 4 + d]
         next if b
 
-        used_q[d] = true
+        # used_q[d] = true
+        used[(qi * W + qj) * 4 + d] = true
 
         pd = $d2p[d]
         di, dj = pd
