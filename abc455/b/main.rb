@@ -16,11 +16,35 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+H, W = STDIN.gets.chomp.split.map(&:to_i)
+SS = (1..H).map do
+  STDIN.gets.chomp.chars
+end
+
+def check(i1, i2, j1, j2)
+  (i1..i2).each do |i|
+    (j1..j2).each do |j|
+      return false unless SS[i][j] == SS[i1 + i2 - i][j1 + j2 - j]
+    end
+  end
+  true
+end
+
+def main
+  r = 0
+  H.times do |i1|
+    (i1...H).each do |i2|
+      W.times do |j1|
+        (j1...W).each do |j2|
+          r += 1 if check(i1, i2, j1, j2)
+        end
+      end
+    end
+  end
+  r
+end
+
+
+puts main()
 
 

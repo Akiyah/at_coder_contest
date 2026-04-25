@@ -16,10 +16,21 @@
 
 $debug = !ARGV[0].nil?
 
-A, B, C = STDIN.gets.chomp.split.map(&:to_i)
+N = STDIN.gets.chomp.to_i
+S = STDIN.gets.chomp
 
-if A != B && B == C
-  puts 'Yes'
-else
-  puts 'No'
+ss = S.chars
+
+r = 0
+N.times do |i|
+  (i...N).each do |j|
+    ts = ss[i..j].tally
+    pp(i:, j:, ts:) if $debug
+    na = ts['A'] || 0
+    nb = ts['B'] || 0
+    nc = ts['C'] || 0
+    r += 1 unless na == nb || na == nc || nb == nc
+  end
 end
+
+puts r
