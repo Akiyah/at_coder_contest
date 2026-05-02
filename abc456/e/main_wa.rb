@@ -37,30 +37,33 @@ def calc(n, m, uvs, w, ss)
   oss = ss.map { |s| s.chars.map { |c| c == 'o' } }
   pp(paths:, oss:) if $debug
 
-  routes = Array.new(n, Set.new)
+  start_us = []
   oss.each.with_index do |os, u|
-    routes[u] << u if os[0]
+    start_us << u if os[0]
   end
-  pp(routes:) if $debug
+  pp(start_us:) if $debug
+
+  dp = start_us
+  pp(dp:) if $debug
 
   (1..w).each do |j|
-    routes2 = Array.new(n, Set.new)
-    routes.each.with_index do |us, v|
-      paths[v].each do |v2|
-        if oss[v2][j % w]
-          routes2[v2] += us
-        end
-      end
+    dp2 = []
+    dp.each do |u|
+      dp2 += paths[u]
     end
-    routes = routes2
-    pp(j:, routes:) if $debug
+    dp2.uniq!
+    dp3 = []
+    dp2.each do |u|
+      # pp(u:) if $debug
+      # pp(oss[u]) if $debug
+      dp3 << u if oss[u][j % w]
+    end
+    dp = dp3
+    pp(j:, dp:) if $debug
   end
 
-  routes.each.with_index do |us, v|
-    pp(us:, v:) if $debug
-    return true if us.include?(v)
-  end
-  false
+  # start_us.intersect?(dp)
+  0 < dp.length
 end
 
 

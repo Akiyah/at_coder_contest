@@ -16,11 +16,21 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+AS = (1..3).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
 
 
+def r(as, n)
+  as.count(n).to_f / 6
+end
+
+ans = 0
+ans += r(AS[0], 4) * r(AS[1], 5) * r(AS[2], 6)
+ans += r(AS[0], 4) * r(AS[1], 6) * r(AS[2], 5)
+ans += r(AS[0], 5) * r(AS[1], 4) * r(AS[2], 6)
+ans += r(AS[0], 5) * r(AS[1], 6) * r(AS[2], 4)
+ans += r(AS[0], 6) * r(AS[1], 4) * r(AS[2], 5)
+ans += r(AS[0], 6) * r(AS[1], 5) * r(AS[2], 4)
+
+puts ans

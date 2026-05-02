@@ -16,11 +16,32 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+S = STDIN.gets.chomp
+
+MOD = 998244353
+
+def calc
+  ss = S.chars
+  l = ss.length
+
+  r = 0
+  i = 0
+  j = 0
+
+  l.times do |i|
+    if 0 < i && ss[i] == ss[i - 1]
+      j = i
+    end
+
+    r += (i - j + 1)
+    r %= MOD
+  end
+
+  r %= MOD
+  r
+end
+
+
+puts calc
 
 
