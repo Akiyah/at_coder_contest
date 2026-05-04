@@ -47,27 +47,61 @@ def calc(n, m, uvs, w, ss)
   route_data = Array.new(n) { [] }
   route = []
   while true
+    pp(dp:, d:, route:) if $debug
+    pp(route_data:) if $debug
+    if $debug
+      x = route_data.map.with_index do |line, u|
+        w.times.map do |d|
+          if line[d]
+            '*'
+          else
+            oss[u][d] ? 'o' : 'x'
+          end
+        end.join('')
+      end
+      puts x
+      puts
+    end
+
+    if $debug
+      x = useds.map.with_index do |line, u|
+        w.times.map do |d|
+          line[d] ? '*' : '.'
+        end.join('')
+      end
+      puts x
+      puts
+    end
 
     if dp[d].length == 0 # 一つ上の次に戻る
       return false if d == 0 # 全部探索した
       u = route.pop
+      pp(u:, d:, w:) if $debug
+      pp('route_data[u]' =>  route_data[u]) if $debug
       route_data[u][(d - 1) % w] = false
+      pp('route_data[u]' =>  route_data[u]) if $debug
       d -= 1
       next
     end
 
     u = dp[d].pop
-    route << u
 
+    pp(route:) if $debug
     return true if route_data[u][d % w] # 同じところを通ったことがある
-    route_data[u][d % w] = true
 
-    next if useds[u][d % w] # すでに確認済みの場合
-    useds[u][d % w] = true
+    pp('useds[u][d % w]' => useds[u][d % w]) if $debug
+    if useds[u][d % w] # すでに確認済みの場合
+      next
+    else
+      route << u
+      useds[u][d % w] = true
+      route_data[u][d % w] = true
+      pp(route_data:) if $debug
 
-    vs = paths[u].filter { |v| oss[v][(d + 1) % w] }
-    dp[d + 1] = vs
-    d += 1
+      vs = paths[u].filter { |v| oss[v][(d + 1) % w] }
+      dp[d + 1] = vs
+      d += 1
+    end
   end
 
   false
