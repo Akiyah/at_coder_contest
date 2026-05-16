@@ -16,11 +16,28 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+H, W = STDIN.gets.chomp.split.map(&:to_i)
 
+H.times.map do |i|
+  rs = W.times.map do |j|
+    r = 0
+
+    if H == 1
+      r += 0
+    elsif 0 == i || i == H - 1
+      r += 1
+    else
+      r += 2
+    end
+    if W == 1
+      r += 0
+    elsif 0 == j || j == W - 1
+      r += 1
+    else
+      r += 2
+    end
+    r
+  end
+  puts rs.join(' ')
+end
 
