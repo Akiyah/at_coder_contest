@@ -41,7 +41,10 @@ def inverse(n)
 end
 
 def combination(n, m)
-  ans = factorial(n) * inverse(factorial(m)) * inverse(factorial(n - m)) % MOD
+  a1 = factorial(n)
+  a2 = factorial(m)
+  a3 = factorial(n - m)
+  ans = a1 * inverse(a2 * a3) % MOD
   pp("combination(#{n}, #{m}) = #{ans}") if $debug
   ans
 end
