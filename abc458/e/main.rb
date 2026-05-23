@@ -20,26 +20,43 @@ MOD = 998244353
 
 X1, X2, X3 = STDIN.gets.chomp.split.map(&:to_i)
 
+$factorial_i = 0
+$factorial_data = [1]
 def factorial(n)
-  return 1 unless 1 < n
-  n * factorial(n - 1)  
+  if $factorial_i < n
+    x = $factorial_data[$factorial_i]
+    (($factorial_i + 1)..n).each do |i|
+      x *= i
+      x %= MOD
+      $factorial_data[i] = x
+    end
+    $factorial_i = n
+  end
+
+  $factorial_data[n]
 end
 
+def inverse(n)
+  n.pow(MOD - 2, MOD)
+end
 
-def c(n, m)
-  factorial(n) / factorial(m) / factorial(n - m)
+def combination(n, m)
+  ans = factorial(n) * inverse(factorial(m)) * inverse(factorial(n - m)) % MOD
+  pp("combination(#{n}, #{m}) = #{ans}") if $debug
+  ans
 end
 
 r = 0
 (1..X2).each do |i|
-  j = (X2 + 1) - i
+  next unless 0 <= X1 - i
+
   pp(i:) if $debug
-  pp(j:) if $debug
-  pp(c(X1, i)) if $debug
-  pp(c(X3 + j, j)) if $debug
-  pp(c(X2 + 1, i)) if $debug
-  c(X1 + i, i) * c(X3 + j, j) * c(X2 + 1, i)
-  r += c(X1, i) * c(X3 + j, j) * c(X2 + 1, i)
+  r1 = combination(X1 - 1, i - 1)
+  r2 = combination(X2 + 1, i)
+  r3 = combination(X2 + 1 - i + X3 - 1, X3)
+  pp(i:, r1:, r2:, r3:, 'r1 * r2 * r3' => r1 * r2 * r3 ) if $debug
+  r += r1 * r2 * r3
+  r %= MOD
 end
 
 puts r
