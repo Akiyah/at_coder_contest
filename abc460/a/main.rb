@@ -16,11 +16,16 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M = STDIN.gets.chomp.split.map(&:to_i)
 
+x = M
+
+r = 0
+while x != 0
+  x = N % x
+  r += 1
+end
+
+
+puts r
 

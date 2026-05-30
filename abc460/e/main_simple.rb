@@ -16,18 +16,28 @@
 
 $debug = !ARGV[0].nil?
 
+MOD = 998244353
 T = STDIN.gets.chomp.to_i
 
 
-def calc(x1, y1, r1, x2, y2, r2)
-  d2 = (x2 - x1) ** 2 + (y2 - y1) ** 2
-  (d2 <= (r1 + r2) ** 2) && ((r1 - r2) ** 2 <= d2) && ((r2 - r1) ** 2 <= d2)
+def calc(n, m)
+
+  r = 0
+  (1..n).each do |x|
+    (1..n).each do |y|
+      if (x + y - (x.to_s + y.to_s).to_i) % MOD == 0
+        r += 1
+      end
+    end
+  end
+
+  r % MOD
 end
 
 
 T.times do
-  x1, y1, r1, x2, y2, r2 = STDIN.gets.chomp.split.map(&:to_i)
-  ans = calc(x1, y1, r1, x2, y2, r2)
+  n, m = STDIN.gets.chomp.split.map(&:to_i)
+  ans = calc(n, m)
   puts ans ? 'Yes' : 'No'
 
 end

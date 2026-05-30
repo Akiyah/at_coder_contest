@@ -16,11 +16,33 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M = STDIN.gets.chomp.split.map(&:to_i)
+AS = STDIN.gets.chomp.split.map(&:to_i)
+BS = STDIN.gets.chomp.split.map(&:to_i)
+
+
+def calc
+  as = AS.sort.reverse
+  bs = BS.sort.reverse
+  pp(as:, bs:) if $debug
+
+
+  r = 0
+  i = 0
+  as.each do |a|
+    while a * 2 < bs[i]
+      i += 1
+      return r if i == M
+    end
+    r += 1
+    i += 1
+    return r if i == M
+  end
+
+  r
+end
+
+puts calc
+
 
 
