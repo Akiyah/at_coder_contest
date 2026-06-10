@@ -22,40 +22,31 @@ SS = (1..H).map do
 end
 
 def calc
+  ss = []
+  ss << Array.new(W + 1, 0)
+  SS.each.with_index do |line, i|
+    ss[i + 1] = []
+    ss[i + 1][0] = 0
+    sum = 0
+    line.each.with_index do |b, j|
+      sum += b
+      ss[i + 1][j + 1] = sum + ss[i][j + 1]
+    end
+  end
+  pp(ss:) if $debug
+
   ans = 0
   (0...H).each do |r1|
-    bs = nil
-    (r1...H).each do |r2|
-      if r2 == r1
-        bs = SS[r1]
-      else
-        bs = bs.zip(SS[r2]).map { |a, b| a + b }
+    bs = Array.new(W, 0)
+    ((r1 + 1)..H).each do |r2|
+      x = Hash.new(0)
+      (0..W).each do |c|
+        b = ss[r2][c] - ss[r1][c]
+        x[b] += 1
+        ans += x[b - K]
+        pp(x:, ans:) if $debug
       end
-
-      b0_sum = 0
-      b1_sum = 0
-      c0 = 0
-      c1 = 0
-      W.times do |c|
-        b = bs[c]
-        b0_sum += b
-        b1_sum += b
-        while c0 <= c && K < b0_sum
-          b0_sum -= bs[c0]
-          c0 += 1
-        end
-        while c1 <= c && K <= b1_sum
-          b1_sum -= bs[c1]
-          c1 += 1
-        end
-        if b0_sum == K
-          ans += c1 - c0
-        else
-        end
-        pp(c0:, c1:, b:, b0_sum:, b1_sum:, bs:, ans:) if $debug
-      end
-      pp(r1:, r2:, ans:) if $debug
-      
+      pp(r1:, r2:, ans:) if $debug      
     end
   end
 
