@@ -16,11 +16,17 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+S = STDIN.gets.chomp
+pp(S:) if $debug
 
+r = []
+S.chars.each do |s|
+  pp(s:) if $debug
+  r << s if ['1','2','3','4','5','6','7','8','9','0'].include?(s)
+  pp(r:) if $debug
+end
 
+if 0 < r.length
+  puts r.join('')
+else
+end
