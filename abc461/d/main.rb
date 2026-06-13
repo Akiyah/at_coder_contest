@@ -37,13 +37,15 @@ def calc
 
   ans = 0
   (0...H).each do |r1|
+    ssr1 = ss[r1]
     bs = Array.new(W, 0)
     ((r1 + 1)..H).each do |r2|
+      ssr2 = ss[r2]
       x = Hash.new(0)
       (0..W).each do |c|
-        b = ss[r2][c] - ss[r1][c]
-        x[b] += 1
+        b = ssr2[c] - ssr1[c]
         ans += x[b - K]
+        x[b] += 1
         pp(x:, ans:) if $debug
       end
       pp(r1:, r2:, ans:) if $debug      
