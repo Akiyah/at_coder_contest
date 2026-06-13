@@ -36,12 +36,23 @@ def calc
   pp(ss:) if $debug
 
   ans = 0
+  x = Hash.new(0)
   (0...H).each do |r1|
     ssr1 = ss[r1]
     bs = Array.new(W, 0)
     ((r1 + 1)..H).each do |r2|
       ssr2 = ss[r2]
-      x = Hash.new(0)
+      # x = (0..W).map { |c| ssr2[c] - ssr1[c] }.tally
+      # if K == 0
+      #   x.each do |c, v|
+      #     ans += v * (v - 1) / 2
+      #   end
+      # else
+      #   x.each do |c, v|
+      #     ans += v * (x[c - K] || 0)
+      #   end
+      # end
+      x.clear
       (0..W).each do |c|
         b = ssr2[c] - ssr1[c]
         ans += x[b - K]
