@@ -5,22 +5,66 @@
 # acc s 
 
 
-# require "ac-library-rb/priority_queue"
+require "ac-library-rb/priority_queue"
 # require "ac-library-rb/segtree"
 # require "ac-library-rb/dsu"
 
-# pq = AcLibraryRb::PriorityQueue.new
 
 # require 'prime'
 # pd = Prime.prime_division(a)
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M, Y = STDIN.gets.chomp.split.map(&:to_i)
+UVTS = (1..M).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
+XS = STDIN.gets.chomp.split.map(&:to_i)
 
+
+
+
+def calc
+
+  paths = {}
+  UVTS.each do |u, v, t|
+    paths[u] ||= {}
+    paths[u][v] = t
+    paths[v] ||= {}
+    paths[v][u] = t
+  end
+
+
+  pq = AcLibraryRb::PriorityQueue.new { |(u1, t1), (u2, t2)| t1 < t2 }
+  pq << [0, 0] #  都市1 = start, time = 0
+  ts = Array.new(N)
+  ts[0] = 0 # 都市1 = start
+  co = 1 # 計算済みの都市
+
+  while true
+
+    u, t = pq.pop
+
+    paths_u = paths[u] || {}
+    N.times do |v|
+      next if v == u
+      next if ts[v] # 訪問済み
+      t2 = paths_u[v]
+      t_new = if t2 && t2 < XS[u] + XS[v] + Y
+                t + t2
+              else
+                t + XS[u] + XS[v] + Y
+              end
+      dp << [v, t_new]
+      ts[v] = t_new
+    end
+  end
+end
+
+
+
+
+
+rs = calc
+puts rs.join(' ')
 

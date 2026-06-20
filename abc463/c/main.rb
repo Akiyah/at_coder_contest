@@ -16,11 +16,27 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+HLS = (1..N).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
+Q = STDIN.gets.chomp.to_i
+TS = STDIN.gets.chomp.split.map(&:to_i)
+
+
+
+max_h = 0
+max_hls = []
+HLS.reverse.each do |h, l|
+  max_h = h if max_h < h
+  max_hls << [max_h, l]
+end
+max_hls.reverse!
+
+TS.each do |t|
+  hl = max_hls.bsearch { |h, l| t < l }
+  puts hl[0]
+end
+
 
 

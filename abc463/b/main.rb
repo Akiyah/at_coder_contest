@@ -16,11 +16,21 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, X = STDIN.gets.chomp.split
+SS = (1..(N.to_i)).map do
+  STDIN.gets.chomp
+end
+
+pp(N:, X:, SS:) if $debug
+
+i = { 'A' => 0, 'B' => 1, 'C' => 2, 'D' => 3, 'E' => 4 }[X]
+
+pp(i:) if $debug
+
+r = SS.any? do |s|
+  s[i] == 'o'
+end
+
+puts r ? 'Yes' : 'No'
 
 
