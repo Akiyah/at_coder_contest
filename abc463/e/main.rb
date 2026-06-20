@@ -27,11 +27,18 @@ XS = STDIN.gets.chomp.split.map(&:to_i)
 def calc
 
   paths = {}
-  UVTS.each do |u, v, t|
+  M.times do |u|
     paths[u] ||= {}
-    paths[u][v] = t
-    paths[v] ||= {}
-    paths[v][u] = t
+    M.times do |v|
+      paths[u][v] = XS[u] + XS[v] + Y
+    end
+  end
+
+  UVTS.each do |u, v, t|
+    if t < paths[u][v]
+      paths[u][v] = t
+      paths[v][u] = t
+    end
   end
 
 
