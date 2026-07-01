@@ -27,14 +27,6 @@ XS = STDIN.gets.chomp.split.map(&:to_i)
 def calc
 
   paths = {}
-  # N.times do |u|
-  #   paths[u] ||= {}
-  #   N.times do |v|
-  #     paths[u][v] = XS[u] + XS[v] + Y unless u == v
-  #   end
-  # end
-  # pp(paths:) if $debug
-
   UVTS.each do |u1, v1, t|
     u = u1 - 1
     v = v1 - 1
@@ -46,39 +38,48 @@ def calc
   end
   pp(paths:) if $debug
 
+  xus = XS.map.with_index { |x, u| [x, u] }.sort
+  js = Array.new(N, 0)
+  pp(xus:) if $debug
 
-  pq = AcLibraryRb::PriorityQueue.new { |(u1, t1, used1), (u2, t2, used2)| t1 == t2 ? used1 < used2 : t1 < t2 }
-  pq << [0, 0, 0] #  都市1 = start, time = 0, used = false
+  pq = AcLibraryRb::PriorityQueue.new { |(u1, t_u1, v1, t_v1), (u2, t_u2, v2, t_v2)| t_v1 < t_v2 }
+  pq << [nil, nil, 0, 0] # u, t_u, v(都市1 = start), t_v = 0
+
   ts = Array.new(N)
-  co = 0 # 計算済みの都市
+  co = 0 # 計算済みの都市数
 
-  pp(pq:) if $debug
+  # u = 0
+  j = js[0] # 0
+  x1, u1 = xus[j]
+  pq << [0, 0, u1, 0 + XS[0] + XS[u1] + Y]
+  js[0] += 1
 
   while true
-    u, t, used = pq.pop
-    pp(u:, t:, used:) if $debug
-    next if ts[u] # 計算済み
+    pp(pq:) if $debug
+    pp(ts:, co:) if $debug
+    u, t_u, v, t_v = pq.pop
+    pp(u:, t_u:, v:, t_v:) if $debug
 
-    ts[u] = t # 訪問
-    co += 1
-    return ts if co == N
-
-    if paths[u]
-      paths[u].each do |v2, t2|
-        next if ts[v2] # 訪問済み
-        pq << [v2, t + t2, 0]
+    if u
+      j = js[u]
+      if j < N
+        x1, u1 = xus[j]
+        pp(j:, x1:, u1:) if $debug
+        pq << [u, t_u, u1, t_u + XS[u] + XS[u1] + Y]
+        js[u] += 1
       end
     end
 
-    if used == 0
-      N.times do |v2|
-        next if v2 == u
-        next if ts[v2] # 訪問済み
+    next if ts[v] # 計算済み
 
-        t2 = XS[u] + XS[v2] + Y
+    ts[v] = t_v # 訪問
+    co += 1
+    return ts if co == N
 
-        pq << [v2, t + t2, 1]
-      end
+    (paths[v] || []).each do |v2, t2|
+      next if ts[v2] # 訪問済み
+
+      pq << [v, t_v, v2, t_v + t2]
     end
   end
   ts
