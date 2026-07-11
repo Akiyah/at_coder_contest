@@ -55,11 +55,11 @@ javascript:(function() {
             const h3 = element.querySelector('h3');
             const pre = element.querySelector('pre');
             const n = h3.innerText.split(' ')[1];
-            if (h3.innerText.includes('入力例')) {
+            if (h3.innerText.startsWith('入力例')) {
               if (!ranks[n]) { ranks[n] = {}; }
               ranks[n]['in'] = pre.innerText;
             }
-            if (h3.innerText.includes('出力例')) {
+            if (h3.innerText.startsWith('出力例')) {
               if (!ranks[n]) { ranks[n] = {}; }
               ranks[n]['out'] = pre.innerText;
             }
