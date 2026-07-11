@@ -21,19 +21,18 @@ RCS = (1..M).map do
   STDIN.gets.chomp.split.map(&:to_i)
 end
 
-
-
-rs = {}
-cs = {}
-ans = 0
-RCS.reverse.each do |r, c|
-  if !rs[r - 1] && !cs[c - 1] 
-    ans += 1
-  end
-  rs[r - 1] = true
-  cs[c - 1] = true
+board = Array.new(N) { Array.new(N) }
+RCS.each do |r, c|
+  N.times { |i| board[i][c - 1] = false }
+  N.times { |j| board[r - 1][j] = false }
+  board[r - 1][c - 1] = true
 end
 
+r = 0
+N.times do |i|
+  N.times do |j|
+    r += 1 if board[i][j]
+  end
+end
 
-puts ans
-
+puts r

@@ -16,11 +16,21 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M = STDIN.gets.chomp.split.map(&:to_i)
+CSS = (1..N).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
 
+
+data = {}
+CSS.each do |c, s|
+  if !data[c] || data[c] < s
+    data[c] = s
+  end
+end
+
+rs = M.times.map do |c|
+  data[c + 1] || -1
+end
+puts rs.join(' ')
 
