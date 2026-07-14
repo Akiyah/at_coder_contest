@@ -20,102 +20,134 @@ MOD = 998244353
 
 N = STDIN.gets.chomp
 
-def create_data
-  is = N.chars.map(&:to_i)
-  m = is.length # 桁数
+def create_dps(m)
+  # 0:'3'を含むか、1:3で割ったあまり、2:文字種数、3:使用文字(1文字、2文字、3文字、4文字以上はnilにする)
+  dps = []
+  dp = {}
+  dp[[true, 0, 0, {}]] = 0
+  dp[[true, 1, 0, {}]] = 0
+  dp[[true, 2, 0, {}]] = 0
+  dp[[false, 0, 0, {}]] = 1
+  dp[[false, 1, 0, {}]] = 0
+  dp[[false, 2, 0, {}]] = 0
+  dps << dp
+  pp(dps:) if $debug
 
-  ddp = [] # '3'を含むか、3で割ったあまり、使用文字(1文字、2文字、3文字、4文字以上はnilにする)
-  dp0 = {}
-  dp0[[true, 0, 0, {}, false]] = 0
-  dp0[[true, 1, 0, {}, false]] = 0
-  dp0[[true, 2, 0, {}, false]] = 0
-  dp0[[false, 0, 0, {}, false]] = 1
-  dp0[[false, 1, 0, {}, false]] = 0
-  dp0[[false, 2, 0, {}, false]] = 0
-  
-  ddp[0] = dp0
+  (1..m).each do |d_new|
+    dp_new = {}
 
-  (1..m).each do |d|
-    dp_old = ddp[d - 1]
-    dp = {}
-    (0..9).each do |y| # 一番上の桁、0も許容する
-      dp_old.each do |(b1_old, b2_old, b3_old, b4_old, b5_old), value|
-        b1 = (y == 3) || b1_old
-        b2 = (b2_old + y) % 3
-        b3 = b3_old
-        b4 = b4_old.dup
-        b5 = (y == 0)
-        if b4
-          if !b4[y]
-            if b3 < 3
-              b3 += 1
-              b4[y] = true
-            else
-              b3 = 4
-              b4 = nil
-            end
+    dps.each.with_index do |dp, d|
+      dp.each do |(b1, b2, b3, b4), value|
+        (1..9).each do |y| # 一番上の桁
+          b1_new = b1 || (y == 3)
+          b2_new = (b2 + y) % 3
+          if b3 < 3 && b4 && !b4[y]
+            b3_new = b3 + 1
+            b4_new = b4.merge({ y => true })
+          else
+            b3_new = b3
+            b4_new = b4
           end
+          k = [b1_new, b2_new, b3_new, b4_new]
+          v = dp_new[k] || 0
+          dp_new[k] = (v + value) % MOD
         end
-        v = dp[[b1, b2, b3, b4, b5]] || 0
-        dp[[b1, b2, b3, b4, b5]] = (v + value) % MOD
       end
     end
-    ddp[d] = dp
-    pp(dp:) if $debug
+    dps << dp_new
+    pp(dps:) if $debug
   end
-
-  pp(ddp:) if $debug
-
-  ddp
-
-
-  cs = []
-  cs_sum = 0
-  cs_include_3 = false
-  r = 0
-  is.each.with_idnex do |i, d2|
-    (0...i).each do |y|
-      ddp[m - d2 - 1].each do |(b1, b2, b3, b4, b5), value|
-        b = 0
-        b += 1 if cs_include_3 || b1
-        b += 1 if (y + b2 + cs_sum) % 3 == 0
-        b += 1 if (b3 == 3 && b4.include?(y)) 
-        
-
-      end
-
-
-    end
-    cs << i
-    cs_sum += i
-    cs_include_3 = true if i == 3
-  end
-
-
-  # r = 0
-  # (1..N).each do |x|
-  #   b1 = 0
-  #   b2 = 0
-  #   b3 = 0
-  #   # pp(x:) if $debug
-  #   b1 = 1 if x % 3 == 0
-  #   cs = x.to_s.chars
-  #   # pp(cs:) if $debug
-  #   b2 = 1 if cs.include?('3')
-  #   ds = cs.tally
-  #   pp(ds:) if $debug
-
-  #   b3 = 1 if ds.keys.length == 3
-
-  #   b = ((b1 + b2 + b3) == 1)
-
-  #   r += 1 if b
-  #   pp(x:, b: [b1, b2, b3], r:) if $debug
-  # end
-
-  # r % MOD
+  dps
 end
 
-data = create_data
-pp(data:) if $debug
-puts data.length
+
+def calc_under_m_keta(m, dps) # ex: m = 3 => 1 〜 999
+  r = 0
+  (1..m).each do |d|
+    dp = dps[d]
+    dp.each do |(b1, b2, b3, b4), value|
+      c1 = (b1 ? 1 : 0)
+      c2 = (b2 == 0 ? 1 : 0)
+      c3 = (b3 == 3 ? 1 : 0)
+      if c1 + c2 + c3 == 1
+        r += value
+      end
+    end
+  end
+  r
+end
+
+def calc_one(is, m, dps) # ex: is = [1, 2], m = 3 => 12000 〜 12999
+  r = 0
+  b10 = is.include?(3)
+  b20 = is.sum
+  b400 = is.map { |i| [i, true] }.to_h.merge({0 => true})
+  (1...m).each do |d|
+    dp = dps[d]
+    dp.each do |(b1, b2, b3, b4), value|
+      c1 = (b10 || b1 ? 1 : 0)
+      c2 = ((b20 + b2) == 0 ? 1 : 0)
+      b41 = b400.merge(b4)
+      b31 = b41.length
+      c3 = (((b31 == 3 && b41[0]) || (b31 == 2 && !b41[0])) ? 1 : 0)
+      if c1 + c2 + c3 == 1
+        r += value
+      end
+    end
+  end
+  b401 = is.map { |i| [i, true] }.to_h
+  [m].each do |d|
+    dp = dps[d]
+    dp.each do |(b1, b2, b3, b4), value|
+      c1 = (b10 || b1 ? 1 : 0)
+      c2 = ((b20 + b2) == 0 ? 1 : 0)
+      b41 = b401.merge(b4)
+      b31 = b41.length
+      c3 = (b31 == 3 ? 1 : 0)
+      if c1 + c2 + c3 == 1
+        r += value
+      end
+    end
+  end
+  r
+end
+
+def calc(is, dps)
+  r = 0
+  m = is.length
+
+  (1...m).each do |d|
+    is2 = is[0...d]
+    i2 = is[d]
+
+    (0...i2).each do |i|
+      r += calc_one(is2 + [i], m - d, dps)
+      r %= MOD
+    end
+  end
+
+  [0].each do |d|
+    i2 = is[0]
+
+    (1...i2).each do |i| # 0 は含まない
+      r += calc_one([i], 0, dps)
+      r %= MOD
+    end
+  end
+
+  if 1 < m
+    r += calc_under_m_keta(m - 1, dps) # ex: m = 3 => 1 〜 999
+  end
+  r %= MOD
+
+  r
+end
+
+is = N.chars.map(&:to_i)
+
+dps = create_dps(is.length)
+pp(dps:) if $debug
+
+puts calc(is, dps)
+
+
