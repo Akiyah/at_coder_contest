@@ -16,11 +16,18 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+ABSS = (1..N).map do
+  a, b, s = STDIN.gets.chomp.split
+  [a.to_i, b.to_i, s]
+end
+
+r = 0
+ABSS.each do |a, b, s|
+  if s == 'keep'
+    r += b - a
+  end
+end
 
 
+puts r
