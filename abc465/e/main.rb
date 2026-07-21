@@ -23,27 +23,28 @@ N = STDIN.gets.chomp
 
 def create_new_b3_b4(y, b3, b4, d, d2)
   if 3 < b3
-    return [4, nil]
+    return [4, 0b1111111111]
   end
 
-  b4 = {} unless b4
+  b3_new = b3
+  b4 = 0b0000000000 unless b4
 
-  b4_new = b4.merge({ y => true })
-  b4_new = b4_new.merge({ 0 => true }) if d < d2 - 1
+  b4_new = b4 | (1 << y)
+  b4_new = b4_new | (1 << 0) if d < d2 - 1
 
-  b3_new = b4_new.length
+  b3_new = 10.times.sum { |i| b4_new[i] }
   if 3 < b3_new
-    return [4, nil]
+    return [4, 0b1111111111]
   end
 
   return [b3_new, b4_new]
 end
 
 def create_dps(m)
-  # 0:'3'を含むか、1:3で割ったあまり、2:文字種数、3:使用文字(1文字、2文字、3文字、4文字以上はnilにする)
+  # 0:'3'を含むか、1:3で割ったあまり、2:文字種数、3:使用文字(4文字以上は0b1111111111にする)
   dps = []
   dp = {}
-  dp[[false, 0, 0, {}]] = 1
+  dp[[false, 0, 0, 0b0000000000]] = 1
   dps << dp
   # pp(dps:) if $debug
 
@@ -96,15 +97,17 @@ def calc_one(is, m, dps) # ex: is = [1, 2], m = 3 => 12000 〜 12999
   r = 0
   b10 = is.include?(3)
   b20 = is.sum
-  b400 = is.map { |i| [i, true] }.to_h.merge({0 => true})
+  # b400 = is.map { |i| [i, true] }.to_h.merge({0 => true})
+  b400 = is.inject(0) { |x, i| (x | (1 << i)) } | 0b0000000001
+  
   (0...m).each do |d|
     dp = dps[d]
     dp.each do |(b1, b2, b3, b4), value|
       c1 = (b10 || b1 ? 1 : 0)
       c2 = ((b20 + b2) % 3 == 0 ? 1 : 0)
       if b4
-        b41 = b400.merge(b4)
-        b31 = b41.length
+        b41 = b400 | b4
+        b31 = 10.times.sum { |i| b41[i] }
         c3 = (((b31 == 3 && b41[0]) || (b31 == 2 && !b41[0])) ? 1 : 0)
       else
         c3 = 0
@@ -114,15 +117,16 @@ def calc_one(is, m, dps) # ex: is = [1, 2], m = 3 => 12000 〜 12999
       end
     end
   end
-  b401 = is.map { |i| [i, true] }.to_h
+  # b401 = is.map { |i| [i, true] }.to_h
+  b401 = is.inject(0) { |x, i| (x | (1 << i)) }
   [m].each do |d|
     dp = dps[d]
     dp.each do |(b1, b2, b3, b4), value|
       c1 = (b10 || b1 ? 1 : 0)
       c2 = ((b20 + b2) % 3 == 0 ? 1 : 0)
       if b4
-        b41 = b401.merge(b4)
-        b31 = b41.length
+        b41 = b401 | b4
+        b31 = 10.times.sum { |i| b41[i] }
         c3 = (b31 == 3 ? 1 : 0)
       else
         c3 = 0
