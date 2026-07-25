@@ -16,11 +16,53 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
+N = STDIN.gets.chomp.to_i
+AS = STDIN.gets.chomp.split.map(&:to_i)
+MOD = 998244353
+
+# def f(l, r)
+#   q = (r - l + 1).pow(MOD - 2, MOD)
+#   AS[l..r].sum * q
 # end
+
+
+# ans = 0
+# N.times do |l|
+#   (l...N).each do |r|
+#     x = f(l, r)
+#     pp(l:, r:, x:) if $debug
+#     ans += x
+#     ans %= MOD
+#   end
+# end
+
+# # puts ans
+
+def inv(i)
+  i.pow(MOD - 2, MOD)
+end
+
+def calc
+  s = AS.sum
+  ans = (N * s)
+
+  x = 0
+  y = 0
+  (2..N).each do |i|
+    y += AS[i - 2] + AS[N - 1 - (i - 2)]
+    x = (x * (i - 1) + y) * inv(i)
+    x %= MOD
+    pp(i:, x:, y:) if $debug
+    ans -= x
+    ans %= MOD
+  end
+  ans
+end
+
+
+
+puts calc
+
+
 
 

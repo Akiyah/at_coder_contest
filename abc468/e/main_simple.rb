@@ -18,10 +18,29 @@ $debug = !ARGV[0].nil?
 
 N = STDIN.gets.chomp.to_i
 AS = STDIN.gets.chomp.split.map(&:to_i)
+MOD = 998244353
 
-r = 0
-(N - 2).times do |i|
-  r += 1 if AS[i] < AS[i + 1] && AS[i + 1] > AS[i + 2]
+def f(l, r)
+  q = (r - l + 1).pow(MOD - 2, MOD)
+  AS[l..r].sum * q
 end
 
-puts r
+
+ans = 0
+N.times do |l|
+  (l...N).each do |r|
+    x = f(l, r)
+    pp(l:, r:, x:) if $debug
+    ans += x
+    ans %= MOD
+  end
+end
+
+puts ans
+
+
+
+
+
+
+
