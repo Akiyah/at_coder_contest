@@ -21,173 +21,130 @@ MOD = 998244353
 N = STDIN.gets.chomp
 
 
-def create_new_b3_b4(y, b3, b4, d, d2)
-  if 3 < b3
-    return [4, 0b1111111111]
-  end
-
-  b3_new = b3
-  b4 = 0b0000000000 unless b4
-
-  b4_new = b4 | (1 << y)
-  b4_new = b4_new | (1 << 0) if d < d2 - 1
-
-  b3_new = 10.times.sum { |i| b4_new[i] }
-  if 3 < b3_new
-    return [4, 0b1111111111]
-  end
-
-  return [b3_new, b4_new]
+$data
+def set(dp, p3, c, b, edge, count)
+  dp[p3] ||= []
+  dp[p3][c] ||= []
+  dp[p3][c][b] ||= {}
+  dp[p3][c][b][edge] += count
 end
 
-def create_dps(m)
-  # 0:'3'を含むか、1:3で割ったあまり、2:文字種数、3:使用文字(4文字以上は0b1111111111にする)
-  dps = []
-  dp = {}
-  dp[[false, 0, 0, 0b0000000000]] = 1
-  dps << dp
-  # pp(dps:) if $debug
+def get(dp, p3, c, b, edge)
+  dp[p3] ||= []
+  dp[p3][c] ||= []
+  dp[p3][c][b] ||= {}
+  dp[p3][c][b][edge] += count
+end
 
-  (1..m).each do |d2|
-    dp_new = {}
+# p3: 3で割ったあまり、0,1,2
+# c: 使用文字種数、0,1,2,3,4,5,6,7,8,9,10
+# b: 使用文字種、0b0000000000〜0b1111111111、4文字種以上は0x1111111111に寄せる
+def key(p3, c, b)
+  (p3 * 11 + c) * 0b10000000000 + b
+end
 
-    (0...d2).each do |d|
-      dp = dps[d]
-      dp.each do |(b1, b2, b3, b4), value|
-        (1..9).each do |y| # 一番上の桁
-          b1_new = b1 || (y == 3)
-          b2_new = (b2 + y) % 3
-          b3_new, b4_new = create_new_b3_b4(y, b3, b4, d, d2)
-          k = [b1_new, b2_new, b3_new, b4_new]
-          v = dp_new[k] || 0
-          dp_new[k] = (v + value) % MOD
-        end
+def parse_key(k)
+  p3 = k / (11 * 0b10000000000)
+  c = (k / 0b10000000000) % 11
+  b = k % 0b10000000000
+  [p3, c, b]
+end
+
+def next_p3_c_b(p3, c, b, n2)
+  # pp(method: 'next_p3_c_b', p3:, c:, b:, n2:) if $debug
+  p3_new = (p3 + n2) % 3
+  c_new = b[n2] == 1 ? c : c + 1
+  b_new = b | (1 << n2)
+  # if 3 < c_new
+  #   return [p3_new, 4, 0b1111111111]
+  # end
+  [p3_new, c_new, b_new]
+end
+
+def calc()
+  ns = N.chars.map(&:to_i)
+  m = ns.length
+
+  k0 = key(0, 0, 0b0000000000)
+  kvs = Hash.new(0)
+  # kvs[k0] = 1
+
+  kvs_edge = Hash.new(0)
+  kvs_edge[k0] = 1
+
+  if $debug
+    # pp kvs.map { |k, v| p3, c, b = parse_key(k); [[p3, c, b.to_s(2)], v] }
+    pp kvs_edge.map { |k, v| p3, c, b = parse_key(k); [[p3, c, b.to_s(2)], v] }
+  end
+
+  ns.each.with_index do |n, i|
+    kvs_new = Hash.new(0)
+    kvs_edge_new = Hash.new(0)
+
+    # この桁からスタートするもの
+    if 0 < i
+      (1..9).each do |n2| # 0は除外
+        p3, c, b = next_p3_c_b(0, 0, 0b0000000000, n2)
+        k_new = key(p3, c, b)
+        kvs_new[k_new] += 1
       end
     end
 
-    dps << dp_new
-    # pp(dps:) if $debug
-  end
-
-  # k = [false, 0, 1, { 0 => true }]
-  # dps[1][k] = 1
-
-  dps
-end
-
-
-def calc_under_m_keta(m, dps) # ex: m = 3 => 1 〜 999
-  r = 0
-  (1..m).each do |d|
-    dp = dps[d]
-    dp.each do |(b1, b2, b3, b4), value|
-      c1 = (b1 ? 1 : 0)
-      c2 = (b2 == 0 ? 1 : 0)
-      c3 = (b3 == 3 ? 1 : 0)
-      if c1 + c2 + c3 == 1
-        r += value
+    kvs.each do |k, v|
+      p3_old, c_old, b_old = parse_key(k)
+      (0..9).each do |n2|
+        p3, c, b = next_p3_c_b(p3_old, c_old, b_old, n2)
+        k_new = key(p3, c, b)
+        kvs_new[k_new] = (kvs_new[k_new] + v) % MOD
       end
     end
-  end
-  r
-end
 
-def calc_one(is, m, dps) # ex: is = [1, 2], m = 3 => 12000 〜 12999
-  pp(method: 'calc_one', is:, m:) if $debug
-  r = 0
-  b10 = is.include?(3)
-  b20 = is.sum
-  # b400 = is.map { |i| [i, true] }.to_h.merge({0 => true})
-  b400 = is.inject(0) { |x, i| (x | (1 << i)) } | 0b0000000001
-  
-  (0...m).each do |d|
-    dp = dps[d]
-    dp.each do |(b1, b2, b3, b4), value|
-      c1 = (b10 || b1 ? 1 : 0)
-      c2 = ((b20 + b2) % 3 == 0 ? 1 : 0)
-      if b4
-        b41 = b400 | b4
-        b31 = 10.times.sum { |i| b41[i] }
-        c3 = (((b31 == 3 && b41[0]) || (b31 == 2 && !b41[0])) ? 1 : 0)
-      else
-        c3 = 0
+    kvs_edge.each do |k, v| # 一個だけ入っている
+      p3_old, c_old, b_old = parse_key(k)
+      range = (i == 0 ? (1...n) : (0...n)) # 一番上の桁は0を除く
+      range.each do |n2|
+        p3, c, b = next_p3_c_b(p3_old, c_old, b_old, n2)
+        k_new = key(p3, c, b)
+        kvs_new[k_new] = (kvs_new[k_new] + v) % MOD
       end
-      if c1 + c2 + c3 == 1
-        r += value
+      [n].each do |n2|
+        p3, c, b = next_p3_c_b(p3_old, c_old, b_old, n2)
+        k_new = key(p3, c, b)
+        kvs_edge_new[k_new] = (kvs_edge_new[k_new] + v) % MOD
       end
     end
-  end
-  # b401 = is.map { |i| [i, true] }.to_h
-  b401 = is.inject(0) { |x, i| (x | (1 << i)) }
-  [m].each do |d|
-    dp = dps[d]
-    dp.each do |(b1, b2, b3, b4), value|
-      c1 = (b10 || b1 ? 1 : 0)
-      c2 = ((b20 + b2) % 3 == 0 ? 1 : 0)
-      if b4
-        b41 = b401 | b4
-        b31 = 10.times.sum { |i| b41[i] }
-        c3 = (b31 == 3 ? 1 : 0)
-      else
-        c3 = 0
-      end
-      # pp(d:, b1:, b2:, b3:, b4:, value:, c1:, c2:, c3:) if $debug
-      if c1 + c2 + c3 == 1
-        r += value
-      end
+
+    kvs = kvs_new
+    kvs_edge = kvs_edge_new
+
+    if $debug
+      # pp kvs.map { |k, v| p3, c, b = parse_key(k); [[p3, c, b.to_s(2)], v] }
+      pp kvs_edge.map { |k, v| p3, c, b = parse_key(k); [[p3, c, b.to_s(2)], v] }
     end
   end
-  r
-end
 
-def calc(is, dps)
-  pp(is:) if $debug
+  # pp(kvs:) if $debug
+  # pp(kvs_edge:) if $debug
 
   r = 0
-  m = is.length
-
-  [0].each do |d|
-    is2 = is[0...d]
-    i2 = is[d]
-    pp(is2:, i2:) if $debug
-
-    (1...i2).each do |i|
-      r += calc_one(is2 + [i], m - d - 1, dps)
-      r %= MOD
-      pp(r:, d:, is2:, i:, 'm - d - 1' => m - d - 1) if $debug
-    end
+  kvs.each do |k, v|
+    p3, c, b = parse_key(k)
+    d0 = (p3 == 0) ? 1 : 0
+    d1 = (b[3] == 1) ? 1 : 0
+    d2 = (c == 3) ? 1 : 0
+    r = (r + v) % MOD if d0 + d1 + d2 == 1
   end
-
-  (1...m).each do |d|
-    is2 = is[0...d]
-    i2 = is[d]
-    pp(is2:, i2:) if $debug
-
-    (0...i2).each do |i|
-      r += calc_one(is2 + [i], m - d - 1, dps)
-      r %= MOD
-      pp(r:, d:, is2:, i:, 'm - d - 1' => m - d - 1) if $debug
-    end
-  end
-
-  r += calc_one(is, 0, dps)
-  r %= MOD
-  pp(r:, is:) if $debug
-
-  if 1 < m
-    r += calc_under_m_keta(m - 1, dps) # ex: m = 3 => 1 〜 999
-    r %= MOD
-    pp(r:, m:) if $debug
+  kvs_edge.each do |k, v|
+    p3, c, b = parse_key(k)
+    d0 = (p3 == 0) ? 1 : 0
+    d1 = (b[3] == 1) ? 1 : 0
+    d2 = (c == 3) ? 1 : 0
+    r = (r + v) % MOD if d0 + d1 + d2 == 1
   end
 
   r
 end
 
-is = N.chars.map(&:to_i)
-
-dps = create_dps(is.length)
-pp(dps:) if $debug
-
-puts calc(is, dps)
+puts calc()
 
 
