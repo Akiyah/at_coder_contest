@@ -55,9 +55,13 @@ def next_p3_c_b(p3, c, b, n2)
   p3_new = (p3 + n2) % 3
   c_new = b[n2] == 1 ? c : c + 1
   b_new = b | (1 << n2)
-  # if 3 < c_new
-  #   return [p3_new, 4, 0b1111111111]
-  # end
+  if 3 < c_new
+    if b_new[3] == 1
+      return [p3_new, 10, 0b1111111111]
+    else
+      return [p3_new, 9, 0b1111110111]
+    end
+  end
   [p3_new, c_new, b_new]
 end
 
