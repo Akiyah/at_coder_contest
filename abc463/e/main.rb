@@ -22,10 +22,32 @@ end
 XS = STDIN.gets.chomp.split.map(&:to_i)
 
 
+def next_ut(xus, pq_p, pq_x)
+  u_p, v_p, t_p = pq_p.get
+  pp(u_p:, v_p:, t_p:) if $debug
+  u_x, v_x, t_x, j_x = pq_x.get
+  pp(u_x:, v_x:, t_x:, j_x:) if $debug
 
+  if t_x && t_x < t_p
+    pq_x.pop
+
+    # 今回のノードを1つずらす
+    j3 = j_x + 1
+    x3, u3 = xus[j3]
+    if u3 == u_x
+      j3 += 1
+      x3, u3 = xus[j3] if j3 < N
+    end
+    pq_x << [u_x, u3, t_x + XS[u_x] + Y + XS[u3], j3] if j3 < N
+
+    [v_x, t_x]
+  else
+    pq_p.pop
+    [v_p, t_p]
+  end
+end
 
 def calc
-
   paths = {}
   UVTS.each do |u1, v1, t|
     u = u1 - 1
@@ -39,48 +61,41 @@ def calc
   pp(paths:) if $debug
 
   xus = XS.map.with_index { |x, u| [x, u] }.sort
-  js = Array.new(N, 0)
   pp(xus:) if $debug
 
-  pq = AcLibraryRb::PriorityQueue.new { |(u1, t_u1, v1, t_v1), (u2, t_u2, v2, t_v2)| t_v1 < t_v2 }
-  pq << [nil, nil, 0, 0] # u, t_u, v(都市1 = start), t_v = 0
+  pq_p = AcLibraryRb::PriorityQueue.new { |(u1, v1, t1), (u2, v2, t2)| t1 < t2 }
+  pq_p << [nil, 0, 0] # u(nil), v(都市1 = start), t = 0
+
+  pq_x = AcLibraryRb::PriorityQueue.new { |(u1, v1, t1, j1), (u2, v2, t2, j2)| t1 < t2 }
+  # pq_x << [0, 0] # u(都市1 = start), j = 0
 
   ts = Array.new(N)
   co = 0 # 計算済みの都市数
 
-  # u = 0
-  j = js[0] # 0
-  x1, u1 = xus[j]
-  pq << [0, 0, u1, 0 + XS[0] + XS[u1] + Y]
-  js[0] += 1
-
   while true
-    pp(pq:) if $debug
-    pp(ts:, co:) if $debug
-    u, t_u, v, t_v = pq.pop
-    pp(u:, t_u:, v:, t_v:) if $debug
+    u, t = next_ut(xus, pq_p, pq_x)
+    pp(u:, t:) if $debug
 
-    if u
-      j = js[u]
-      if j < N
-        x1, u1 = xus[j]
-        pp(j:, x1:, u1:) if $debug
-        pq << [u, t_u, u1, t_u + XS[u] + XS[u1] + Y]
-        js[u] += 1
-      end
-    end
+    next if ts[u] # 計算済み
 
-    next if ts[v] # 計算済み
-
-    ts[v] = t_v # 訪問
+    ts[u] = t # 訪問
     co += 1
+    pp(ts:, co:) if $debug
     return ts if co == N
 
-    (paths[v] || []).each do |v2, t2|
+    (paths[u] || []).each do |v2, t2|
       next if ts[v2] # 訪問済み
-
-      pq << [v, t_v, v2, t_v + t2]
+      pq_p << [u, v2, t + t2]
     end
+
+    # 新しいノードをpq_xに追加
+    j3 = 0
+    x3, u3 = xus[j3]
+    if u3 == u
+      j3 += 1
+      x3, u3 = xus[j3]
+    end
+    pq_x << [u, u3, t + XS[u] + Y + XS[u3], j3]
   end
   ts
 end
