@@ -22,31 +22,6 @@ end
 XS = STDIN.gets.chomp.split.map(&:to_i)
 
 
-def next_ut(xus, pq_p, pq_x)
-  u_p, v_p, t_p = pq_p.get
-  pp(u_p:, v_p:, t_p:) if $debug
-  u_x, v_x, t_x, j_x = pq_x.get
-  pp(u_x:, v_x:, t_x:, j_x:) if $debug
-
-  if t_x && t_x < t_p
-    pq_x.pop
-
-    # 今回のノードを1つずらす
-    j3 = j_x + 1
-    x3, u3 = xus[j3]
-    if u3 == u_x
-      j3 += 1
-      x3, u3 = xus[j3] if j3 < N
-    end
-    pq_x << [u_x, u3, t_x + XS[u_x] + Y + XS[u3], j3] if j3 < N
-
-    [v_x, t_x]
-  else
-    pq_p.pop
-    [v_p, t_p]
-  end
-end
-
 def calc
   paths = {}
   UVTS.each do |u1, v1, t|
@@ -61,41 +36,65 @@ def calc
   pp(paths:) if $debug
 
   xus = XS.map.with_index { |x, u| [x, u] }.sort
+  xj = 0
+  min_x = XS[0]
   pp(xus:) if $debug
 
-  pq_p = AcLibraryRb::PriorityQueue.new { |(u1, v1, t1), (u2, v2, t2)| t1 < t2 }
-  pq_p << [nil, 0, 0] # u(nil), v(都市1 = start), t = 0
-
-  pq_x = AcLibraryRb::PriorityQueue.new { |(u1, v1, t1, j1), (u2, v2, t2, j2)| t1 < t2 }
-  # pq_x << [0, 0] # u(都市1 = start), j = 0
+  pq = AcLibraryRb::PriorityQueue.new { |(u1, t1), (u2, t2)| t1 < t2 }
+  # pq << [0, 0] # u(都市1 = start), t = 0
 
   ts = Array.new(N)
-  co = 0 # 計算済みの都市数
+  ts[0] = 0
+  co = 1 # 計算済みの都市数
+
+  (paths[0] || []).each do |v2, t2|
+    next if ts[v2] # 訪問済み
+    pq << [v2, 0 + t2]
+  end
 
   while true
-    u, t = next_ut(xus, pq_p, pq_x)
+    u, t = pq.get
+    while u && ts[u] # 計算済み
+      pq.pop
+      u, t = pq.get
+    end
     pp(u:, t:) if $debug
 
-    next if ts[u] # 計算済み
+    x, u2 = xus[xj]
+    while ts[u2]
+      xj += 1
+      x, u2 = xus[xj]
+    end
+    pp(x:, u2:, xj:) if $debug
 
-    ts[u] = t # 訪問
+    if !u || min_x + Y + x < t
+      xj += 1
+      next_u = u2
+      next_t = min_x + Y + x
+    else
+      pq.pop
+      next_u = u
+      next_t = t
+    end
+    pp(next_u:, next_t:) if $debug
+
     co += 1
-    pp(ts:, co:) if $debug
+    ts[next_u] = next_t
+
+    if next_t + XS[next_u] < min_x
+      min_x = next_t + XS[next_u]
+    end
+
     return ts if co == N
 
-    (paths[u] || []).each do |v2, t2|
+    (paths[next_u] || []).each do |v2, t2|
       next if ts[v2] # 訪問済み
-      pq_p << [u, v2, t + t2]
+      pq << [v2, next_t + t2]
     end
 
-    # 新しいノードをpq_xに追加
-    j3 = 0
-    x3, u3 = xus[j3]
-    if u3 == u
-      j3 += 1
-      x3, u3 = xus[j3]
-    end
-    pq_x << [u, u3, t + XS[u] + Y + XS[u3], j3]
+    pp(ts:, co:, xj:, min_x:) if $debug
+    # pp(pq:) if $debug
+    pp('---') if $debug
   end
   ts
 end
