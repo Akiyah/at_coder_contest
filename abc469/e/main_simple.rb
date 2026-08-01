@@ -16,15 +16,26 @@
 
 $debug = !ARGV[0].nil?
 
-N = STDIN.gets.chomp.to_i
+N, K = STDIN.gets.chomp.split.map(&:to_i)
 S = STDIN.gets.chomp
 
-r = 0
-N.times do |i|
-  if S[i] == 'x' && (i == 0 || S[i - 1] == 'x') && (i == N - 1 || S[i + 1] == 'x')
-    r += 1
+if K == 1
+  puts 1
+  exit
+end
+
+cs = S.chars.map { |c| c == 'o' ? 1 : 0 }
+ans = 0
+(0...N).to_a.combination(2) do |l, r|
+  pp(l:, r:) if $debug
+  s = cs[l..r].sum
+  if K <= s
+    pp(s:) if $debug
+    a = cs[l..r].sum.to_r / (r - l + 1)
+    pp(a:) if $debug
+    ans = a if ans < a
   end
 end
 
-puts r
+puts ans.to_f
 

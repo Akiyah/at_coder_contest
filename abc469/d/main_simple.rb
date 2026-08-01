@@ -16,15 +16,19 @@
 
 $debug = !ARGV[0].nil?
 
-N = STDIN.gets.chomp.to_i
-S = STDIN.gets.chomp
+N, M = STDIN.gets.chomp.split.map(&:to_i)
+ABS = (1..M).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
+
 
 r = 0
-N.times do |i|
-  if S[i] == 'x' && (i == 0 || S[i - 1] == 'x') && (i == N - 1 || S[i + 1] == 'x')
+(1..N).to_a.combination(2).each do |x, y|
+  if ABS.all? do |a, b| x == a || x == b || y == a || y == b end
     r += 1
   end
 end
 
-puts r
 
+
+puts r
