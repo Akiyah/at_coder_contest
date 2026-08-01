@@ -29,9 +29,14 @@ def calc
     v = v1 - 1
 
     paths[u] ||= {}
-    paths[u][v] = t
+    if !paths[u][v] || t < paths[u][v] 
+      paths[u][v] = t
+    end
     paths[v] ||= {}
     paths[v][u] = t
+    if !paths[v][u] || t < paths[v][u] 
+      paths[v][u] = t
+    end
   end
   pp(paths:) if $debug
 

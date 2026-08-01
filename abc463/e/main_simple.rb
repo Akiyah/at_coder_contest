@@ -28,16 +28,23 @@ def calc
     v = v1 - 1
 
     paths[u] ||= {}
-    paths[u][v] = t
+    if !paths[u][v] || t < paths[u][v] 
+      paths[u][v] = t
+    end
     paths[v] ||= {}
     paths[v][u] = t
+    if !paths[v][u] || t < paths[v][u] 
+      paths[v][u] = t
+    end
   end
   pp(paths:) if $debug
 
   XS.each.with_index do |x1, u|
     XS.each.with_index do |x2, v|
       paths[u] ||= {}
-      paths[u][v] ||= x1 + x2 + Y
+      if !paths[u][v] || x1 + x2 + Y < paths[u][v]
+        paths[u][v] = x1 + x2 + Y
+      end
     end
   end
 
