@@ -10,9 +10,11 @@
   pp(i:)
 
   n = rand(100) + 2
-  m = rand(n * (n - 1) / 2 + 1)
+  # m = rand(n * (n - 1) / 2 + 1)
+  m = rand(100)
   y = rand(10000) + 1
-  uvts = {}
+  pp(i:, n:, m:, y:)
+  uvts = []
   while uvts.length < m
     # pp(n:, m:, uvts:)
     u = rand(n) + 1
@@ -20,17 +22,17 @@
     t = rand(10000) + 1
     next if u == v
     u, v = v, u unless u < v
-    next if uvts[[u, v]]
-    uvts[[u, v]] = t
+    # next if uvts[[u, v]]
+    uvts << [u, v, t]
     # pp(uvts:)
   end
   xs = n.times.map { rand(10000) + 1 }
-  pp(i:, n:, m:, y:, xs:)
+  # pp(i:, n:, m:, y:, xs:)
 
   File.open('test/sample.in', 'w') do |f|
     f.puts [n, m, y].join(' ')
-    uvts.each do |uv, t|
-      f.puts (uv + [t]).join(' ')
+    uvts.each do |u, v, t|
+      f.puts [u, v, t].join(' ')
     end
     f.puts xs.join(' ')
   end
