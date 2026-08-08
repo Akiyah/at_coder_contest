@@ -21,8 +21,8 @@ N, Q = STDIN.gets.chomp.split.map(&:to_i)
 
 b = 0
 as = {}
+bottom = 0
 ks = {}
-ks[0] = N
 pp(b:, as:, ks:) if $debug
 
 Q.times do |q|
@@ -30,38 +30,35 @@ Q.times do |q|
   pp(t:, x1:) if $debug
   if t == 1
     x = x1 - 1
-    a = as[x] || 0
-    as[x] = a + 1
-
-    if ks[a]
-      ks[a] -= 1
-      ks.delete(a) if ks[a] == 0
+    a = if !as[x] || as[x] <= bottom
+      bottom
+    else
+      as[x]
     end
 
-    ks[a + 1] ||= 0
-    ks[a + 1] += 1
+    as[x] = a + 1
+
+    if ks[a] # 1
+      ks.delete(a)
+    else
+      ks[a] = 1
+    end
+
+    if ks[a + 1] # 1
+      ks.delete(a + 1)
+    else
+      ks[a + 1] = 1
+    end
 
     b ^= a
     b ^= (a + 1)
   else # t == 2
-    new_as = {}
-    as.each do |a, v|
-      new_as[a] = v - 1 if 1 < v # 0は含まないようにする
-    end
-    as = new_as
+    ks.delete(bottom) if ks[bottom]
+    bottom += 1
 
-    new_ks = {}
-    ks.each do |k, v|
-      new_ks[k - 1] = v if 0 < k
-    end
-    new_ks[0] ||= 0
-    new_ks[0] += ks[0] || 0
-    ks = new_ks
     b = 0
     ks.each do |k, v|
-      if 0 < k
-        b ^= (1 << (k - 1)) unless v % 2 == 0
-      end
+      b ^= (1 << (k - bottom - 1))
     end
   end
 
