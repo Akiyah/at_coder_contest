@@ -8,7 +8,7 @@
 
 def run_test
   (2..10).each do |n|
-    (0..10).each do |m|
+    (0..(n * (n - 1) / 2)).each do |m|
       pp(n:, m:)
 
       10.times do |i|
@@ -27,14 +27,14 @@ def run_test
           t = rand(100) + 1
           next if u == v
           u, v = v, u unless u < v
-          # next if uvts[[u, v]]
+          next if uvts.find { |uvt| uvt[...2] == [u, v] }
           uvts << [u, v, t]
           # pp(uvts:)
         end
         xs = n.times.map { rand(100) + 1 }
         # pp(i:, n:, m:, y:, xs:)
 
-        File.open('test/sample.in', 'w') do |f|
+        File.open('test/sample2.in', 'w') do |f|
           f.puts [n, m, y].join(' ')
           uvts.each do |u, v, t|
             f.puts [u, v, t].join(' ')
@@ -42,8 +42,9 @@ def run_test
           f.puts xs.join(' ')
         end
         
-        o1 = `ruby main.rb < test/sample.in`
-        o2 = `ruby main_simple.rb < test/sample.in`
+        o1 = `ruby main.rb < test/sample2.in`
+        # o2 = `ruby main_editorial.rb < test/sample2.in`
+        o2 = `ruby 77041237.rb < test/sample2.in`
 
         pp('o1 == o2' => o1 == o2)
         unless o1 == o2

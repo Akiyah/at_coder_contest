@@ -38,7 +38,7 @@
   end
   
   o1 = `ruby main.rb < test/sample.in`
-  o2 = `ruby main_simple.rb < test/sample.in`
+  o2 = `ruby main_editorial.rb < test/sample.in`
 
   pp('o1 == o2' => o1 == o2)
   unless o1 == o2

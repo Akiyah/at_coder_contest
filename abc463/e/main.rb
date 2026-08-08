@@ -29,12 +29,11 @@ def calc
     v = v1 - 1
 
     paths[u] ||= {}
-    if !paths[u][v] || t < paths[u][v] 
+    if !paths[u][v] || t < paths[u][v]
       paths[u][v] = t
     end
     paths[v] ||= {}
-    paths[v][u] = t
-    if !paths[v][u] || t < paths[v][u] 
+    if !paths[v][u] || t < paths[v][u]
       paths[v][u] = t
     end
   end
