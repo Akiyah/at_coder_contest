@@ -20,49 +20,45 @@ N, Q = STDIN.gets.chomp.split.map(&:to_i)
 
 
 b = 0
-as = {}
+as = Array.new(N, 0)
 bottom = 0
 ks = {}
-pp(b:, as:, ks:) if $debug
+pp(b:, as:, ks:, bottom:) if $debug
 
 Q.times do |q|
   t, x1 = STDIN.gets.chomp.split.map(&:to_i)
   pp(t:, x1:) if $debug
   if t == 1
     x = x1 - 1
-    a = if !as[x] || as[x] <= bottom
-      bottom
-    else
-      as[x]
-    end
+    a = as[x]
+    a = bottom if a < bottom
 
     as[x] = a + 1
 
-    if ks[a] # 1
-      ks.delete(a)
-    else
-      ks[a] = 1
-    end
+    ks[a] = ((ks[a] || 0) - 1) % 2
+    ks[a + 1] = ((ks[a + 1] || 0) + 1) % 2
 
-    if ks[a + 1] # 1
-      ks.delete(a + 1)
-    else
-      ks[a + 1] = 1
-    end
-
-    b ^= a
-    b ^= (a + 1)
+    b ^= (a - bottom)
+    b ^= (a - bottom + 1)
   else # t == 2
     ks.delete(bottom) if ks[bottom]
     bottom += 1
 
+    ks_new = {}
+    ks.each do |k, v|
+      next if k <= bottom
+      ks_new[k] = 1 unless v % 2 == 0
+    end
+    ks = ks_new
+
     b = 0
     ks.each do |k, v|
-      b ^= (1 << (k - bottom - 1))
+      b ^= (k - bottom)
     end
+
   end
 
-  pp(b:, as:, ks:) if $debug
+  pp(b:, as:, ks:, bottom:) if $debug
 
   puts b
 end
