@@ -51,8 +51,8 @@ def calc
   pp(cN__K__: c(N - 2, K - 2)) if $debug
 
   r = 0
-  r += s2 * (c(N, K) - c(N - 1, K))
-  r += s12 * c(N - 2, K - 2)
+  r += s2 * (c(N, K) * K * inv(N))
+  r += s12 * (c(N, K) * (K * (K - 1) / 2) * inv(N * (N - 1) / 2))
 
   r % MOD
 end
