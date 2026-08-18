@@ -20,55 +20,42 @@ N, L = STDIN.gets.chomp.split.map(&:to_i)
 AS = STDIN.gets.chomp.split.map(&:to_i)
 
 
-def calc(as)
-  i = 0
-  score = 0
-  bs = {}
-  l = L
+$v = Array.new(N + 1) { Array.new(N + 1) { Array.new(L + 1, 0) } } # $v[n][m][l], $v[0-N][0-N][0-L]
+def get_v(n, m, l)
+  return 0 if l == 0
+  return 0 if N < n
+  return n if m == 0
 
-  while true
-    # pp(i:, score:) if $debug
-    a1 = as[i]
-    if bs[a1]
-      score += a1 # もう一個めくって点数を取得する
-      i += 1
-    else
-      bs[a1] = true
+  $v[n][m][l]
+end
+def set_v(n, m, l, v)
+  $v[n][m][l] = v
+end
 
-      a2 = as[i + 1]
-      if a2 == a1 # めくった二枚が一致した
-        score += a1 # 点数を取得する
-      else
-        l -= 1
-        return score if l == 0
-        
-        if bs[a2] # 次にスコアを取得する
-          score += a2 # 点数を取得する
+
+def calc
+  (1..N).each do |m|
+    (1..L).each do |l|
+      (0..N).each do |n|
+        a = 1.0 * n / (n + 2 * m) * (1 + get_v(n - 1, m, l))
+        b1 = 1.0 * (2 * m) / (n + 2 * m) / (n + 2 * m - 1) * (1 + get_v(n, m - 1, l))
+        b2 = 1.0 * (2 * m) / (n + 2 * m) * (2 * m - 2) / (n + 2 * m - 1) * get_v(n + 2, m - 2, l - 1)
+        if 1 < l
+          b3 = 1.0 * (2 * m) / (n + 2 * m) * n / (n + 2 * m - 1) * (1 + get_v(n, m - 1, l - 1))
+        else
+          b3 = 0
         end
-        bs[a2] = true
+        v = a + b1 + b2 + b3
+        set_v(n, m, l, v)
       end
-
-      i += 2
     end
-
-    return score if N * 2 <= i
   end
+
+  r = get_v(0, N, L)
+  r * AS.sum / N
 end
 
-
-
-s = 0
-n = 0
-(AS + AS).permutation(N * 2).each do |as|
-  pp(as:) if $debug
-  score = calc(as)
-  pp(score:) if $debug
-
-  s += score
-  n += 1
-  pp(s:, n:) if $debug
-end
-
-puts s.to_f / n
+r = calc
+puts r.to_f
 
 
