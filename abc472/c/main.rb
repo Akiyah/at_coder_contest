@@ -16,11 +16,32 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M, K = STDIN.gets.chomp.split.map(&:to_i)
+AS = STDIN.gets.chomp.split.map(&:to_i)
 
 
+
+def calc
+
+  eated = []
+
+  total = 0
+  N.times do |i|
+    pp(i:, total:) if $debug
+    if 0 <= i - M && eated[i - M]
+      total -= AS[i - M]
+    end
+    pp(i:, total:, 'total + AS[i]' => total + AS[i], K:) if $debug
+
+    if total + AS[i] <= K
+      puts 'Yes'
+      total += AS[i]
+      eated[i] = true
+    else
+      puts 'No'
+    end
+  end
+end
+
+
+calc
