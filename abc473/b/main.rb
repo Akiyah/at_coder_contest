@@ -16,11 +16,17 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+AS = STDIN.gets.chomp.split.map(&:to_i)
 
+
+h = AS.tally
+pp(h:) if $debug
+
+r = 0
+h.each do |k, v|
+  r += k * (v % 2)
+end
+
+puts r
 
