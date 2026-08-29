@@ -21,24 +21,19 @@ S = STDIN.gets.chomp
 
 
 
-def check_one(p, cs)
-  cs = S.chars
-  pp(cs:) if $debug
-  as = cs.map { |c| c == 'o' ? 1 - p : -p }
-  pp(as:) if $debug
+def check_one(p, as, ois)
+  # cs = S.chars
+  # pp(cs:) if $debug
+  # as = cs.map { |c| c == 'o' ? 1 - p : -p }
+  # pp(as:) if $debug
   
-  ois = []
-  cs.each.with_index do |c, i|
-    ois << i if c == 'o'
-  end
-  pp(ois:) if $debug
 
   ss = [0]
   min_ss = [0]
   a_sum = 0
   min_s = 0
   as.each do |a|
-    a_sum += a
+    a_sum += (a - p)
     ss << a_sum
     min_s = a_sum if a_sum < min_s
     min_ss << min_s
@@ -65,11 +60,17 @@ def check_one(p, cs)
 end
 
 def calc
-  cs = S.chars.map { |c| c == 'o' ? 1 : 0 }
+  as = S.chars.map { |c| c == 'o' ? 1 : 0 }
+
+  ois = []
+  as.each.with_index do |a, i|
+    ois << i if a == 1
+  end
+  pp(ois:) if $debug
 
   a_max = (0..(10 ** 6)).bsearch do |a|
     p = a.to_f / (10 ** 6)
-    ans = check_one(p, cs)
+    ans = check_one(p, as, ois)
     pp(a:, p:, ans:) if $debug
     !ans
   end
