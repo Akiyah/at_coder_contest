@@ -20,66 +20,66 @@ N, K = STDIN.gets.chomp.split.map(&:to_i)
 S = STDIN.gets.chomp
 
 
-def calc
-  cs = S.chars.map { |c| c == 'o' ? 1 : 0 }
+
+def check_one(p, cs)
+  cs = S.chars
   pp(cs:) if $debug
+  as = cs.map { |c| c == 'o' ? 1 - p : -p }
+  pp(as:) if $debug
+  
+  ois = []
+  cs.each.with_index do |c, i|
+    ois << i if c == 'o'
+  end
+  pp(ois:) if $debug
 
-  js = []
-  cs.each.with_index do |c, j|
-    js << j if c == 1
+  ss = [0]
+  min_ss = [0]
+  a_sum = 0
+  min_s = 0
+  as.each do |a|
+    a_sum += a
+    ss << a_sum
+    min_s = a_sum if a_sum < min_s
+    min_ss << min_s
+  end
+  pp(ss:) if $debug
+  pp(min_ss:) if $debug
+
+  len = ois.length
+  # return false if l < K
+
+  ((K - 1)...len).each do |i|
+    pp(i:) if $debug
+    r = ois[i]
+    l = ois[i - (K - 1)]
+    pp(l:, r:) if $debug
+    sr = ss[r + 1]
+    # sl_1 = ss[l - 1]
+    min_s_l_1 = min_ss[l - 1 + 1]
+    pp(l:, r:, sr:, min_s_l_1:) if $debug
+    return true if min_s_l_1 <= sr
   end
 
-  pp(js:) if $debug
-
-  sum_k_max = 0
-  n = js.length
-  (0..(n - K)).each do |i|
-    j0 = js[i]
-    j1 = js[i + K - 1]
-    r = Rational(K, j1 - (j0 - 1))
-    sum_k_max = r if sum_k_max < r
-  end
-
-  pp(sum_k_max:) if $debug
-
-  last_r = 0
-  is = []
-  (0..(n - K)).each do |i|
-    j0 = js[i]
-    j1 = js[i + K - 1]
-    r = Rational(K, j1 - (j0 - 1))
-    is << i if sum_k_max == r
-  end
-
-  pp(is:) if $debug
-
-  last_i = nil
-  left_i = is[0]
-  sum_max = sum_k_max
-  is.each do |i|
-    if i - 1 == last_i
-    else
-      left_i = i
-    end
-    pp(i:, last_i:, left_i:) if $debug
-
-    j0 = js[left_i]
-    j1 = js[i + K - 1]
-    r = Rational(i + K - left_i, j1 - (j0 - 1))
-    sum_max = r if sum_max < r
-    pp(j0:, j1:, r:, sum_max:) if $debug
-
-    last_i = i
-  end
-
-  pp(sum_max:) if $debug
-
-  sum_max.to_f
+  false
 end
 
+def calc
+  cs = S.chars.map { |c| c == 'o' ? 1 : 0 }
 
+  a_max = (0..(10 ** 6)).bsearch do |a|
+    p = a.to_f / (10 ** 6)
+    ans = check_one(p, cs)
+    pp(a:, p:, ans:) if $debug
+    !ans
+  end
 
-
+  pp(a_max:) if $debug
+  unless a_max
+    return 1
+  end
+  a_max.to_f / (10 ** 6)
+end
 
 ans = calc()
 if ans == 1
