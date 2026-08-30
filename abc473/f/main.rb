@@ -29,19 +29,26 @@ pp(N:, S:, Q:) if $debug
 
 
 def check(bs, seg, l, r)
-  sum = 0
-  bs[(l - 1)..(r - 1)].each do |b|
-    sum += b
-    return false if sum < 0
-  end
-  true
+
+  pp(methid: :check, bs:, seg: seg_to_a(seg), l:, r:) if $debug
+
+  seg.get(l - 1) <= seg.prod(l, r + 1)
+  # sum = 0
+  # bs[(l - 1)..(r - 1)].each do |b|
+  #   sum += b
+  #   return false if sum < 0
+  # end
+  # true
 end
 
 def calc_1(bs, seg, i, c)
   pp(method: 'calc_1', i:, c:) if $debug
   b = (c == 'A' ? 1 : -1)
-  bs[i - 1] = b
-  seg.apply(i, N, 1)
+  if bs[i - 1] != b
+    bs[i - 1] = b
+    seg.apply(i, N, b * 2)
+  end
+  pp(bs:, seg: seg_to_a(seg)) if $debug
 end
 
 def calc_2(bs, seg, l, r)
@@ -55,23 +62,26 @@ end
 
 bs = S.chars.map { |c| c == 'A' ? 1 : -1 }
 
-
-# create lazy segtree
-e = 0
-id = 0
-op = proc { |x, y| x + y }
-mapping = proc { |f, x| f + x }
-composition = proc { |f, g| f + g }
-
-ds = []
+ds = [0]
 d = 0
 bs.each do |b|
   d += b
   ds << d
 end
 
+# create lazy segtree, 最小を探すsegtree
+INF = 10 ** 10
+e = INF
+id = 0
+op = proc { |x, y| [x, y].min }
+mapping = proc { |f, x| f + x }
+composition = proc { |f, g| f + g }
 seg = AcLibraryRb::LazySegtree.new(ds, e, id, op, mapping, composition)
 
+def seg_to_a(seg)
+  n = seg.instance_variable_get(:@n)
+  n.times.map { |i| seg.get(i) }
+end
 
 Q.times do
   query = STDIN.gets.chomp.split
