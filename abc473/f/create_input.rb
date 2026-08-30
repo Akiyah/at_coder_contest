@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
-N = 5 * 10 ** 5
-S = N.times.map { ['A', 'B'].sample }.join('')
-Q = 2 * 10 ** 5
+N = 5 * 10 ** 4
+S = N.times.map { ['A', 'A', 'A', 'A', 'B'].sample }.join('')
+Q = 2 * 10 ** 4
 
 puts N
 puts S
