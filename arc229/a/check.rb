@@ -1,0 +1,54 @@
+
+def f(x)
+  r = 0
+  # pp(x:, r:)
+  while x.index('ARC')
+    x = x.sub('ARC', 'CRA')
+    # pp(x:, r:)
+    r += 1
+  end
+  r
+end
+
+def calc(x)
+  pp(x:)
+  return 'A' if x == 0
+
+  ans = ''
+
+  p = x / 25
+
+  x2 = x - p * 25
+
+  if 0 < x2
+    ans += 'AR' * x2 + 'CR' + ('AR' * (25 - x2))
+  else
+    ans += 'AR' * 25
+  end
+
+  ans += 'CR' * p
+  # pp(ans:) if $debug
+
+  ans
+end
+
+
+(0..600).each do |x|
+  ans = calc(x)
+  if 100 < ans.length || x != f(ans)
+    pp(x:, ans:, 'f(ans)' => f(ans), 'len' => ans.length)
+  end
+end
+
+
+
+
+# ARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCARCRCRCRCARARARC
+# ARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARARCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCARCRCRCRC
+# ARARARC
+
+
+# ARARARARARARARARARARARARARARARARARARARARARARARCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCARARARARCRCRCRCRCARARARARC
+# ARARARARARARARARARARARARARARARARARARARARARARARCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRCRC
+# ARARARARCRCRCRCRC
+# ARARARARC

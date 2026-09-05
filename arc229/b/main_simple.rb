@@ -32,15 +32,14 @@ def calc(n, as)
     # ds = as.map.with_index { |a, i| a * (2 ** i) }
     pp(as:, us:) if $debug
 
-    u = us.min
-    if u == 0
+    if us.min == 0
       return -1
     end
 
+    r += 1
 
-    b = as.map.with_index { |a, i| (u >> i) == 0 ? (10 ** 9) : a / (u >> i) }.min
-    r += b
-    as = as.map.with_index { |a, i| a - (u >> i) * b }
+    u = us.min
+    as = as.map.with_index { |a, i| a - (u >> i) }
     pp(u:, as:) if $debug
   end
   
