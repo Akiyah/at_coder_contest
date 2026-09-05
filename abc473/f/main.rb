@@ -6,9 +6,9 @@
 
 
 # require "ac-library-rb/priority_queue"
-# require "ac-library-rb/segtree"
+require "ac-library-rb/segtree"
 # require "ac-library-rb/dsu"
-require "ac-library-rb/lazy_segtree"
+# require "ac-library-rb/lazy_segtree"
 
 # pq = AcLibraryRb::PriorityQueue.new
 
@@ -24,21 +24,15 @@ Q = STDIN.gets.chomp.to_i
 
 pp(N:, S:, Q:) if $debug
 
-
-
-
-
 def check(bs, seg, l, r)
 
-  pp(methid: :check, bs:, seg: seg_to_a(seg), l:, r:) if $debug
+  # pp(methid: :check, bs:, seg: seg_to_a(seg), l:, r:) if $debug
+  pp(methid: :check, bs:, l:, r:) if $debug
 
-  seg.get(l - 1) <= seg.prod(l, r + 1)
-  # sum = 0
-  # bs[(l - 1)..(r - 1)].each do |b|
-  #   sum += b
-  #   return false if sum < 0
-  # end
-  # true
+  # pp(seg.get(l - 1))
+  # pp(seg.prod(l - 1, r))
+  # seg.get(l - 1)[1] <= seg.prod(l - 1, r)[1]
+  0 <= seg.prod(l - 1, r)[1]
 end
 
 def calc_1(bs, seg, i, c)
@@ -46,9 +40,10 @@ def calc_1(bs, seg, i, c)
   b = (c == 'A' ? 1 : -1)
   if bs[i - 1] != b
     bs[i - 1] = b
-    seg.apply(i, N, b * 2)
+    seg.set(i - 1, [b, b])
   end
-  pp(bs:, seg: seg_to_a(seg)) if $debug
+  # pp(bs:, seg: seg_to_a(seg)) if $debug
+  pp(bs:) if $debug
 end
 
 def calc_2(bs, seg, l, r)
@@ -62,21 +57,11 @@ end
 
 bs = S.chars.map { |c| c == 'A' ? 1 : -1 }
 
-ds = [0]
-d = 0
-bs.each do |b|
-  d += b
-  ds << d
-end
+ds = bs.map { |b| [b, b] } # sum, min
 
-# create lazy segtree, 最小を探すsegtree
-INF = 10 ** 10
-e = INF
-id = 0
-op = proc { |x, y| [x, y].min }
-mapping = proc { |f, x| f + x }
-composition = proc { |f, g| f + g }
-seg = AcLibraryRb::LazySegtree.new(ds, e, id, op, mapping, composition)
+# create segtree, 最小を探すsegtree
+INF = 10 ** 6
+seg = AcLibraryRb::Segtree.new(ds, [0, INF]) { |(s0, m0), (s1, m1)| [s0 + s1, [m0, s0 + m1].min] }
 
 def seg_to_a(seg)
   n = seg.instance_variable_get(:@n)
