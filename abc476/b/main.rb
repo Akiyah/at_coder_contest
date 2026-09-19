@@ -16,11 +16,15 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+S = STDIN.gets.chomp
+T = STDIN.gets.chomp
 
 
+r = true
+(0...N).each do |i|
+  r = false if T[i] != '*' && S[i] != T[i]
+end
+
+
+puts r ? 'Yes' : 'No'

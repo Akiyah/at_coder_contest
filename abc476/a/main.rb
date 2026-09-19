@@ -16,7 +16,14 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
+S = STDIN.gets.chomp
+
+if S[-1] == 'e'
+  puts S + 'r'
+else
+  puts S + 'er'
+end
+
 # N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
 # AS = (1..N).map do
 #   STDIN.gets.chomp.to_i

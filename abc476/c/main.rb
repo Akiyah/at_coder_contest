@@ -16,11 +16,37 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N = STDIN.gets.chomp.to_i
+AS = STDIN.gets.chomp.split.map(&:to_i)
 
 
+if AS[0] < AS[1]
+  as3 = [AS[1], AS[0], 0]
+else
+  as3 = [AS[0], AS[1], 0]
+end
+
+rs = []
+(2...N).each do |k|
+  a = AS[k]
+  if as3[2] < a
+    if as3[1] < a
+      if as3[0] < a
+        as3 = [a, as3[0], as3[1]]
+      else
+        as3 = [as3[0], a, as3[1]]
+      end
+    else
+      as3 = [as3[0], as3[1], a]
+    end
+  else
+    # 変更なし
+  end
+
+  rs << as3[2]
+
+end
+
+rs.each do |r|
+  puts r
+end
