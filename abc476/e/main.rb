@@ -23,45 +23,48 @@ LRS = (1..M).map do
 end
 
 
-def calc(ps)
-  pis = ps.map.with_index { |p, i| [p, i, p, i] }
-  pp(pis:) if $debug
+def calc(ps, lrs)
+  p2i = [] 
+  ps.each.with_index { |p, i| p2i[p] = i }
+  pp(ps:) if $debug
+  pp(p2i:) if $debug
 
-  # seg_max = AcLibraryRb::Segtree.new(pis, [0, -1]) { |(p0, i0), (p1, i1)| p0 > p1 ? [p0, i0] : [p1, i1] }
-  # seg_min = AcLibraryRb::Segtree.new(pis, [2 * 10 ** 5 + 1, -1]) { |(p0, i0), (p1, i1)| p0 < p1 ? [p0, i0] : [p1, i1] }
-  seg = AcLibraryRb::Segtree.new(pis, [0, -1, 2 * 10 ** 5 + 1, -1]) { |(pmax0, imax0, pmin0, imin0), (pmax1, imax1, pmin1, imin1)|
-    pmax, imax = (pmax0 > pmax1 ? [pmax0, imax0] : [pmax1, imax1])
-    pmin, imin = (pmin0 < pmin1 ? [pmin0, imin0] : [pmin1, imin1])
-    [pmax, imax, pmin, imin]
-  }
+  seg_max = AcLibraryRb::Segtree.new(ps, -1) { |p0, p1| [p0, p1].max }
+  seg_min = AcLibraryRb::Segtree.new(ps, 2 * 10 ** 5 + 1) { |p0, p1| [p0, p1].min }
 
-  LRS.each do |l1, r1|
-    l = l1 - 1
-    r = r1 - 1
-    pp(l1:, l:, r1:, r:) if $debug
+  lrs.each do |l, r|
+    pp(l:, r:) if $debug
 
-    pmax, imax, pmin, imin = seg.prod(l, r + 1)
-    pp(pmax:, imax:, pmin:, imin:) if $debug
-    # pp(p_max:, i_max:) if $debug
-    # pp(p_min:, i_min:) if $debug
+    pmax = seg_max.prod(l, r + 1)
+    pmin = seg_min.prod(l, r + 1)
+    pp(pmax:, pmin:) if $debug
 
-    seg.set(imax, [pmin, imax, pmin, imax])
-    seg.set(imin, [pmax, imin, pmax, imin])
-    # seg_min.set(i_max, [p_min, i_max])
-    # seg_min.set(i_min, [p_max, i_min])
-    pp(seg: [seg.get(0), seg.get(1), seg.get(2), seg.get(3), seg.get(4)]) if $debug
+    imax = p2i[pmax]
+    imin = p2i[pmin]
+    pp(imax:, imin:) if $debug
+    
+    seg_max.set(imax, pmin)
+    seg_max.set(imin, pmax)
+    seg_min.set(imax, pmin)
+    seg_min.set(imin, pmax)
 
-    pis[imax] = [pmin, imax, pmin, imax]
-    pis[imin] = [pmax, imin, pmax, imin]
+    ps[imax] = pmin
+    ps[imin] = pmax
 
-    pp(pis:) if $debug
+    p2i[pmax] = imin
+    p2i[pmin] = imax
+
+    pp(ps:) if $debug
+    pp(p2i:) if $debug
   end
 
-  pis.map { |p, i| p }
+  ps
 end
 
 
-ps = PS.dup
-ps = calc(ps)
+ps = PS.map { |p| p - 1 }
+lrs = LRS.map { |l, r| [l - 1, r - 1] }
 
-puts ps.join(' ')
+ps = calc(ps, lrs)
+
+puts ps.map { |p| p + 1 }.join(' ')
