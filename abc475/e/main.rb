@@ -31,7 +31,7 @@ ijs = Q.times.map do
 end
 
 ts = T.chars
-zs = SS.map { |s| s.chars.map.with_index { |c, j| c == ts[j] ? (1 << (K - 1 - j)) : 0 }.sum }
+zs = SS.map { |s| s.chars.map.with_index { |c, j| c == ts[j] ? 0 : (1 << (K - 1 - j)) }.sum }
 
 def calc(zs, ijs)
   pp(zs:, ijs:) if $debug
@@ -53,7 +53,7 @@ def calc(zs, ijs)
   end
   pp(h:) if $debug
 
-  k2i = h.keys.sort.reverse.map.with_index { |k, i| [k, i] }.to_h
+  k2i = h.keys.sort.map.with_index { |k, i| [k, i] }.to_h
   vs = []
   h.each do |k, v|
     vs[k2i[k]] = v
@@ -85,7 +85,7 @@ def calc(zs, ijs)
     pp(segtree: vs.map { |v| [v.to_s(2), segtree.get(k2i[v])] }) if $debug
     # pp(segtree:) if $debug
     pp(z:, sum:) if $debug
-    rs << ((z != 0) && (sum <= M))
+    rs << ((z != ((1 << K) - 1)) && (sum <= M))
   end
 
   rs
