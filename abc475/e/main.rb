@@ -30,8 +30,8 @@ ijs = Q.times.map do
   [i - 1, j - 1]
 end
 
-ts = T.chars
-zs = SS.map { |s| s.chars.map.with_index { |c, j| c == ts[j] ? 0 : (1 << (K - 1 - j)) }.sum }
+z_t = T.tr('ox', '01').to_i(2)
+zs = SS.map { |s| s.tr('ox', '01').to_i(2) ^ z_t }
 
 def calc(zs, ijs)
   pp(zs:, ijs:) if $debug
@@ -53,16 +53,16 @@ def calc(zs, ijs)
   end
   pp(h:) if $debug
 
-  k2i = h.keys.sort.map.with_index { |k, i| [k, i] }.to_h
+  z2i = h.keys.sort.map.with_index { |z, i| [z, i] }.to_h
   vs = []
-  h.each do |k, v|
-    vs[k2i[k]] = v
+  h.each do |z, v|
+    vs[z2i[z]] = v
   end
 
-  pp(k2i:, vs:) if $debug
+  pp(z2i:, vs:) if $debug
 
-  segtree = AcLibraryRb::SegTree.new(vs, 0) { |v1, v2| v1 + v2 }
-  pp(segtree: vs.map { |v| [v.to_s(2), segtree.get(k2i[v])] }) if $debug
+  seg = AcLibraryRb::SegTree.new(vs, 0) { |v1, v2| v1 + v2 }
+  pp(seg: vs.map { |v| [v.to_s(2), seg.get(z2i[v])] }) if $debug
 
   zs2 = zs.dup
   rs = []
@@ -72,18 +72,18 @@ def calc(zs, ijs)
     z = zs2[i]
     h[z] -= 1
     pp(zs2:, h:) if $debug
-    segtree.set(k2i[z], h[z])
+    seg.set(z2i[z], h[z])
     z ^= (1 << (K - 1 - j))
     zs2[i] = z
     h[z] += 1
     pp(zs2:, h:) if $debug
-    segtree.set(k2i[z], h[z])
+    seg.set(z2i[z], h[z])
 
-    pp('k2i[z]' => k2i[z]) if $debug
+    pp('z2i[z]' => z2i[z]) if $debug
 
-    sum = segtree.prod(0, k2i[z] + 1)
-    pp(segtree: vs.map { |v| [v.to_s(2), segtree.get(k2i[v])] }) if $debug
-    # pp(segtree:) if $debug
+    sum = seg.prod(0, z2i[z] + 1)
+    pp(seg: vs.map { |v| [v.to_s(2), seg.get(z2i[v])] }) if $debug
+    # pp(seg:) if $debug
     pp(z:, sum:) if $debug
     rs << ((z != ((1 << K) - 1)) && (sum <= M))
   end
