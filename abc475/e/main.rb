@@ -6,7 +6,7 @@
 
 
 # require "ac-library-rb/priority_queue"
-# require "ac-library-rb/segtree"
+require "ac-library-rb/segtree"
 # require "ac-library-rb/dsu"
 
 # pq = AcLibraryRb::PriorityQueue.new
@@ -25,50 +25,73 @@ end
 
 Q = STDIN.gets.chomp.to_i
 
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+ijs = Q.times.map do
+  i, j = STDIN.gets.chomp.split.map(&:to_i)
+  [i - 1, j - 1]
+end
 
 ts = T.chars
-answers = SS.map { |s| s.chars.map.with_index { |c, j| c == ts[j] ? true : false } }
+zs = SS.map { |s| s.chars.map.with_index { |c, j| c == ts[j] ? (1 << (K - 1 - j)) : 0 }.sum }
 
-def calc(answers, i, j)
-  answers[i][j] = !answers[i][j]
+def calc(zs, ijs)
+  pp(zs:, ijs:) if $debug
+  
+  pp(zs: zs.map { |z| z.to_s(2) }) if $debug
 
-  pp(answers:) if $debug
 
-  uks = (0...N).to_a
-  oks = []
-  ngs = []
-  pp(uks:, oks:, ngs:) if $debug
-  K.times do |j|
-    oks_ = []
-    ngs_ = []
-    uks.each do |i|
-      if answers[i][j]
-        oks_ << i
-      else
-        ngs_ << i
-      end
-    end
-    if oks.length + oks_.length <= M
-      oks += oks_
-      uks -= oks_
-    else
-      ngs += ngs_
-      uks -= ngs_
-    end
-    pp(j:, uks:, oks:, ngs:) if $debug
+  h = {}
+  zs.each do |z|
+    h[z] ||= 0
+    h[z] += 1
+  end
+  pp(h:) if $debug
+
+  zs2 = zs.dup
+  ijs.each do |i, j|
+    zs2[i] ^= (1 << (K - 1 - j))
+    h[zs2[i]] ||= 0
+  end
+  pp(h:) if $debug
+
+  k2i = h.keys.sort.reverse.map.with_index { |k, i| [k, i] }.to_h
+  vs = []
+  h.each do |k, v|
+    vs[k2i[k]] = v
   end
 
-  oks.include?(i)
+  pp(k2i:, vs:) if $debug
+
+  segtree = AcLibraryRb::SegTree.new(vs, 0) { |v1, v2| v1 + v2 }
+  pp(segtree: vs.map { |v| [v.to_s(2), segtree.get(k2i[v])] }) if $debug
+
+  zs2 = zs.dup
+  rs = []
+  ijs.each do |i, j|
+    pp(i:, j:) if $debug
+    pp(zs2:, h:) if $debug
+    z = zs2[i]
+    h[z] -= 1
+    pp(zs2:, h:) if $debug
+    segtree.set(k2i[z], h[z])
+    z ^= (1 << (K - 1 - j))
+    zs2[i] = z
+    h[z] += 1
+    pp(zs2:, h:) if $debug
+    segtree.set(k2i[z], h[z])
+
+    pp('k2i[z]' => k2i[z]) if $debug
+
+    sum = segtree.prod(0, k2i[z] + 1)
+    pp(segtree: vs.map { |v| [v.to_s(2), segtree.get(k2i[v])] }) if $debug
+    # pp(segtree:) if $debug
+    pp(z:, sum:) if $debug
+    rs << ((z != 0) && (sum <= M))
+  end
+
+  rs
 end
 
-Q.times do
-  i, j = STDIN.gets.chomp.split.map(&:to_i)
-  r = calc(answers, i - 1, j - 1)
+rs = calc(zs, ijs)
+rs.each do |r|
   puts r ? 'Yes' : 'No'
 end
-
