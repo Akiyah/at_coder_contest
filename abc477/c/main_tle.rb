@@ -16,16 +16,17 @@
 
 $debug = !ARGV[0].nil?
 
-N, D = STDIN.gets.chomp.split.map(&:to_i)
-XS = STDIN.gets.chomp.split.map(&:to_i)
+Q = STDIN.gets.chomp.to_i
+S = STDIN.gets.chomp
+T = STDIN.gets.chomp
+LRS = Q.times.map { STDIN.gets.chomp.split.map(&:to_i) }
 
-rs = []
-N.times do |i|
-  r = N.times.all? { |j| i == j || D <= (XS[i] - XS[j]).abs }
-  rs << i if r
+
+
+LRS.each do |l1, r1|
+  l = l1 - 1
+  r = r1 - 1
+  puts S[l..r].include?(T) ? 'Yes' : 'No'
 end
 
-pp(rs:) if $debug
 
-puts rs.length
-puts rs.map { |i| i + 1 }.join(' ')

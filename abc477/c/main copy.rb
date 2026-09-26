@@ -22,10 +22,15 @@ T = STDIN.gets.chomp
 LRS = Q.times.map { STDIN.gets.chomp.split.map(&:to_i) }
 
 
+ss = S.split(T)
+
 js = []
+j = 0
 l_t = T.length
-S.length.times do |j|
-  js << j if S[j, l_t] == T
+ss.each.with_index do |s, i|
+  j += s.length
+  js << j
+  j += l_t
 end
 
 pp(js:) if $debug
@@ -34,37 +39,9 @@ lris = LRS.map.with_index { |(l, r), i| [l, r, i] }.sort_by { |l, r, i| [l, r, i
 
 pp(lris:) if $debug
 
-def check(js, lris, l_t)
-  k = 0
-  rs = []
-  lris.each do |l1, r1, i|
-    l = l1 - 1
-    r = r1 - 1
-    pp(l:, r:, i:) if $debug
-
-    while k < js.length && js[k] < l
-      k += 1
-    end
-
-    unless k < js.length
-      rs << [i, 'No']
-      next
-    end
-
-    # l <= js[k]
-    if js[k] + l_t - 1 <= r
-      pp('Yes') if $debug
-      rs << [i, 'Yes']
-    else
-      pp('NO') if $debug
-      rs << [i, 'No']
-    end
-  end
-  rs
+k = 0
+lris.each do |l, r, i|
+  if js[k] 
 end
 
-
-rs = check(js, lris, l_t)
-pp(rs:) if $debug
-rs.sort_by { |i, ans| i }.each { |i, ans| puts ans }
 
