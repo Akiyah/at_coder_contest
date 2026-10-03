@@ -16,11 +16,19 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, V = STDIN.gets.chomp.split.map(&:to_i)
+WS = STDIN.gets.chomp.split.map(&:to_i)
+pp(WS:) if $debug
 
+ws = WS.map.with_index { |w, i| [w, i + 1] }
 
+m = 0
+ws.combination(3).each do |(w0, i0), (w1, i1), (w2, i2), |
+  s = w0 + w1 + w2
+  # pp(vs:, s:) if $debug
+  if i0 + i1 + i2 <= V && m < s
+    m = s
+  end
+end
+
+puts m

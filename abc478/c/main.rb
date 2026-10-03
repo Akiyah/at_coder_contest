@@ -16,11 +16,24 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, K = STDIN.gets.chomp.split.map(&:to_i)
+AS = STDIN.gets.chomp.split.map(&:to_i)
 
 
+
+as_sorted = AS.sort
+
+ds = AS.map.with_index { |a, i| a == as_sorted[i] }
+
+min_i = ds.find_index(false)
+max_i = ds.rindex(false)
+
+if min_i == nil || max_i == nil
+  puts 'Yes'
+else
+  if max_i - min_i + 1 <= K
+    puts 'Yes'
+  else
+    puts 'No'
+  end
+end
