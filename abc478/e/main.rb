@@ -7,7 +7,7 @@
 
 # require "ac-library-rb/priority_queue"
 # require "ac-library-rb/segtree"
-require "ac-library-rb/dsu"
+# require "ac-library-rb/dsu"
 
 # pq = AcLibraryRb::PriorityQueue.new
 
@@ -22,141 +22,116 @@ TUVS = (1..Q).map do
 end
 
 
-
-
-def calc_group(group, path0, path0_r, path1, path1_r)
-  mins = {}
-  maxs = {}
-  calced = {}
-  s = group[0]
-  mins[s] = 0
-  maxs[s] = 0 # 固定しておく
-  # calced[s] = true
-
-  dp = [[s, 0], [s, 1]]
-  while 0 < dp.length
-    u, dir = dp.shift
-    pp(u:, dir:) if $debug
-    calced[u] ||= {}
-    next if calced[u][dir]
-    calced[u][dir] = true
-    pp(mins:, maxs:) if $debug
-
-    pp('path0[u]' => path0[u],'path0_r[u]' => path0_r[u],'path1[u]' => path1[u],'path1_r[u]' => path1_r[u]) if $debug
-    if dir == 0
-      (path0[u] || []).each do |v|
-        if mins[u]
-          min_a_v = mins[u] + 0
-          mins[v] = min_a_v if !mins[v] || mins[v] < min_a_v
-          if maxs[v] && maxs[v] < mins[v]
-            return false
-          end
-        end
-        
-        dp << [v, 0] if !calced[v] || !calced[v][0]
-        dp << [v, 1] if !calced[v] || !calced[v][1]
-      end
-      (path1[u] || []).each do |v|
-        if mins[u]
-          min_a_v = mins[u] + 1
-          mins[v] = min_a_v if !mins[v] || mins[v] < min_a_v
-          if maxs[v] && maxs[v] < mins[v]
-            return false
-          end
-        end
-        dp << [v, 0] if !calced[v] || !calced[v][0]
-        dp << [v, 1] if !calced[v] || !calced[v][1]
-      end
-    else
-      (path0_r[u] || []).each do |v|
-        if maxs[u]
-          max_a_v = maxs[u] + 0
-          maxs[v] = max_a_v if !maxs[v] || max_a_v < maxs[v]
-          if mins[v] && maxs[v] < mins[v]
-            return false
-          end
-        end
-        dp << [v, 0] if !calced[v] || !calced[v][0]
-        dp << [v, 1] if !calced[v] || !calced[v][1]
-      end
-      (path1_r[u] || []).each do |v|
-        if maxs[u]
-          max_a_v = maxs[u] - 1
-          maxs[v] = max_a_v if !maxs[v] || max_a_v < maxs[v]
-          if mins[v] && maxs[v] < mins[v]
-            return false
-          end
-        end
-        dp << [v, 0] if !calced[v] || !calced[v][0]
-        dp << [v, 1] if !calced[v] || !calced[v][1]
-      end
-    end
-  end
-
-
-  pp(mins:, maxs:) if $debug
-  ans = {}
-  group.each do |u|
-    if mins[u]
-      ans[u] = mins[u]
-    else
-      ans[u] = maxs[u]
-    end
-  end
-
-  ans
-end
-
-
 def calc
-  path0 = {}
-  path1 = {}
-  path0_r = {}
-  path1_r = {}
-  TUVS.each do |t, u1, v1|
-    u = u1 - 1
-    v = v1 - 1
-    if t == 0
-      path0[u] ||= []
-      path0[u] << v
-      path0_r[v] ||= []
-      path0_r[v] << u
+  paths = {}
+  TUVS.each do |t, u, v|
+    paths[u] ||= []
+    paths[u] << [v, t]
+  end
+  pp(paths:) if $debug
+
+  paths[0] ||= []
+  (1..N).each do |u|
+    paths[0] << [u, 0]
+  end
+  pp(paths:) if $debug
+
+  stack = []
+  values = {}
+  ds = {}
+  indexies = {}
+  used_nodes = {}
+
+  stack << 0 # start
+  values[0] = 0
+  ds[0] = 0
+  indexies[0] = 0
+  used_nodes[0] = true
+
+  while true
+    u = stack[-1]
+    i = indexies[u]
+    pp(u:, i:, stack:, values:, ds:, indexies:, used_nodes: used_nodes.filter_map { |k, v| k if v } ) if $debug
+
+    if paths[u] && i < paths[u].length
+      v, t = paths[u][i]
+      pp(v:, t:) if $debug
+      if values[v] # 同じルートに乗っているvの場合
+        if used_nodes[v]
+          if values[v] + ds[v] < values[u] + t
+            return false # 一周して1つ以上増えている
+          end
+        end
+
+        # vの隣に移動する
+        if values[v] + ds[v] < values[u] + t
+          ds[v] = values[u] + t - values[v]
+        end
+        indexies[u] = i + 1
+      else
+        # vに進む
+        stack << v
+        values[v] = values[u] + t
+        ds[v] = 0
+        indexies[v] = 0
+        used_nodes[v] = true
+      end
     else
-      path1[u] ||= []
-      path1[u] << v
-      path1_r[v] ||= []
-      path1_r[v] << u
+      # 全部見たので戻る
+      stack.pop # u
+      used_nodes[u] = false
+
+      break if stack.length == 0 # 全部終わった場合
+      u_parent = stack[-1]
+      indexies[u_parent] += 1
     end
   end
-  pp(path0:, path0_r:, path1:, path1_r:)if $debug
 
-  dsu = AcLibraryRb::DSU.new(N)
+  pp(values:, ds:) if $debug
 
-  TUVS.each do |t, u1, v1|
-    u = u1 - 1
-    v = v1 - 1
-    dsu.merge(u, v)
-  end
 
-  pp(dsu:) if $debug
+  # 番号をつけていく
+  stack = []
+  indexies = {}
+  ans = {}
 
-  rss = []
-  dsu.groups.each do |group|
-    rs = calc_group(group, path0, path0_r, path1, path1_r)
-    pp(group:, rs:) if $debug
-    return false unless rs
-    rss << rs
-  end
-  pp(rss:) if $debug
+  stack << 0 # start
+  indexies[0] = 0
+  ans[0] = 0
+  d = 0
 
-  ans = []
-  rss.each do |rs|
-    rs.each do |u, i|
-      ans[u] = i
+  while true
+    u = stack[-1]
+    i = indexies[u]
+    pp(u:, i:, stack:, indexies:, ans:) if $debug
+
+    if paths[u] && i < paths[u].length
+      v, t = paths[u][i]
+      pp(v:, t:) if $debug
+      if ans[v] # 計算済み
+        indexies[u] = i + 1
+      else
+        # vに進む
+        stack << v
+        indexies[v] = 0
+        d += ds[v]
+        ans[v] = values[v] + d
+      end
+    else
+      # 全部見たので戻る
+      stack.pop # u
+      d -= ds[u]
+
+      break if stack.length == 0 # 全部終わった場合
+      u_parent = stack[-1]
+      indexies[u_parent] += 1
     end
   end
+
   pp(ans:) if $debug
-  ans
+
+
+  (1..N).map { |i| ans[i] }
 end
 
 rs = calc()
@@ -166,3 +141,18 @@ if rs
 else
   puts 'No'
 end
+
+
+
+if $debug && rs
+  TUVS.each do |t, u, v|
+    puts "#{t} #{u} #{v}"
+    unless rs[u - 1] + t <= rs[v - 1]
+      puts "NG"
+    end
+  end
+end
+
+
+# > 2 1 1 1 1 1 1 2 2 1 1 3 1 2 2
+# > 1 0 0 0 0 0 0 1 1 0 0 2 0 1 1
