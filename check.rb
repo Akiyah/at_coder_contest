@@ -26,7 +26,7 @@ def check_one(input_file_name, output_file_name, main_file_name)
 end
 
 def check(dir, selected_input_file_names, params)
-  main_file_name = params[:m] || params[:main] || 'main.rb'
+  main_file_name = params[:m] || params[:main] || params[:'main:'] || 'main.rb'
   pp(dir:, selected_input_file_names:, main_file_name:)
 
   Dir.glob(dir + '/' + '*.in') do |input_file_name|
