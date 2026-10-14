@@ -33,40 +33,64 @@ def calc
   end
   pp(paths:, paths_r:) if $debug
 
-  stack = N.times.to_a.reverse
   used = []
-  u2is = []
   ordered_us = []
+  u2is = []
   i = 0
-  while 0 < stack.length
-    pp(stack:, used:, u2is:, i:) if $debug
-    u = stack[-1]
-    pp(u:) if $debug
-    if used[u]
-      stack.pop
 
-      unless u2is[u]
-        u2is[u] = i
-        ordered_us << u
-        i += 1
+  N.times.to_a.each do |u|
+    stack = [u]
+    while 0 < stack.length
+      pp(stack:, used:, i:) if $debug
+      u = stack[-1]
+      pp(u:) if $debug
+      if used[u]
+        stack.pop
+
+        unless u2is[u]
+          u2is[u] = i
+          ordered_us << u
+          i += 1
+        end
+      else
+        paths[u].each do |v, t|
+          stack << v unless used[v]
+        end
+        used[u] = true
       end
-    else
-      paths[u].each do |v, t|
-        stack << v unless used[v]
-      end
-      used[u] = true
     end
   end
 
-  pp(u2is:, ordered_us:) if $debug
+  pp(ordered_us:) if $debug
 
-  u2is.each.with_index do |i, u|
+  u2is = []
 
+  ordered_us.each.with_index do |u, i|
+    dp = [u]
+    while 0 < dp.length
+      u = dp.pop
+      unless u2is[u]
+        u2is[u] = i
+        paths[u].each do |v, t|
+          dp << v unless u2is[v]
+        end
+      end
+    end
   end
 
+  pp(u2is:) if $debug
 
 
-  false
+  paths.each.with_index do |vts, u|
+    i_u = u2is[u]
+    vts.each do |v, t|
+      if t == 1 && i_u == u2is[v]
+        return false
+      end
+    end
+  end
+
+  u2is.map { |i| N - i }
 end
 
 rs = calc()
