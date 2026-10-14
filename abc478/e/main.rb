@@ -23,115 +23,50 @@ end
 
 
 def calc
-  paths = {}
-  TUVS.each do |t, u, v|
-    paths[u] ||= []
+  paths = Array.new(N) { [] }
+  paths_r = Array.new(N) { [] }
+  TUVS.each do |t, u1, v1|
+    u = u1 - 1
+    v = v1 - 1
     paths[u] << [v, t]
+    paths_r[v] << [u, t]
   end
-  pp(paths:) if $debug
+  pp(paths:, paths_r:) if $debug
 
-  paths[0] ||= []
-  (1..N).each do |u|
-    paths[0] << [u, 0]
-  end
-  pp(paths:) if $debug
-
-  stack = []
-  values = {}
-  ds = {}
-  indexies = {}
-  used_nodes = {}
-
-  stack << 0 # start
-  values[0] = 0
-  ds[0] = 0
-  indexies[0] = 0
-  used_nodes[0] = true
-
-  while true
+  stack = N.times.to_a.reverse
+  used = []
+  u2is = []
+  ordered_us = []
+  i = 0
+  while 0 < stack.length
+    pp(stack:, used:, u2is:, i:) if $debug
     u = stack[-1]
-    i = indexies[u]
-    pp(u:, i:, stack:, values:, ds:, indexies:, used_nodes: used_nodes.filter_map { |k, v| k if v } ) if $debug
+    pp(u:) if $debug
+    if used[u]
+      stack.pop
 
-    if paths[u] && i < paths[u].length
-      v, t = paths[u][i]
-      pp(v:, t:) if $debug
-      if values[v] # 同じルートに乗っているvの場合
-        if used_nodes[v]
-          if values[v] + ds[v] < values[u] + t
-            return false # 一周して1つ以上増えている
-          end
-        end
-
-        # vの隣に移動する
-        if values[v] + ds[v] < values[u] + t
-          ds[v] = values[u] + t - values[v]
-        end
-        indexies[u] = i + 1
-      else
-        # vに進む
-        stack << v
-        values[v] = values[u] + t
-        ds[v] = 0
-        indexies[v] = 0
-        used_nodes[v] = true
+      unless u2is[u]
+        u2is[u] = i
+        ordered_us << u
+        i += 1
       end
     else
-      # 全部見たので戻る
-      stack.pop # u
-      used_nodes[u] = false
-
-      break if stack.length == 0 # 全部終わった場合
-      u_parent = stack[-1]
-      indexies[u_parent] += 1
+      paths[u].each do |v, t|
+        stack << v unless used[v]
+      end
+      used[u] = true
     end
   end
 
-  pp(values:, ds:) if $debug
+  pp(u2is:, ordered_us:) if $debug
 
+  u2is.each.with_index do |i, u|
 
-  # 番号をつけていく
-  stack = []
-  indexies = {}
-  ans = {}
-
-  stack << 0 # start
-  indexies[0] = 0
-  ans[0] = 0
-  d = 0
-
-  while true
-    u = stack[-1]
-    i = indexies[u]
-    pp(u:, i:, stack:, indexies:, ans:) if $debug
-
-    if paths[u] && i < paths[u].length
-      v, t = paths[u][i]
-      pp(v:, t:) if $debug
-      if ans[v] # 計算済み
-        indexies[u] = i + 1
-      else
-        # vに進む
-        stack << v
-        indexies[v] = 0
-        d += ds[v]
-        ans[v] = values[v] + d
-      end
-    else
-      # 全部見たので戻る
-      stack.pop # u
-      d -= ds[u]
-
-      break if stack.length == 0 # 全部終わった場合
-      u_parent = stack[-1]
-      indexies[u_parent] += 1
-    end
   end
 
-  pp(ans:) if $debug
 
 
-  (1..N).map { |i| ans[i] }
+  false
 end
 
 rs = calc()
