@@ -105,9 +105,10 @@ end
 
 if $debug && rs
   TUVS.each do |t, u, v|
-    puts "#{t} #{u} #{v}"
     unless rs[u - 1] + t <= rs[v - 1]
-      puts "NG"
+      puts "#{t} #{u} #{v} : NG"
+    else
+      puts "#{t} #{u} #{v} : OK"
     end
   end
 end
