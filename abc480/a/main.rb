@@ -16,11 +16,19 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+S11, S12 = STDIN.gets.chomp.chars
+S21, S22 = STDIN.gets.chomp.chars
+pp(S11:, S12:, S21:, S22:) if $debug
 
+if S11 == 'A' && S22 == 'D'
+  puts 'No'
+elsif S12 == 'A' && S21 == 'D'
+  puts 'No'
+elsif S21 == 'A' && S12 == 'D'
+  puts 'No'
+elsif S22 == 'A' && S11 == 'D'
+  puts 'No'
+else
+  puts 'Yes'
+end
 
