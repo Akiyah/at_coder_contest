@@ -16,11 +16,24 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+Q = STDIN.gets.chomp.to_i
+SS = (1..Q).map do
+  STDIN.gets.chomp
+end
+
+
+as = {}
+id = 1
+
+SS.each do |s|
+  if as[s]
+  else
+    as[s] = id
+    id += 1
+  end
+
+  puts as[s]
+end
+
 
 

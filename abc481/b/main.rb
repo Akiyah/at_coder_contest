@@ -16,11 +16,22 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, K = STDIN.gets.chomp.split.map(&:to_i)
+AS = STDIN.gets.chomp.split.map(&:to_i)
 
+r = 0
+(N - 1).times do |i|
+  a1 = AS[i]
+  a2 = AS[i + 1]
+
+  if (a1 <= K && K < a2) || (a2 < K && K <= a1)
+    r += 1
+  end
+end
+
+if AS[-1] == K
+  r += 1
+end
+
+puts r
 

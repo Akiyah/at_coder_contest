@@ -16,11 +16,11 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+A, B = STDIN.gets.chomp.split.map(&:to_i)
 
+if 10 <= A + B
+  puts 2
+else
+  puts 1
+end
 
