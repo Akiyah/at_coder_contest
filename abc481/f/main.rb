@@ -5,7 +5,7 @@
 # acc s 
 
 
-require "ac-library-rb/priority_queue"
+# require "ac-library-rb/priority_queue"
 # require "ac-library-rb/segtree"
 # require "ac-library-rb/dsu"
 
@@ -23,36 +23,35 @@ ABCS = (1..M).map do
   STDIN.gets.chomp.split.map(&:to_i)
 end
 
-
-paths = {}
+paths = Array.new(10) { {} }
 ABCS.each do |a, b, c|
-  paths[a] ||= []
-  paths[a] << [b, c]
+  paths[c][a] ||= []
+  paths[c][a] << b
 end
 
 def calc(paths)
 
-  pq = AcLibraryRb::PriorityQueue.new {|(a1, l1), (a2, l2)| l1 < l2 }
-
-  pq << [1, 0]
+  dp = []
+  dp << [[1], 0]
 
   calced = {}
 
-  while !pq.empty?
-    a, l = pq.pop
-    pp(a:, l:) if $debug
+  while 0 < dp.length
+    as, v = dp.shift
+    pp(as:, v:) if $debug
 
-    next if calced[a]
-    calced[a] = l
-
-    bcs = paths[a]
-    next unless bcs
-
-    bcs.each do |b, c|
-      pp(b:, c:) if $debug
-      unless calced[b]
-        pq << [b, l * 10 + c]
+    (1..9).each do |c|
+      v2 = (v * 10 + c) % MOD
+      bs = []
+      as.each do |a|
+        (paths[c][a] || []).each do |b|
+          unless calced[b]
+            bs << b
+            calced[b] = v2
+          end
+        end
       end
+      dp << [bs, v2] if 0 < bs.length
     end
   end
 
