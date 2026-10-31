@@ -29,100 +29,63 @@ pp(RCS:) if $debug
 pp(QUERIES:) if $debug
 
 
-rs = {}
-cs = {}
-RCS.each do |r1, c1|
-  r = r1 - 1
-  c = c1 - 1
-  rs[r] ||= 0
-  rs[r] += 1
-  cs[c] ||= 0
-  cs[c] += 1
+rs = []
+r_counts = {}
+r_count_sums = {}
+cs = []
+c_counts = {}
+c_count_sums = {}
+
+RCS.each do |r, c|
+  rs << r
+  cs << c
+  r_counts[r] ||= 0
+  r_counts[r] += 1
+  c_counts[c] ||= 0
+  c_counts[c] += 1
+end
+pp(rs:) if $debug
+pp(cs:) if $debug
+pp(r_counts:) if $debug
+pp(c_counts:) if $debug
+
+QUERIES.each do |t, a, b|
+  if t == 1
+    rs << a
+    rs << b
+  else
+    cs << a
+    cs << b
+  end
 end
 pp(rs:) if $debug
 pp(cs:) if $debug
 
-rs_keys = rs.keys.sort
-cs_keys = cs.keys.sort
-pp(rs_keys:) if $debug
-pp(cs_keys:) if $debug
+rs = rs.uniq.sort
+cs = cs.uniq.sort
+pp(rs:) if $debug
+pp(cs:) if $debug
 
-sum_r = 0
-sum_rs = {}
-rs_keys.each do |r|
-  sum_r += rs[r]
-  sum_rs[r] = sum_r
+
+r_count_sum = 0
+rs.each do |r|
+  r_count_sum += r_counts[r] || 0
+  r_count_sums[r] = r_count_sum
 end
-pp(sum_rs:) if $debug
+pp(r_count_sums:) if $debug
 
-sum_c = 0
-sum_cs = {}
-cs_keys.each do |c|
-  sum_c += cs[c]
-  sum_cs[c] = sum_c
+c_count_sum = 0
+cs.each do |c|
+  c_count_sum += c_counts[c] || 0
+  c_count_sums[c] = c_count_sum
 end
-pp(sum_cs:) if $debug
-
+pp(c_count_sums:) if $debug
 
 QUERIES.each do |t, a, b|
   if t == 1
-    u, d = a - 1, b - 1
-    pp(t:, a:, b:, u:, d:) if $debug
-
-    i_d1 = rs_keys.bsearch_index { |k| d < k }
-    i_u1 = rs_keys.bsearch_index { |k| u <= k }
-    pp(i_d1:, i_u1:) if $debug
-
-    if i_d1 == nil
-      ans1 = sum_rs[rs_keys[-1]]
-    elsif i_d1 == 0
-      ans1 = 0
-    else
-      k = rs_keys[i_d1 - 1]
-      pp(k:) if $debug
-      ans1 = sum_rs[k]
-    end
-    if i_u1 == nil
-      ans2 = sum_rs[rs_keys[-1]]
-    elsif i_u1 == 0
-      ans2 = 0
-    else
-      k = rs_keys[i_u1 - 1]
-      pp(k:) if $debug
-      ans2 = sum_rs[k]
-    end
-    pp(ans1:, ans2:) if $debug
-
-    ans = ans1 - ans2
+    ans = r_count_sums[b] - r_count_sums[a] + (r_counts[a] || 0)
   else
-    l, r = a - 1, b - 1
-    pp(t:, a:, b:, l:, r:) if $debug
-
-    i_r1 = cs_keys.bsearch_index { |k| r < k }
-    i_l1 = cs_keys.bsearch_index { |k| l <= k }
-    pp(i_r1:, i_l1:) if $debug
-
-    if i_r1 == nil
-      ans1 = sum_cs[cs_keys[-1]]
-    elsif i_r1 == 0
-      ans1 = 0
-    else
-      k = cs_keys[i_r1 - 1]
-      pp(k:) if $debug
-      ans1 = sum_cs[k]
-    end
-    if i_l1 == nil
-      ans2 = sum_cs[cs_keys[-1]]
-    elsif i_l1 == 0
-      ans2 = 0
-    else
-      k = cs_keys[i_l1 - 1]
-      pp(k:) if $debug
-      ans2 = sum_cs[k]
-    end
-    pp(ans1:, ans2:) if $debug
-
-    ans = ans1 - ans2
+    ans = c_count_sums[b] - c_count_sums[a] + (c_counts[a] || 0)
   end
   puts ans
 end
