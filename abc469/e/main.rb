@@ -29,11 +29,12 @@ def check_one(p, as, ois)
   sp_1_mins = []
   last_i = -1
 
-  ois.each do |i|
+  len = ois.length
+
+  (0...(K - 1)).each do |j|
+    i = ois[j]
     d = i - last_i
     sp += 1 - p * d
-    # sp_1 += 1 - p * d
-    # sp_1_min = [sp_1_min, sp_1].min
     sp_1_min = [sp_1_min, sp + p - 1].min
 
     sps << sp
@@ -41,13 +42,19 @@ def check_one(p, as, ois)
     last_i = i
   end
 
-  len = ois.length
+  ((K - 1)...len).each do |j|
+    i = ois[j]
+    d = i - last_i
+    sp += 1 - p * d
+    sp_1_min = [sp_1_min, sp + p - 1].min
 
-  ((K - 1)...len).each do |i|
-    pp(i:) if $debug
-    sp = sps[i]
-    sp_1_min = sp_1_mins[i - (K - 1)]
-    return true if sp_1_min <= sp
+    sps << sp
+    sp_1_mins << sp_1_min
+    last_i = i
+
+    sp_ = sps[j]
+    sp_1_min_ = sp_1_mins[j - (K - 1)]
+    return true if sp_1_min_ <= sp_
   end
 
   false
