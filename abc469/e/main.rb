@@ -22,38 +22,36 @@ S = STDIN.gets.chomp
 
 
 def check_one(p, as, ois)
-  # cs = S.chars
-  # pp(cs:) if $debug
-  # as = cs.map { |c| c == 'o' ? 1 - p : -p }
-  # pp(as:) if $debug
-  
-
-  ss = [0]
-  min_ss = [0]
-  a_sum = 0
-  min_s = 0
-  as.each do |a|
-    a_sum += (a - p)
-    ss << a_sum
-    min_s = a_sum if a_sum < min_s
-    min_ss << min_s
+  sp = nil
+  sp_1 = nil
+  sp_1_min = nil
+  sps = []
+  sp_1_mins = []
+  last_i = nil
+  ois.each do |i|
+    if last_i == nil
+      d = i + 1
+      sp = 1 - p * (d + 1)
+      sp_1 = - p * d
+      sp_1_min = sp_1
+    else
+      d = i - last_i
+      sp = sp + 1 - p * d
+      sp_1 = sp_1 + 1 - p * d
+      sp_1_min = [sp_1_min, sp_1].min
+    end
+    sps << sp
+    sp_1_mins << sp_1_min
+    last_i = i
   end
-  pp(ss:) if $debug
-  pp(min_ss:) if $debug
 
   len = ois.length
-  # return false if l < K
 
   ((K - 1)...len).each do |i|
     pp(i:) if $debug
-    r = ois[i]
-    l = ois[i - (K - 1)]
-    pp(l:, r:) if $debug
-    sr = ss[r + 1]
-    # sl_1 = ss[l - 1]
-    min_s_l_1 = min_ss[l - 1 + 1]
-    pp(l:, r:, sr:, min_s_l_1:) if $debug
-    return true if min_s_l_1 <= sr
+    sp = sps[i]
+    sp_1_min = sp_1_mins[i - (K - 1)]
+    return true if sp_1_min <= sp
   end
 
   false
