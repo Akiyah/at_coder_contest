@@ -22,24 +22,20 @@ S = STDIN.gets.chomp
 
 
 def check_one(p, as, ois)
-  sp = nil
-  sp_1 = nil
-  sp_1_min = nil
+  sp = -p
+  sp_1 = -1 # sp + p == sp_1 + 1
+  sp_1_min = 1
   sps = []
   sp_1_mins = []
-  last_i = nil
+  last_i = -1
+
   ois.each do |i|
-    if last_i == nil
-      d = i + 1
-      sp = 1 - p * (d + 1)
-      sp_1 = - p * d
-      sp_1_min = sp_1
-    else
-      d = i - last_i
-      sp = sp + 1 - p * d
-      sp_1 = sp_1 + 1 - p * d
-      sp_1_min = [sp_1_min, sp_1].min
-    end
+    d = i - last_i
+    sp += 1 - p * d
+    # sp_1 += 1 - p * d
+    # sp_1_min = [sp_1_min, sp_1].min
+    sp_1_min = [sp_1_min, sp + p - 1].min
+
     sps << sp
     sp_1_mins << sp_1_min
     last_i = i
