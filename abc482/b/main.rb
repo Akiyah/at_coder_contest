@@ -16,11 +16,20 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+AS = (1..5).map do
+  STDIN.gets.chomp.chars
+end
 
 
+r1 = 5.times.map do |i|
+  (AS[i].tally['o'] || 0)
+end.max
+
+r2 = 5.times.map do |j|
+  ( 5.times.map { |i| AS[i][j] }.tally['o'] || 0 )
+end.max
+
+r3 = 5.times.map { |i| AS[i][i] }.tally['o'] || 0
+r4 = 5.times.map { |i| AS[i][4 - i] }.tally['o'] || 0
+
+puts 5 - [r1, r2, r3, r4].max
