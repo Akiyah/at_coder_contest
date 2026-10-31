@@ -74,7 +74,7 @@ QUERIES.each do |t, a, b|
     pp(i_d1:, i_u1:) if $debug
 
     if i_d1 == nil
-      ans1 = sum_rs[H - 1]
+      ans1 = sum_rs[rs_keys[-1]]
     elsif i_d1 == 0
       ans1 = 0
     else
@@ -83,7 +83,7 @@ QUERIES.each do |t, a, b|
       ans1 = sum_rs[k]
     end
     if i_u1 == nil
-      ans2 = sum_rs[H - 1]
+      ans2 = sum_rs[rs_keys[-1]]
     elsif i_u1 == 0
       ans2 = 0
     else
@@ -103,7 +103,7 @@ QUERIES.each do |t, a, b|
     pp(i_r1:, i_l1:) if $debug
 
     if i_r1 == nil
-      ans1 = sum_cs[W - 1]
+      ans1 = sum_cs[cs_keys[-1]]
     elsif i_r1 == 0
       ans1 = 0
     else
@@ -112,7 +112,7 @@ QUERIES.each do |t, a, b|
       ans1 = sum_cs[k]
     end
     if i_l1 == nil
-      ans2 = sum_cs[W - 1]
+      ans2 = sum_cs[cs_keys[-1]]
     elsif i_l1 == 0
       ans2 = 0
     else
