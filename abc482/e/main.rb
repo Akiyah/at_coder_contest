@@ -36,43 +36,90 @@ def create_tree()
   root = 1
   tree = {}
   tree[root] = { parent: nil, children: [], depth: 0}
-  leafs = []
+  leafs = {}
 
   dp = []
   dp << root
 
   while 0 < dp.length
-    node = dp.shift
+    u = dp.shift
     pp(node:) if $debug
-    parent = tree[node][:parent]
-    children = tree[node][:children]
-    depth = tree[node][:depth]
+    node_u = tree[u]
+    parent = node_u[:parent]
+    children = node_u[:children]
+    depth = node_u[:depth]
 
-    (paths[node] || []).each do |v|
+    (paths[u] || []).each do |v|
       next if v == parent
 
       children << v
-      tree[v] = { parent: node, children: [], depth: depth + 1}
+      tree[v] = { parent: u, children: [], depth: depth + 1}
 
       dp << v
     end
 
     if children.length == 0
-      leafs << node
+      leafs[depth] ||= []
+      leafs[depth] << u
     end
   end
-
-  pp(tree:) if $debug
-  pp(root:) if $debug
-  pp(leafs:) if $debug
 
   [tree, root, leafs]
 end
 
 
-def calc
+def calc_2(tree, root, leafs)
+  depth_max = leafs.keys.max
+  pp(depth_max:) if $debug
 
+  lines = {}
+  joints = {}
+  length_max = 0
+
+  dp = []
+  l_max = 0
+  [0..depth_max].reverse_each do |d|
+    if leafs[d]
+      leafs[d].each do |u|
+        lines[u] = [0, [u]] # [l, us]
+      end
+      dp += leafs[d]
+    end
+    dp.each do |u|
+      node_u = tree[u]
+      parent = node_u[:parent]
+      children = node_u[:children]
+      depth = node_u[:depth]
+
+
+      # parent = tree[u][:parent]
+      # l_u = tree[u][:length]
+      # l_p = tree[parent][:length]
+      if !l
+        l = tree[u][:length] + 1
+
+        if l_max < l
+          l_max = l
+        end
+      else
+        if l < tree[u][:length] + 1
+          l = tree[u][:length] + 1
+        end
+      end
+    end
+
+  end
+  while 0 < dp.length
+
+    
+  end
+end
+
+def calc
   tree, root, leafs = create_tree()
+  pp(tree:, root:, leafs:) if $debug
+
+  calc_2(tree, root, leafs)
 end
 
 puts calc
