@@ -22,41 +22,39 @@ SS = (1..N).map do
 end
 
 
-# r = 0
-# SS.combination(2).each do |s1, s2|
-#   c = M.times.count { |i| s1[i] != s2[i] }
-#   r += 1 if c <= 2
-# end
 
-# puts r
-
-
-ss = SS.uniq
-r0 = SS.tally.values.inject(:*) # 以下の答えをr0倍する
+r0 = SS.tally.values.map { |c| c * (c - 1) / 2 }.sum
 pp(r0:) if $debug
-n = ss.length
 
-# ハミング距離=1を数える。ハミング距離2のときにこれらが(M-1)回登場する
-r1s = []
+s1s = []
 M.times do |i|
-  ss1 = ss.map { |s| s[...i] + s[(i + 1)..] }
-  r1s << n - ss1.uniq.length
+  SS.each do |s|
+    s1 = s.dup
+    s1[i] = '*'
+    s1s << s1
+  end
 end
-pp(r1s:) if $debug
+pp(s1s:) if $debug
+r1 = s1s.tally.values.map { |c| c * (c - 1) / 2 }.sum
+pp(r1:) if $debug
 
-# (1..6).to_a.combination(4).to_a
-# ハミング距離=2を数える
-r2s = []
-# (1..6).to_a.combination(4).to_a
+s2s = []
 (0...M).to_a.combination(2).each do |i, j|
-  ss2 = ss.map { |s| s[...i] + s[(i + 1)...j] + s[(j + 1)..] }
-  r2 = n - ss2.uniq.length
-  r2s << r2
-  pp(i:, j:, r2:) if $debug
+  SS.each do |s|
+    s2 = s.dup
+    s2[i] = '*'
+    s2[j] = '*'
+    s2s << s2
+  end
 end
-pp(r2s:) if $debug
+pp(s2s:) if $debug
+r2 = s2s.tally.values.map { |c| c * (c - 1) / 2 }.sum
+pp(r2:) if $debug
 
+r0_ = r0
+r1_ = r1 - r0_ * M
+r2_ = r2 - r1_ * (M - 1) - r0_ * M * (M - 1) / 2
+pp(r0_:, r1_:, r2_:) if $debug
 
-
-r = (r2s.sum - r1s.sum * (M - 2)) * r0
+r = r0_ + r1_ + r2_
 puts r
