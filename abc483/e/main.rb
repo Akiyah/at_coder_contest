@@ -22,33 +22,34 @@ SS = (1..N).map do
 end
 
 
+pp(SS:) if $debug
 
-r0 = SS.tally.values.map { |c| c * (c - 1) / 2 }.sum
+zs = SS.map { |s| s.codepoints.map.with_index { |c, i| (c - 'a'.ord) << ((M - 1 - i) * 5)  }.sum }
+pp(zs:) if $debug
+
+r0 = zs.tally.values.map { |c| c * (c - 1) / 2 }.sum
 pp(r0:) if $debug
 
-s1s = []
+z1s = []
 M.times do |i|
-  SS.each do |s|
-    s1 = s.dup
-    s1[i] = '*'
-    s1s << s1
+  zs.each do |z|
+    z1 = z | (0b11111 << (i * 5))
+    z1s << z1
   end
 end
-pp(s1s:) if $debug
-r1 = s1s.tally.values.map { |c| c * (c - 1) / 2 }.sum
+pp(z1s:) if $debug
+r1 = z1s.tally.values.map { |c| c * (c - 1) / 2 }.sum
 pp(r1:) if $debug
 
-s2s = []
+z2s = []
 (0...M).to_a.combination(2).each do |i, j|
-  SS.each do |s|
-    s2 = s.dup
-    s2[i] = '*'
-    s2[j] = '*'
-    s2s << s2
+  zs.each do |z|
+    z2 = z | (0b11111 << (i * 5)) | (0b11111 << (j * 5))
+    z2s << z2
   end
 end
-pp(s2s:) if $debug
-r2 = s2s.tally.values.map { |c| c * (c - 1) / 2 }.sum
+pp(z2s:) if $debug
+r2 = z2s.tally.values.map { |c| c * (c - 1) / 2 }.sum
 pp(r2:) if $debug
 
 r0_ = r0
