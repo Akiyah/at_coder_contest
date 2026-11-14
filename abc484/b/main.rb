@@ -16,11 +16,14 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+K = STDIN.gets.chomp.to_i
+AS = STDIN.gets.chomp.split.map(&:to_i)
 
 
+as = AS.sort
+
+if as[-1] == 9
+  puts as[0]
+else
+  puts -1
+end
