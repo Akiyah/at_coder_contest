@@ -38,26 +38,26 @@ pp(gs:) if $debug
 
 r = 0
 sum_c = 0
-left_s = {}
-left_s1 = {}
-left_t = {}
+count_a_s = {}
+length1_a_s = {}
 gs.each do |a, c|
-  left_s[a] ||= 0
-  left_s1[a] ||= 0
-  left_t[a] ||= 0
+  pp(a:, c:) if $debug
+  count_a_s[a] ||= 0
+  length1_a_s[a] ||= 0
 
-  r0 = c * (c - 1) / 2
-  r1 = left_s[a] * c - left_t[a]
-  r2 = c * (sum_c - left_s1[a])
+  r1 = count_a_s[a]
+  r2 = sum_c - length1_a_s[a]
+  pp(r1:, r2:) if $debug
 
-  r += r0 + r1
+  r += r1 + r2
+  pp(r:) if $debug
 
-  left_s[a] += c
-  left_s1[a] += c + 1
-  left_t[a] += 1
   sum_c += c
+  count_a_s[a] += 1
+  length1_a_s[a] += c + 1
+  pp(sum_c:, count_a_s:, length1_a_s:) if $debug
 end
 
-puts N * (N - 1) / 2 - r
+puts r + 1
 
 
