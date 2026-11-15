@@ -16,11 +16,16 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, L, R = STDIN.gets.chomp.split.map(&:to_i)
+AS = STDIN.gets.chomp.split.map(&:to_i)
 
+r = 0
+N.times do |i|
+  (i...N).each do |j|
+    s = AS[i..j].sum
+    r += 1 if L <= s && s <= R
+  end
+end
+
+puts r
 
