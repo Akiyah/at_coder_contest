@@ -32,9 +32,12 @@ def calc(ss, r, l) # vより小さくなる数
     s_j = ss[j + 1]
     pp(j:, s_j:) if $debug
 
-    i_r = ss2.bsearch_index { |s| s < s_j - r } || j + 1
+    s_j_r = s_j - r
+    i_r = ss2.bsearch_index { |s| s < s_j_r } || j + 1
     ans += i_r
-    i_l = ss2.bsearch_index { |s| s < s_j - (l - 1) } || j + 1
+
+    s_j_l_1 = s_j - (l - 1)
+    i_l = ss2.bsearch_index { |s| s < s_j_l_1 } || j + 1
     ans -= i_l
     pp(i_r:, i_l:, ans:, ss2:) if $debug
 
