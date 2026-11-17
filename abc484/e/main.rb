@@ -24,29 +24,25 @@ pp(AS:) if $debug
 
 
 
-def calc(ss, v) # vより小さくなる数
-  pp(ss:, v:) if $debug
-  r = 0
+def calc(ss, r, l) # vより小さくなる数
+  pp(ss:, r:, l:) if $debug
+  ans = 0
   ss2 = [0]
   N.times do |j|
     s_j = ss[j + 1]
     pp(j:, s_j:) if $debug
 
-    i1 = ss2.bsearch_index { |s| s < s_j - v } || j + 1
-    r += i1
-    pp(i1:, r:, ss2:) if $debug
+    i_r = ss2.bsearch_index { |s| s < s_j - r } || j + 1
+    ans += i_r
+    i_l = ss2.bsearch_index { |s| s < s_j - (l - 1) } || j + 1
+    ans -= i_l
+    pp(i_r:, i_l:, ans:, ss2:) if $debug
 
     i2 = ss2.bsearch_index { |s| s < s_j } || j + 1
     ss2.insert(i2, s_j)
     pp(i2:, ss2:) if $debug
-
-    # (0..j).each do |i|
-    #   s = ss[j + 1] - ss[i]
-    #   pp(i:, j:, s:) if $debug
-    #   r += 1 if s <= v
-    # end
   end
-  r
+  ans
 end
 
 
@@ -59,9 +55,7 @@ AS.each do |a|
 end
 pp(ss:) if $debug
 
-r1 = calc(ss, R)
-r2 = calc(ss, L - 1)
-r = r1 - r2
-pp(r1:, r2:, r:) if $debug
+r = calc(ss, R, L)
+pp(r:) if $debug
 
 puts r
