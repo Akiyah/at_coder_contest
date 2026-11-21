@@ -50,7 +50,7 @@ def calc(ss, r, l) # vより小さくなる数
     pp(j_r:) if $debug
     pp(segtree_r:) if $debug
 
-    while j_l <= N && sis[j_l][0] + l < s
+    while j_l <= N && sis[j_l][0] + (l - 1) < s
       s0, i0 = sis[j_l]
       segtree_l[i0] = 0
       j_l += 1
