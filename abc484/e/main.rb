@@ -28,22 +28,40 @@ def calc(ss, r, l) # vより小さくなる数
   pp(ss:, r:, l:) if $debug
   ans = 0
   ss2 = [0]
-  N.times do |j|
-    s_j = ss[j + 1]
-    pp(j:, s_j:) if $debug
 
-    s_j_r = s_j - r
-    i_r = ss2.bsearch_index { |s| s < s_j_r } || j + 1
-    ans += i_r
+  # segtree_r = AcLibraryRb::SegTree.new(N + 1, 1) { |x, y| x + y }
+  # segtree_l = AcLibraryRb::SegTree.new(N + 1, 1) { |x, y| x + y }
+  segtree_r = [1] * (N + 1)
+  segtree_l = [1] * (N + 1)
 
-    s_j_l_1 = s_j - (l - 1)
-    i_l = ss2.bsearch_index { |s| s < s_j_l_1 } || j + 1
-    ans -= i_l
-    pp(i_r:, i_l:, ans:, ss2:) if $debug
+  sis = ss.map.with_index { |s, i| [s, i] }.sort
+  pp(sis:) if $debug
 
-    i2 = ss2.bsearch_index { |s| s < s_j } || j + 1
-    ss2.insert(i2, s_j)
-    pp(i2:, ss2:) if $debug
+  j_r = 0
+  j_l = 0
+  sis.each do |s, i|
+    pp(s:, i:, j_r:, j_l:) if $debug
+
+    while j_r <= N && sis[j_r][0] + r < s
+      s0, i0 = sis[j_r]
+      segtree_r[i0] = 0
+      j_r += 1
+    end
+    pp(j_r:) if $debug
+    pp(segtree_r:) if $debug
+
+    while j_l <= N && sis[j_l][0] + l < s
+      s0, i0 = sis[j_l]
+      segtree_l[i0] = 0
+      j_l += 1
+    end
+    pp(j_l:) if $debug
+    pp(segtree_l:) if $debug
+
+    d_r = segtree_r[0...i].sum
+    d_l = segtree_l[0...i].sum
+    ans += d_r - d_l
+    pp(i:, d_r:, d_l:, ans:) if $debug
   end
   ans
 end
