@@ -20,99 +20,56 @@ N = STDIN.gets.chomp.to_i
 S = STDIN.gets.chomp
 
 
+def abc_index(ss)
+  abcs = {}
+  n = 0
+  ss.each.with_index do |x, i|
+    if !abcs[x]
+      abcs[x] ||= 0
+      abcs[x] += 1
+      n += 1      
+    end
+    return i if 3 <= n
+  end
+
+  return nil
+end
+
 def calc
   ss = S.chars
-  abc_counts = ss.tally
-  abc_counts['A'] ||= 0
-  abc_counts['B'] ||= 0
-  abc_counts['C'] ||= 0
-  pp(abc_counts:) if $debug
 
-  lefts = []
-  xs_l = {}
-  xs_l['A'] = 0
-  xs_l['B'] = 0
-  xs_l['C'] = 0
-  ss.each.with_index do |x, i|
-    xs_l[x] += 1
-    if ['A', 'B', 'C'].all? { |x0| 1 <= xs_l[x0] }
-      if ['A', 'B', 'C'].all? { |x0| 2 <= abc_counts[x0] - xs_l[x0] }
-        lefts << i
-      end
-    end
-  end
-  pp(xs_l:) if $debug
-  pp(lefts:) if $debug
-  return 0 if lefts.length == 0
+  i_l = abc_index(ss)
+  i_r = abc_index(ss.reverse)
+  pp(i_l:, i_r:) if $debug
 
+  return 0 unless i_l
+  return 0 unless i_r
+  return 0 if N < (i_l + 1) + (i_r + 1)
 
-  rights = []
-  xs_r = {}
-  xs_r['A'] = 0
-  xs_r['B'] = 0
-  xs_r['C'] = 0
-  ss.reverse.each.with_index do |x, j|
-    i = N - 1 - j
-    xs_r[x] += 1
-    if ['A', 'B', 'C'].all? { |x0| 1 <= xs_r[x0] }
-      if ['A', 'B', 'C'].all? { |x0| 2 <= abc_counts[x0] - xs_r[x0] }
-        rights << i - 1
-      end
-    end
-  end
-  pp(xs_r:) if $debug
-  rights = rights.reverse
-  pp(rights:) if $debug
-  return 0 if rights.length == 0
+  ss = ss[(i_l + 1)...(N - (i_r + 1))]
+  n = ss.length
+  pp(ss:, n:) if $debug
 
+  j = -1
   ans = 0
-
-  xs_l = {}
-  xs_l['A'] = 0
-  xs_l['B'] = 0
-  xs_l['C'] = 0
-
-  xs_r = {}
-  xs_r['A'] = 0
-  xs_r['B'] = 0
-  xs_r['C'] = 0
-
-  (0..rights[0]).each do |i0|
-    x0 = ss[i0]
-    xs_r[x0] += 1
-  end
-
-  last_i_l = -1
-  last_i_r = -1
-  j_r = 0
-  right_index = 0
-  lefts.each do |i_l|
-    pp(i_l:) if $debug
-    ((last_i_l + 1)..i_l).each do |i0|
-      x0 = ss[i0]
-      xs_l[x0] += 1
+  xs_i = { 'A' => 0, 'B' => 0, 'C' => 0 }
+  xs_j = { 'A' => 0, 'B' => 0, 'C' => 0 }
+  ss.each.with_index do |x, i|
+    pp(x:, i:) if $debug
+    pp(xs_i:) if $debug
+    pp(xs_j:) if $debug
+    while !['A', 'B', 'C'].all? { |x0| xs_i[x0] < xs_j[x0] }
+      j += 1
+      return ans if n <= j
+      xs_j[ss[j]] += 1
     end
-    pp(xs_l:) if $debug
-    last_i_l = i_l
+    pp(j:) if $debug
+    pp(xs_j:) if $debug
 
-    while !['A', 'B', 'C'].all? { |x0| 1 <= xs_r[x0] - xs_l[x0] }
-      last_i_r = rights[j_r]
-      j_r += 1
-      if rights.length <= j_r
-        return ans
-      end
-      i_r = rights[j_r]
-      ((last_i_r + 1)..i_r).each do |i0|
-        x0 = ss[i0]
-        xs_r[x0] += 1
-      end
-      pp(xs_r:) if $debug
-    end
-
-    pp(j_r:) if $debug
-
-    ans += rights.length - j_r
+    ans += n - j
     pp(ans:) if $debug
+
+    xs_i[x] += 1
   end
 
   ans
