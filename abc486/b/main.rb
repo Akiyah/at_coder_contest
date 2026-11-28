@@ -16,11 +16,30 @@
 
 $debug = !ARGV[0].nil?
 
-# N = STDIN.gets.chomp.to_i
-# N, A, X, Y = STDIN.gets.chomp.split.map(&:to_i)
-# AS = (1..N).map do
-#   STDIN.gets.chomp.to_i
-#   STDIN.gets.chomp.split.map(&:to_i)
-# end
+N, M = STDIN.gets.chomp.split.map(&:to_i)
+AS = STDIN.gets.chomp.split.map(&:to_i)
+XYS = (1..M).map do
+  STDIN.gets.chomp.split.map(&:to_i)
+end
+
+as = {}
+AS.each { |a| as[a] = true }
+pp(as:) if $debug
+XYS.each do |x, y|
+  pp(x:, y:) if $debug
+  as[x] = nil
+  as[y] = true
+  pp(as:) if $debug
+end
+
+rs = []
+as.each do |a, b|
+  rs << a if b
+end
+
+
+puts rs.sort.join(' ')
+
+
 
 
